@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minichat.app.BuildConfig
@@ -502,7 +503,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 text = "MINI CHAT",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Black,
-                    letterSpacing = androidx.compose.ui.unit.TextUnit(2f, androidx.compose.ui.unit.TextUnitType.Sp),
+                    letterSpacing = 2.sp,
                 ),
                 color = MaterialTheme.colorScheme.onBackground,
             )
