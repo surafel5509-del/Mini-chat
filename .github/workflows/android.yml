@@ -41,17 +41,23 @@ jobs:
       - name: Generate Gradle wrapper
         continue-on-error: true
         run: |
+          set -x
+          which gradle || true
+          gradle --version || true
           if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-            gradle wrapper --gradle-version 9.9.0 --distribution-type bin || echo "wrapper generation failed"
+            gradle wrapper --gradle-version 9.9.0 --distribution-type bin --no-daemon 2>&1 | tail -20
           fi
-          chmod +x gradlew || true
+          ls -la gradlew gradle/wrapper 2>&1 || true
+          chmod +x gradlew 2>/dev/null || true
           touch build.log
 
       - name: Assemble debug APK
         continue-on-error: true
         run: |
           set +e
-          ./gradlew :app:assembleDebug --stacktrace --no-daemon --console=plain > build.log 2>&1
+          if [ -x ./gradlew ]; then GRADLE_CMD=./gradlew; else GRADLE_CMD=gradle; fi
+          echo "using $GRADLE_CMD" > build.log
+          $GRADLE_CMD :app:assembleDebug --stacktrace --no-daemon --console=plain >> build.log 2>&1
           echo "gradle_exit=$?" > build-status.txt
           tail -n 120 build.log
 
@@ -59,7 +65,8 @@ jobs:
         continue-on-error: true
         run: |
           set +e
-          ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace --no-daemon --console=plain > release.log 2>&1
+          if [ -x ./gradlew ]; then GRADLE_CMD=./gradlew; else GRADLE_CMD=gradle; fi
+          $GRADLE_CMD :app:assembleRelease :app:bundleRelease --stacktrace --no-daemon --console=plain > release.log 2>&1
           echo "release_gradle_exit=$?" >> build-status.txt
           tail -n 60 release.log
 
