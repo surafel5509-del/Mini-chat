@@ -43,6 +43,8 @@ fun MiniChatNavHost(
     rootViewModel: RootViewModel,
     deepLinkConversationId: String? = null,
     onDeepLinkConsumed: () -> Unit = {},
+    passwordResetPending: Boolean = false,
+    onPasswordResetOpened: () -> Unit = {},
     navController: NavHostController = rememberNavController(),
 ) {
     val state by rootViewModel.uiState.collectAsStateWithLifecycle()
@@ -85,6 +87,13 @@ fun MiniChatNavHost(
             }
 
             AuthState.Loading -> Unit
+        }
+    }
+
+    LaunchedEffect(passwordResetPending, state.authState) {
+        if (passwordResetPending && state.authState is AuthState.SignedIn) {
+            onPasswordResetOpened()
+            navController.navigate(Routes.resetPassword("")) { launchSingleTop = true }
         }
     }
 

@@ -38,6 +38,13 @@ interface AuthRepository {
     suspend fun resendVerificationEmail(email: String): AppResult<Unit>
     suspend fun updatePassword(newPassword: String): AppResult<Unit>
     suspend fun refreshSession(): AppResult<Unit>
+
+    /**
+     * Completes a Supabase recovery deep link (`minichat://auth-callback#access_token=…`).
+     * The recovery link carries a short lived session which is imported so the user can set a
+     * new password without signing in again.
+     */
+    suspend fun completeRecoveryLink(accessToken: String, refreshToken: String): AppResult<Unit>
 }
 
 /** Realtime signals for the conversation list. */

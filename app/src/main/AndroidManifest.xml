@@ -40,6 +40,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="minichat" android:host="auth-callback" />
             </intent-filter>
+
+            <!-- Push notification / share deep links into a conversation -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="minichat" android:host="chat" />
+            </intent-filter>
         </activity>
 
         <service

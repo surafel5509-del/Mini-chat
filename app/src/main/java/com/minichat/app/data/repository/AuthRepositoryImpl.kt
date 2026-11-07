@@ -109,6 +109,13 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun completeRecoveryLink(
+        accessToken: String,
+        refreshToken: String,
+    ): AppResult<Unit> = safeCall {
+        client.auth.importAuthToken(accessToken = accessToken, refreshToken = refreshToken)
+    }
+
     override suspend fun refreshSession(): AppResult<Unit> = safeCall {
         if (client.auth.currentSessionOrNull() != null) {
             client.auth.refreshCurrentSession()

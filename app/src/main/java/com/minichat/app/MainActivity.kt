@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.minichat.app.core.presence.PresenceTracker
+import com.minichat.app.core.util.onSuccess
 import com.minichat.app.design.theme.MiniChatTheme
 import com.minichat.app.navigation.MiniChatNavHost
 import com.minichat.app.notifications.PushTokenManager
@@ -38,8 +39,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject lateinit var presenceTracker: PresenceTracker
     @Inject lateinit var pushTokenManager: PushTokenManager
+    @Inject lateinit var authRepository: com.minichat.app.domain.repository.AuthRepository
 
     private var deepLinkConversationId by mutableStateOf<String?>(null)
+    private var recoveryLinkPending by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -78,6 +81,8 @@ class MainActivity : ComponentActivity() {
                         rootViewModel = rootViewModel,
                         deepLinkConversationId = deepLinkConversationId,
                         onDeepLinkConsumed = { deepLinkConversationId = null },
+                        passwordResetPending = recoveryLinkPending,
+                        onPasswordResetOpened = { recoveryLinkPending = false },
                     )
                 }
             }
@@ -94,8 +99,24 @@ class MainActivity : ComponentActivity() {
 
     private fun handleIntent(intent: Intent?) {
         val data = intent?.data ?: return
-        if (data.scheme == "minichat" && data.host == "chat") {
-            deepLinkConversationId = data.pathSegments.firstOrNull()
+        if (data.scheme != "minichat") return
+        when (data.host) {
+            "chat" -> deepLinkConversationId = data.pathSegments.firstOrNull()
+
+            "auth-callback" -> {
+                // Supabase appends the session to the fragment: #access_token=…&refresh_token=…
+                val raw = data.fragment ?: data.query ?: return
+                val params = raw.split('&').mapNotNull { part ->
+                    val index = part.indexOf('=')
+                    if (index <= 0) null else part.substring(0, index) to part.substring(index + 1)
+                }.toMap()
+                val accessToken = params["access_token"] ?: return
+                val refreshToken = params["refresh_token"] ?: return
+                lifecycleScope.launch {
+                    authRepository.completeRecoveryLink(accessToken, refreshToken)
+                        .onSuccess { recoveryLinkPending = true }
+                }
+            }
         }
     }
 
