@@ -10,40 +10,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Query metadata
+      - name: Gather reference
         continue-on-error: true
         run: |
+          set +e
           {
-          q() {
-            local base="$1" path="$2"
-            local url="$base/$path/maven-metadata.xml"
-            local code
-            code=$(curl -sS -o /tmp/meta.xml -w '%{http_code}' --max-time 30 "$url")
-            echo "=== $path -> HTTP $code  ($(wc -c </tmp/meta.xml) bytes)"
-            sed -e 's/></>\n</g' /tmp/meta.xml | grep -oE '<version>[^<]+' | sed -e 's/<version>//' -e 's/<\/version>//' | tail -12 | tr '\n' ' '
-            echo
-          }
           C=https://repo1.maven.org/maven2
           G=https://dl.google.com/dl/android/maven2
-          q $C io/github/jan-tennert/supabase/postgrest-kt
-          q $C io/github/jan-tennert/supabase/supabase-kt
-          q $C com/google/dagger/hilt-android
-          q $C com/google/devtools/ksp/symbol-processing-gradle-plugin
-          q $C io/coil-kt/coil-compose
-          q $C org/jetbrains/kotlinx/kotlinx-serialization-json
+          q() {
+            local base="$1" path="$2"
+            local code
+            code=$(curl -sS -o /tmp/meta.xml -w '%{http_code}' --max-time 30 "$base/$path/maven-metadata.xml")
+            echo "=== $path -> HTTP $code"
+            sed -e 's/></>\n</g' /tmp/meta.xml | grep -oE '<version>[^<]+' | sed -e 's/<version>//' | tail -25 | tr '\n' ' '
+            echo
+          }
+          q $G com/android/tools/build/gradle
           q $C org/jetbrains/kotlin/kotlin-gradle-plugin
-          q $C com/android/tools/build/gradle
+          q $C com/google/devtools/ksp/symbol-processing-gradle-plugin
+          q $C io/ktor/ktor-client-okhttp
+          q $C io/ktor/ktor-client-core
           q $G androidx/compose/compose-bom
+          q $G androidx/compose/material3/material3
           q $G androidx/navigation/navigation-compose
-          q $G androidx/activity/activity-compose
-          q $G androidx/core/core-ktx
-          q $G androidx/lifecycle/lifecycle-runtime-compose
+          q $G androidx/core/core-splashscreen
           q $G androidx/datastore/datastore-preferences
-          q $G androidx/hilt/hilt-navigation-compose
-          q $G androidx/splashscreen/splashscreen
-          q $G com/google/gms/google-services
-          q $G com/google/firebase/firebase-bom
-          q $G androidx/security/security-crypto
+          echo "=== supabase-kt 3.9.0 repo"
+          curl -sL --max-time 90 https://codeload.github.com/supabase-community/supabase-kt/tar.gz/refs/tags/3.9.0 -o /tmp/sk.tar.gz
+          mkdir -p /tmp/sk && tar xzf /tmp/sk.tar.gz -C /tmp/sk --strip-components=1
+          echo "--- top dirs"; ls /tmp/sk
+          echo "--- modules"; ls /tmp/sk/*/ -d 2>/dev/null | head -30
+          echo "--- versions toml (supabase deps)"; sed -n '1,120p' /tmp/sk/gradle/libs.versions.toml
+          echo "--- demo projects"; find /tmp/sk -maxdepth 3 -type d -name "*demo*" -o -maxdepth 3 -type d -name "*sample*" | head -20
+          echo "--- kotlin files in demos"; find /tmp/sk -path "*demo*" -name "*.kt" | head -60
           } > versions.txt 2>&1
       - name: Publish logs to branch
         if: always()
