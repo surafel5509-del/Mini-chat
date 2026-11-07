@@ -22,7 +22,28 @@ lives in `design/theme`.
 | **Push** | `FirebaseMessagingService` renders grouped notifications that deep-link into the conversation; device tokens are registered per user in `device_tokens`. Disabled safely when no Firebase project is configured. |
 | **Security** | Session tokens in `EncryptedSharedPreferences`, no secrets in the APK besides the Supabase *publishable* key, Postgres row level security on every table. |
 
-Minimum SDK 26 (Android 8.0), target/compile SDK 36.
+Minimum SDK 26 (Android 8.0), target SDK 36, compile SDK 37.
+
+## Download the built APK
+
+Every push to `arena/8de85148-mini-chat` is built by GitHub Actions. When the build is green the
+workflow publishes:
+
+* a **GitHub Release** named `build-<short-sha>` with `app-debug.apk` and `app-release.aab`
+  attached — open <https://github.com/surafel5509-del/Mini-chat/releases> and download
+  `app-debug.apk`;
+* the same files as the **`minichat-apk` workflow artifact** on the run page;
+* the raw Gradle log as a comment on issue **#1** and in `ci-logs/`.
+
+Install it on a device or emulator:
+
+```bash
+adb install -r app-debug.apk
+```
+
+The debug APK is signed with the standard Android debug key (`applicationId com.minichat.app.debug`),
+so it installs without any extra setup. The release APK produced by CI is **unsigned** until you add a
+keystore — see below.
 
 ---
 
