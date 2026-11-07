@@ -1,0 +1,3 @@
+gradle_exit=1
+release_gradle_exit=1
+total 0
