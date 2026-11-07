@@ -1,0 +1,48 @@
+name: Version Discovery
+on:
+  push:
+    branches: ['arena/8de85148-mini-chat']
+    paths: ['VERSIONS_TRIGGER']
+  workflow_dispatch:
+jobs:
+  versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query Maven metadata
+        run: |
+          q() {
+            echo "=== $1"
+            curl -sS --max-time 30 "https://repo1.maven.org/maven2/$1/maven-metadata.xml" \
+              | tr '<' '\n<' | grep -oE '^<version>[^<]+' | sed 's/<version>//' | tail -10 | tr '\n' ' '
+            echo
+          }
+          g() {
+            echo "=== $1 (google)"
+            curl -sS --max-time 30 "https://dl.google.com/dl/android/maven2/$1/maven-metadata.xml" \
+              | tr '<' '\n<' | grep -oE '^<version>[^<]+' | sed 's/<version>//' | tail -14 | tr '\n' ' '
+            echo
+          }
+          q io/github/jan-tennert/supabase/postgrest-kt
+          q io/github/jan-tennert/supabase/supabase-kt
+          q com/google/dagger/hilt-android
+          q com/google/devtools/ksp/symbol-processing-gradle-plugin
+          q io/coil-kt/coil-compose
+          q io/coil-kt/coil3/coil-compose
+          q org/jetbrains/kotlinx/kotlinx-serialization-json
+          q org/jetbrains/kotlin/kotlin-gradle-plugin
+          q com/android/tools/build/gradle
+          g androidx/compose/compose-bom
+          g androidx/navigation/navigation-compose
+          g androidx/activity/activity-compose
+          g androidx/core/core-ktx
+          g androidx/lifecycle/lifecycle-runtime-compose
+          g androidx/datastore/datastore-preferences
+          g androidx/hilt/hilt-navigation-compose
+          g androidx/splashscreen/splashscreen
+          g com/google/gms/google-services
+          g com/google/firebase/firebase-bom
+          echo "=== gradle current"
+          curl -sS --max-time 30 "https://services.gradle.org/versions/current" | head -20
+          echo "=== android sdk"
+          echo "SDK_ROOT=$ANDROID_SDK_ROOT HOME=$ANDROID_HOME"
+          ls "${ANDROID_SDK_ROOT}/platforms" "${ANDROID_SDK_ROOT}/build-tools" 2>/dev/null
