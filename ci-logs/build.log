@@ -92,188 +92,14 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:validateSigningDebug
 > Task :app:writeDebugAppMetadata
 > Task :app:writeDebugSigningConfigVersions
-
 > Task :app:compileDebugKotlin
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:34:39 Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/realtime/RealtimeService.kt:207:45 Argument type mismatch: actual type is 'RealtimeService.TypingPayload', but 'BroadcastPayload' was expected.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/AuthRepositoryImpl.kt:99:66 Unresolved reference 'OtpType'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:53:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:55:17 Unresolved reference 'order'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:14 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:14 Cannot infer type for type parameter 'R'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:18 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:23 Unresolved reference 'toDomain'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:59:14 Unresolved reference 'sortedWith'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:67:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:17 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:17 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:24 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:26 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:73:15 Unresolved reference 'toDomain'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:82:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:84:17 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:84:17 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:84:24 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:85:21 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:86:35 Unresolved reference 'lt'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:88:17 Unresolved reference 'order'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:89:17 Unresolved reference 'limit'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:14 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:14 Cannot infer type for type parameter 'R'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:18 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:23 Unresolved reference 'toDomain'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:93:14 Unresolved reference 'sortedBy'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:93:25 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:105:26 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:114:17 Unresolved reference 'select'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:116:14 Unresolved reference 'decodeSingle' on receiver of type 'StringBuilder'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:123:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:125:17 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:22 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:134:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:136:17 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:22 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:145:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:153:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:154:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:154:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:154:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:155:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:156:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:157:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:171:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:172:15 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:174:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:174:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:174:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:175:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:176:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:183:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:184:15 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:186:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:186:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:186:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:187:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:188:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:195:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:197:17 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:197:17 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:197:24 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:198:21 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:199:21 Unresolved reference 'neq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:204:15 Unresolved reference 'lastReadAt'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:205:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:205:15 Cannot infer type for type parameter 'R'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:205:19 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:35:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:37:17 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:37:26 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:44:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:46:17 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:46:26 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:58:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:60:17 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:61:17 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:62:17 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:65:13 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:65:22 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:66:13 Unresolved reference 'select'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:82:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:83:15 Unresolved reference 'set'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:85:13 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:85:22 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:96:36 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:98:17 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:98:26 Unresolved reference 'ilike'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:99:17 Unresolved reference 'limit'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:103:33 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:105:17 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:105:26 Unresolved reference 'ilike'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:106:17 Unresolved reference 'limit'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:113:27 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:114:23 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:114:42 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:115:20 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:116:25 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:122:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:124:17 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:124:26 Unresolved reference 'neq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:125:17 Unresolved reference 'limit'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:128:27 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:131:27 Cannot infer type for value parameter 'peerId'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:132:17 Cannot infer type for type parameter 'R'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:133:28 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:135:29 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:135:38 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:141:25 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:144:57 Cannot infer type for type parameter 'R'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:145:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:147:17 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:147:26 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:150:20 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:156:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:163:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:164:13 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:165:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:166:17 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:173:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:180:17 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:180:26 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:181:17 Unresolved reference 'order'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:184:27 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:189:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:206:20 Cannot infer type for type parameter 'R'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:207:20 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:209:21 Unresolved reference 'filter'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:209:30 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118:84 Unresolved reference 'KeyboardArrowRight'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:1 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:9 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:10 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:17 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:18 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:26 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:27 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:32 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:33 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:40 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:41 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:1 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:9 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:10 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:17 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:18 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:26 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:27 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:32 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:33 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:40 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:41 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:1 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:9 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:10 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:17 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:18 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:26 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:27 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:32 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:33 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:40 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:41 Syntax error: Expecting a top level declaration.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:178:69 Unresolved reference 'Lock'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:180:59 Unresolved reference 'VisibilityOff'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:182:59 Unresolved reference 'Visibility'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:7:35 Unresolved reference 'slideIntoContainer'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:8:35 Unresolved reference 'slideOutOfContainer'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118:31 Unresolved reference 'Icons'.
 
 > Task :app:compileDebugKotlin FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794054405545.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794054646399.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
@@ -320,36 +146,6 @@ org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:com
 	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:475)
 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:392)
-	at org.gradle.execution.plan.DefaultPlanExecutor.process(DefaultPlanExecutor.java:118)
-	at org.gradle.execution.DefaultBuildWorkExecutor.executePlan(DefaultBuildWorkExecutor.java:143)
-	at org.gradle.execution.DefaultBuildWorkExecutor.displayOrExecutePlan(DefaultBuildWorkExecutor.java:128)
-	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:79)
-	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:75)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
-	at org.gradle.execution.DefaultBuildWorkExecutor.execute(DefaultBuildWorkExecutor.java:75)
-	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$executeTasks$0(DefaultBuildLifecycleController.java:322)
-	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:324)
-	at org.gradle.internal.model.StateTransitionController.lambda$tryTransition$0(StateTransitionController.java:235)
-	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:45)
-	at org.gradle.internal.model.StateTransitionController.tryTransition(StateTransitionController.java:235)
-	at org.gradle.internal.build.DefaultBuildLifecycleController.executeTasks(DefaultBuildLifecycleController.java:313)
-	at org.gradle.internal.build.DefaultBuildWorkGraphController$DefaultBuildWorkGraph.runWork(DefaultBuildWorkGraphController.java:207)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
-	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
-	at org.gradle.composite.internal.DefaultBuildController.doRun(DefaultBuildController.java:182)
-	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.lambda$run$0(DefaultBuildController.java:199)
-	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
-	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.run(DefaultBuildController.java:199)
 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
@@ -470,7 +266,7 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
 	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
-	... 55 more
+	... 25 more
 Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
 	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
 	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
@@ -508,5 +304,5 @@ Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Suspend 
 	... 2 more
 
 
-BUILD FAILED in 2m 30s
+BUILD FAILED in 3m 33s
 32 actionable tasks: 32 executed
