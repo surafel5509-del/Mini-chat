@@ -41,6 +41,12 @@ For more information, see http://developer.android.com/build/r/new-dsl.
 
 To determine what is calling unitTestVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
 Add android.sync.suppressAgpWarnings=DEPRECATED_DSL to the gradle.properties file to suppress this warning.
+
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/build.gradle.kts:42:1: 'fun Project.android(configure: Action<BaseAppModuleExtension>): Unit' is deprecated. Replaced by com.android.build.api.dsl.ApplicationExtension.
+This class is not used for the public extensions in AGP when android.newDsl=true, which is the default in AGP 9.0, and will be removed in AGP 10.0.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/build.gradle.kts:54:9: 'val resourceConfigurations: MutableSet<String>' is deprecated. Support for resource configurations will be removed. For locales, use androidResources.localeFilters. For screen density, pass AAPT2's --preferred-density flag via androidResources.additionalParameters.
+
+> Configure project :app
 w: ⚠️ Deprecated 'org.jetbrains.kotlin.android' plugin usage
 The 'org.jetbrains.kotlin.android' plugin in project ':app' is no longer required for Kotlin support since AGP 9.0.
 Solution: Remove both `android.builtInKotlin=true` and `android.newDsl=false` from `gradle.properties`, then migrate to built-in Kotlin.
@@ -64,304 +70,293 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:generateDebugGlobalSynthetics
 > Task :app:desugarDebugFileDependencies
 > Task :app:checkDebugDuplicateClasses
-> Task :app:checkDebugAarMetadata FAILED
+> Task :app:checkDebugAarMetadata
 > Task :app:kspDebugKotlin
 > Task :app:mergeExtDexDebug
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794053852441.json
+> Task :app:mapDebugSourceSetPaths
+> Task :app:mergeLibDexDebug
+> Task :app:compileDebugNavigationResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugResources
+> Task :app:mergeDebugNativeLibs
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libdatastore_shared_counter.so. Run with --info option to learn more.
+
+> Task :app:processDebugResources
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:compileDebugKotlin
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:33:39 Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:37:22 Unresolved reference 'onFailure' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:37:66 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/realtime/RealtimeService.kt:206:45 Argument type mismatch: actual type is 'RealtimeService.TypingPayload', but 'BroadcastPayload' was expected.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/AuthRepositoryImpl.kt:99:66 Unresolved reference 'OtpType'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:53:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:55:17 Unresolved reference 'order'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:14 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:14 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:18 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:58:23 Unresolved reference 'toDomain'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:59:14 Unresolved reference 'sortedWith'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:67:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:17 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:17 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:24 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:69:26 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:73:15 Unresolved reference 'toDomain'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:82:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:84:17 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:84:17 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:84:24 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:85:21 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:86:35 Unresolved reference 'lt'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:88:17 Unresolved reference 'order'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:89:17 Unresolved reference 'limit'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:14 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:14 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:18 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:92:23 Unresolved reference 'toDomain'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:93:14 Unresolved reference 'sortedBy'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:93:25 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:105:26 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:114:17 Unresolved reference 'select'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:116:14 Unresolved reference 'decodeSingle' on receiver of type 'StringBuilder'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:123:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:125:17 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:128:22 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:134:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:136:17 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:139:22 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:145:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:153:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:154:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:154:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:154:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:155:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:156:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:157:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:171:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:172:15 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:174:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:174:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:174:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:175:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:176:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:183:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:184:15 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:186:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:186:13 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:186:20 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:187:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:188:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:195:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:197:17 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:197:17 Candidate 'fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T>' is inapplicable because of a receiver type mismatch.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:197:24 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:198:21 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:199:21 Unresolved reference 'neq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:204:15 Unresolved reference 'lastReadAt'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:205:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:205:15 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:205:19 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:35:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:37:17 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:37:26 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:44:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:46:17 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:46:26 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:58:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:60:17 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:61:17 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:62:17 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:65:13 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:65:22 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:66:13 Unresolved reference 'select'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:82:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:83:15 Unresolved reference 'set'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:85:13 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:85:22 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:96:36 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:98:17 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:98:26 Unresolved reference 'ilike'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:99:17 Unresolved reference 'limit'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:103:33 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:105:17 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:105:26 Unresolved reference 'ilike'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:106:17 Unresolved reference 'limit'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:113:27 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:114:23 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:114:42 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:115:20 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:116:25 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:122:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:124:17 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:124:26 Unresolved reference 'neq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:125:17 Unresolved reference 'limit'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:128:27 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:131:27 Cannot infer type for value parameter 'peerId'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:132:17 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:133:28 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:135:29 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:135:38 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:141:25 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:144:57 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:145:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:147:17 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:147:26 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:150:20 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:156:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:163:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:164:13 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:165:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:166:17 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:173:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:180:17 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:180:26 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:181:17 Unresolved reference 'order'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:184:27 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:189:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:206:20 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:207:20 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:209:21 Unresolved reference 'filter'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:209:30 Unresolved reference 'eq'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:82:26 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118:77 Unresolved reference 'ChevronRight'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:164:14 This annotation is not repeatable.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/domain/repository/Repositories.kt:55:44 Unresolved reference 'Reaction'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/domain/repository/Repositories.kt:56:46 Unresolved reference 'Reaction'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:175:69 Unresolved reference 'Lock'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:177:59 Unresolved reference 'VisibilityOff'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:179:59 Unresolved reference 'Visibility'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:167:58 Unresolved reference 'messageId'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:168:78 Unresolved reference 'id'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:181:58 Unresolved reference 'messageId'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:182:108 Unresolved reference 'id'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:318:54 Unresolved reference 'onFailure' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:318:66 Cannot infer type for value parameter 'failure'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:319:59 Unresolved reference 'message'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:344:48 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<ConversationSummary>>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:344:60 Cannot infer type for value parameter 'conversations'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:345:64 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:353:18 Unresolved reference 'onFailure' on receiver of type 'AppResult<Message>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:353:30 Cannot infer type for value parameter 'failure'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:353:83 Unresolved reference 'message'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:383:55 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Instant?>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:383:67 Cannot infer type for value parameter 'readAt'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:112:30 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:135:30 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:179:30 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverScreen.kt:172:14 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverScreen.kt:210:22 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverViewModel.kt:51:45 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<Profile>>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverViewModel.kt:51:57 Cannot infer type for value parameter 'peers'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverViewModel.kt:96:53 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:82:58 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<BlockedUser>>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:82:70 Cannot infer type for value parameter 'blocks'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:84:69 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:88:58 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<BlockedUser>>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:88:70 Cannot infer type for value parameter 'blocks'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:89:89 Unresolved reference 'size'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:164:52 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:166:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:175:54 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:177:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:186:61 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:188:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:101:18 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:279:14 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:465:34 None of the following candidates is applicable:
+
+fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
+  No parameter with name 'indication' found.
+
+fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
+  No value passed for parameter 'interactionSource'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:36:53 Unresolved reference 'asStateFlow' on receiver of type 'MutableStateFlow<SettingsViewModel.BlockedState>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:39:49 Unresolved reference 'asStateFlow' on receiver of type 'MutableStateFlow<Profile?>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:61:43 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Profile>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:61:72 Unresolved reference 'it'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:99:60 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:7:35 Unresolved reference 'slideIntoContainer'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:8:35 Unresolved reference 'slideOutOfContainer'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/notifications/PushTokenManager.kt:32:14 Unresolved reference 'onFailure' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/notifications/PushTokenManager.kt:32:71 Unresolved reference 'it'.
+
+> Task :app:compileDebugKotlin FAILED
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794054078580.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
 FAILURE: Build failed with an exception.
 
 * What went wrong:
-Execution failed for task ':app:checkDebugAarMetadata' (registered by plugin 'com.android.internal.application').
-> A failure occurred while executing com.android.build.gradle.internal.tasks.CheckAarMetadataWorkAction
-   > 19 issues were found when checking AAR metadata:
-     
-       1.  Dependency 'androidx.hilt:hilt-navigation-compose:1.4.0' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       2.  Dependency 'androidx.hilt:hilt-lifecycle-viewmodel-compose:1.4.0' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       3.  Dependency 'androidx.navigation:navigation-compose-android:2.10.2' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       4.  Dependency 'androidx.compose.foundation:foundation-layout-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       5.  Dependency 'androidx.compose.animation:animation-core-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       6.  Dependency 'androidx.compose.material:material-ripple-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       7.  Dependency 'androidx.compose.animation:animation-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       8.  Dependency 'androidx.compose.ui:ui-tooling-data-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-       9.  Dependency 'androidx.compose.ui:ui-text-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      10.  Dependency 'androidx.compose.ui:ui-graphics-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      11.  Dependency 'androidx.compose.ui:ui-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      12.  Dependency 'androidx.compose.ui:ui-tooling-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      13.  Dependency 'androidx.compose.foundation:foundation-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      14.  Dependency 'androidx.core:core:1.19.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      15.  Dependency 'androidx.compose.runtime:runtime-saveable-android:1.12.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      16.  Dependency 'androidx.lifecycle:lifecycle-viewmodel-compose-android:2.11.0' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      17.  Dependency 'androidx.lifecycle:lifecycle-runtime-compose-android:2.11.0' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      18.  Dependency 'com.squareup.okhttp3:okhttp-android:5.5.0' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
-     
-      19.  Dependency 'androidx.core:core-ktx:1.19.1' requires libraries and applications that
-           depend on it to compile against version 37 or later of the
-           Android APIs.
-     
-           :app is currently compiled against android-36.
-     
-           Recommended action: Update this project to use a newer compileSdk
-           of at least 37, for example 37.2.
-     
-           Note that updating a library or application's compileSdk (which
-           allows newer APIs to be used) can be done separately from updating
-           targetSdk (which opts the app in to new runtime behavior) and
-           minSdk (which determines which devices the app can be installed
-           on).
+Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.jetbrains.kotlin.android').
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+   > Kotlin compiler: ILLEGAL_SUSPEND_FUNCTION_CALL
+       Kotlin compiler error
+         Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
+         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:33
 
 * Try:
 > Run with --info or --debug option to get more log output.
@@ -369,7 +364,7 @@ Execution failed for task ':app:checkDebugAarMetadata' (registered by plugin 'co
 > Get more help at https://help.gradle.org.
 
 * Exception is:
-org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:checkDebugAarMetadata' (registered by plugin 'com.android.internal.application').
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.jetbrains.kotlin.android').
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
 	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
@@ -398,7 +393,7 @@ org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:che
 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:392)
 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
-Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing com.android.build.gradle.internal.tasks.CheckAarMetadataWorkAction
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
 	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:273)
 	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:132)
 	at org.gradle.internal.Factories$1.create(Factories.java:30)
@@ -456,8 +451,13 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:28)
 	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
 	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:189)
-	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:76)
-	at org.gradle.internal.Either$Right.fold(Either.java:176)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeAndStoreInCache(BuildCacheStep.java:145)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$3(BuildCacheStep.java:104)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$1(BuildCacheStep.java:104)
+	at org.gradle.internal.Try$Success.map(Try.java:170)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithCache(BuildCacheStep.java:88)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$0(BuildCacheStep.java:75)
+	at org.gradle.internal.Either$Left.fold(Either.java:116)
 	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
 	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:74)
 	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:49)
@@ -485,7 +485,7 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:65)
 	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:45)
 	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeWithNonEmptySources(SkipEmptyMutableWorkStep.java:210)
-	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:85)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:90)
 	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:53)
 	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
 	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
@@ -512,293 +512,10 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
 	... 25 more
-Caused by: java.lang.RuntimeException: 19 issues were found when checking AAR metadata:
-
-  1.  Dependency 'androidx.hilt:hilt-navigation-compose:1.4.0' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  2.  Dependency 'androidx.hilt:hilt-lifecycle-viewmodel-compose:1.4.0' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  3.  Dependency 'androidx.navigation:navigation-compose-android:2.10.2' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  4.  Dependency 'androidx.compose.foundation:foundation-layout-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  5.  Dependency 'androidx.compose.animation:animation-core-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  6.  Dependency 'androidx.compose.material:material-ripple-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  7.  Dependency 'androidx.compose.animation:animation-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  8.  Dependency 'androidx.compose.ui:ui-tooling-data-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
-  9.  Dependency 'androidx.compose.ui:ui-text-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 10.  Dependency 'androidx.compose.ui:ui-graphics-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 11.  Dependency 'androidx.compose.ui:ui-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 12.  Dependency 'androidx.compose.ui:ui-tooling-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 13.  Dependency 'androidx.compose.foundation:foundation-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 14.  Dependency 'androidx.core:core:1.19.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 15.  Dependency 'androidx.compose.runtime:runtime-saveable-android:1.12.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 16.  Dependency 'androidx.lifecycle:lifecycle-viewmodel-compose-android:2.11.0' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 17.  Dependency 'androidx.lifecycle:lifecycle-runtime-compose-android:2.11.0' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 18.  Dependency 'com.squareup.okhttp3:okhttp-android:5.5.0' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-
- 19.  Dependency 'androidx.core:core-ktx:1.19.1' requires libraries and applications that
-      depend on it to compile against version 37 or later of the
-      Android APIs.
-
-      :app is currently compiled against android-36.
-
-      Recommended action: Update this project to use a newer compileSdk
-      of at least 37, for example 37.2.
-
-      Note that updating a library or application's compileSdk (which
-      allows newer APIs to be used) can be done separately from updating
-      targetSdk (which opts the app in to new runtime behavior) and
-      minSdk (which determines which devices the app can be installed
-      on).
-	at com.android.build.gradle.internal.tasks.CheckAarMetadataWorkAction.execute(CheckAarMetadataTask.kt:251)
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
+	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
+	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
+	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
 	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
 	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
 	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
@@ -832,5 +549,5 @@ Caused by: java.lang.RuntimeException: 19 issues were found when checking AAR me
 	... 2 more
 
 
-BUILD FAILED in 2m 21s
-15 actionable tasks: 15 executed
+BUILD FAILED in 3m 34s
+32 actionable tasks: 32 executed
