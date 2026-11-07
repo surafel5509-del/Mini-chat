@@ -88,6 +88,19 @@ jobs:
           ls -lh ci-logs/outputs >> build-status.txt 2>/dev/null || true
           cat build-status.txt
 
+      - name: Upload build artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: minichat-apk
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Publish log to issue
         if: always()
         continue-on-error: true
@@ -130,7 +143,7 @@ jobs:
           printf 'ci-logs/outputs/\nci-logs/*.log\n' > /dev/null
           git config user.name "mini-chat-ci"
           git config user.email "ci@users.noreply.github.com"
-          git add -f ci-logs/build.log ci-logs/build-status.txt ci-logs/outputs gradle/wrapper gradlew gradlew.bat 2>/dev/null || true
+          git add -f ci-logs/build.log ci-logs/build-status.txt gradle/wrapper gradlew gradlew.bat 2>/dev/null || true
           git commit -m "ci: build log [skip ci]" || echo "nothing to commit"
           git pull --rebase --autostash -q origin "${GITHUB_REF_NAME}" || true
           git push origin "HEAD:${GITHUB_REF_NAME}" || echo "push failed"
