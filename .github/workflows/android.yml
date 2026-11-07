@@ -101,6 +101,27 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+      - name: Publish GitHub release
+        if: always()
+        continue-on-error: true
+        run: |
+          if ! grep -q 'gradle_exit=0' build-status.txt; then
+            echo "build did not succeed; skipping release"
+            exit 0
+          fi
+          SHORT=$(echo "$GITHUB_SHA" | cut -c1-7)
+          TAG="build-$SHORT"
+          gh release delete "$TAG" --repo "$REPO" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" \
+            --repo "$REPO" \
+            --target "$GITHUB_SHA" \
+            --title "MINI CHAT debug build $SHORT" \
+            --notes "Automatic build of \`$GITHUB_SHA\`.
+
+Download **app-debug.apk** below (signed with the debug key, applicationId \`com.minichat.app.debug\`) and install it with \`adb install -r app-debug.apk\`. \`app-release.aab\` is the App Bundle for Play Console." \
+            app/build/outputs/apk/debug/*.apk \
+            app/build/outputs/bundle/release/*.aab || echo "release step failed"
+
       - name: Publish log to issue
         if: always()
         continue-on-error: true
