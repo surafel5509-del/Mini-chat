@@ -45,9 +45,9 @@ import androidx.compose.ui.text.style.TextAlign
 import com.minichat.app.design.components.MiniChatIconButton
 import com.minichat.app.design.theme.MiniChatColors
 import com.minichat.app.design.theme.MiniChatTheme
-androidx.compose.material.icons.rounded.Lock
-androidx.compose.material.icons.rounded.Visibility
-androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 
 /**
  * Shared authentication layout: soft brand glow at the top, an optional back affordance, a bold

@@ -16,6 +16,7 @@ import com.minichat.app.domain.repository.ConversationSignal
 import com.minichat.app.domain.repository.MessageEvent
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order

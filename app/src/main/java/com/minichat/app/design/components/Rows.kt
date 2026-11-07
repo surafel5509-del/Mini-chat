@@ -115,7 +115,7 @@ fun SettingsRow(
             trailing()
         } else if (showChevron) {
             Icon(
-                imageVector = androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MiniChatTheme.extra.textSecondary,
                 modifier = Modifier.size(20.dp),
