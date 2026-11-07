@@ -109,7 +109,7 @@ fun EmojiPickerSheet(
                                 if (selected) MiniChatColors.YellowPrimary.copy(alpha = 0.25f)
                                 else MiniChatTheme.extra.surfaceMuted,
                             )
-                            .clickable(indication = LocalIndication.current) { groupIndex = index }
+                            .clickable { groupIndex = index }
                             .padding(horizontal = 14.dp, vertical = 8.dp),
                     ) {
                         Text(
@@ -132,7 +132,7 @@ fun EmojiPickerSheet(
                         modifier = Modifier
                             .size(46.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable(indication = LocalIndication.current) { onEmoji(emoji) },
+                            .clickable { onEmoji(emoji) },
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(text = emoji, fontSize = 24.sp)
@@ -176,7 +176,7 @@ fun MessageActionsSheet(
                             .size(44.dp)
                             .clip(CircleShape)
                             .background(MiniChatTheme.extra.surfaceMuted)
-                            .clickable(indication = LocalIndication.current) { onReaction(emoji) },
+                            .clickable { onReaction(emoji) },
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(text = emoji, fontSize = 20.sp)

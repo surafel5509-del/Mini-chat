@@ -8,6 +8,7 @@ import com.minichat.app.domain.model.Profile
 import com.minichat.app.domain.model.StartedConversation
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
+import com.minichat.app.domain.model.Reaction
 
 /** Session state as the UI needs it — never the raw SDK types. */
 sealed interface AuthState {

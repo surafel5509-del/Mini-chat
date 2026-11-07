@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
+import com.minichat.app.core.util.onSuccess
+import com.minichat.app.core.util.onFailure
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(

@@ -33,6 +33,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.minichat.app.core.util.onFailure
 
 /**
  * Owns every Realtime subscription in the app.

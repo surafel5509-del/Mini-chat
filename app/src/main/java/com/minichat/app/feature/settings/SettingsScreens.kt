@@ -99,7 +99,7 @@ fun SettingsScreen(
                 .padding(horizontal = 20.dp, vertical = 8.dp)
                 .clip(RoundedCornerShape(22.dp))
                 .background(MaterialTheme.colorScheme.surface)
-                .clickable(indication = LocalIndication.current, onClick = onEditProfile)
+                .clickable(onClick = onEditProfile)
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -277,7 +277,7 @@ private fun ThemeOption(
                 color = if (selected) MiniChatColors.YellowPrimary else MiniChatTheme.extra.divider,
                 shape = RoundedCornerShape(18.dp),
             )
-            .clickable(indication = LocalIndication.current, onClick = onClick)
+            .clickable(onClick = onClick)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -463,7 +463,7 @@ fun BlockedUsersScreen(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(MiniChatTheme.extra.surfaceMuted)
-                                .clickable(indication = LocalIndication.current) {
+                                .clickable {
                                     viewModel.unblock(blocked)
                                 }
                                 .padding(horizontal = 14.dp, vertical = 8.dp),

@@ -169,7 +169,7 @@ private fun PersonRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(indication = LocalIndication.current, onClick = onClick)
+            .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -207,7 +207,7 @@ private fun PersonRow(
                 modifier = Modifier
                     .clip(RoundedCornerShape(14.dp))
                     .background(MiniChatColors.YellowPrimary.copy(alpha = 0.20f))
-                    .clickable(indication = LocalIndication.current, onClick = onClick)
+                    .clickable(onClick = onClick)
                     .padding(horizontal = 14.dp, vertical = 8.dp),
             ) {
                 Text(

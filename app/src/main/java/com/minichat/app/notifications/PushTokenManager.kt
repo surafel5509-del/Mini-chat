@@ -8,6 +8,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
+import com.minichat.app.core.util.onFailure
 
 /**
  * Keeps the FCM token of this device registered against the signed-in user.

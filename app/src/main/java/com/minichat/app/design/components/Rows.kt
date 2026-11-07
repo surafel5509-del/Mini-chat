@@ -79,7 +79,7 @@ fun SettingsRow(
                 if (onClick != null) {
                     Modifier
                         .clip(RoundedCornerShape(16.dp))
-                        .clickable(indication = LocalIndication.current, onClick = onClick)
+                        .clickable(onClick = onClick)
                 } else {
                     Modifier
                 },
@@ -115,7 +115,7 @@ fun SettingsRow(
             trailing()
         } else if (showChevron) {
             Icon(
-                imageVector = androidx.compose.material.icons.Icons.Rounded.ChevronRight,
+                imageVector = androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MiniChatTheme.extra.textSecondary,
                 modifier = Modifier.size(20.dp),
@@ -161,7 +161,7 @@ fun SwitchRow(
 @Composable
 fun SettingsCard(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScopeContent,
+    content: ColumnScopeContent,
 ) {
     Column(
         modifier = modifier

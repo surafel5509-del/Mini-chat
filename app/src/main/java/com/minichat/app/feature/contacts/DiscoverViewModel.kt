@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.minichat.app.core.util.onSuccess
 
 @HiltViewModel
 class DiscoverViewModel @Inject constructor(
