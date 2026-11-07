@@ -24,8 +24,11 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Verify Android SDK
+        run: |
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls "$ANDROID_SDK_ROOT/platforms" | tail -5
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -35,9 +38,10 @@ jobs:
       - name: Generate Gradle wrapper
         run: |
           if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-            gradle wrapper --gradle-version 9.9.0 --distribution-type bin
+            gradle wrapper --gradle-version 9.9.0 --distribution-type bin || echo "wrapper generation failed"
           fi
           chmod +x gradlew || true
+          touch build.log
 
       - name: Assemble debug APK
         id: build
@@ -71,7 +75,9 @@ jobs:
 
       - name: Publish build log to branch
         if: always()
+        continue-on-error: true
         run: |
+          touch build.log build-status.txt
           mkdir -p ci-logs
           cp build.log ci-logs/build.log 2>/dev/null || true
           cp build-status.txt ci-logs/build-status.txt 2>/dev/null || true
@@ -85,5 +91,5 @@ jobs:
           git config user.email "ci@users.noreply.github.com"
           git add -f ci-logs gradle/wrapper gradlew gradlew.bat
           git commit -m "ci: build log [skip ci]" || echo "nothing to commit"
-          git pull --rebase -q origin ${{ github.ref_name }} || true
-          git push origin HEAD:${{ github.ref_name }}
+          git pull --rebase --autostash -q origin ${{ github.ref_name }} || true
+          git push origin HEAD:${{ github.ref_name }} || echo "push failed"
