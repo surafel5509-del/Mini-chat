@@ -10,48 +10,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fake failing build
+      - name: Query metadata
         continue-on-error: true
         run: |
           {
           q() {
-            echo "=== $1"
-            curl -sS --max-time 30 "https://repo1.maven.org/maven2/$1/maven-metadata.xml" \
-              | tr '<' '\n<' | grep -oE '^<version>[^<]+' | sed 's/<version>//' | tail -10 | tr '\n' ' '
+            local base="$1" path="$2"
+            local url="$base/$path/maven-metadata.xml"
+            local code
+            code=$(curl -sS -o /tmp/meta.xml -w '%{http_code}' --max-time 30 "$url")
+            echo "=== $path -> HTTP $code  ($(wc -c </tmp/meta.xml) bytes)"
+            sed -e 's/></>\n</g' /tmp/meta.xml | grep -oE '<version>[^<]+' | sed -e 's/<version>//' -e 's/<\/version>//' | tail -12 | tr '\n' ' '
             echo
           }
-          g() {
-            echo "=== $1 (google)"
-            curl -sS --max-time 30 "https://dl.google.com/dl/android/maven2/$1/maven-metadata.xml" \
-              | tr '<' '\n<' | grep -oE '^<version>[^<]+' | sed 's/<version>//' | tail -14 | tr '\n' ' '
-            echo
-          }
-          q io/github/jan-tennert/supabase/postgrest-kt
-          q io/github/jan-tennert/supabase/supabase-kt
-          q com/google/dagger/hilt-android
-          q com/google/devtools/ksp/symbol-processing-gradle-plugin
-          q io/coil-kt/coil-compose
-          q io/coil-kt/coil3/coil-compose
-          q org/jetbrains/kotlinx/kotlinx-serialization-json
-          q org/jetbrains/kotlin/kotlin-gradle-plugin
-          q com/android/tools/build/gradle
-          g androidx/compose/compose-bom
-          g androidx/navigation/navigation-compose
-          g androidx/activity/activity-compose
-          g androidx/core/core-ktx
-          g androidx/lifecycle/lifecycle-runtime-compose
-          g androidx/datastore/datastore-preferences
-          g androidx/hilt/hilt-navigation-compose
-          g androidx/splashscreen/splashscreen
-          g com/google/gms/google-services
-          g com/google/firebase/firebase-bom
-          echo "=== gradle current"
-          curl -sS --max-time 30 "https://services.gradle.org/versions/current" | head -20
-          echo "=== android sdk"
-          echo "SDK_ROOT=$ANDROID_SDK_ROOT HOME=$ANDROID_HOME"
-          ls "${ANDROID_SDK_ROOT}/platforms" "${ANDROID_SDK_ROOT}/build-tools" 2>/dev/null
+          C=https://repo1.maven.org/maven2
+          G=https://dl.google.com/dl/android/maven2
+          q $C io/github/jan-tennert/supabase/postgrest-kt
+          q $C io/github/jan-tennert/supabase/supabase-kt
+          q $C com/google/dagger/hilt-android
+          q $C com/google/devtools/ksp/symbol-processing-gradle-plugin
+          q $C io/coil-kt/coil-compose
+          q $C org/jetbrains/kotlinx/kotlinx-serialization-json
+          q $C org/jetbrains/kotlin/kotlin-gradle-plugin
+          q $C com/android/tools/build/gradle
+          q $G androidx/compose/compose-bom
+          q $G androidx/navigation/navigation-compose
+          q $G androidx/activity/activity-compose
+          q $G androidx/core/core-ktx
+          q $G androidx/lifecycle/lifecycle-runtime-compose
+          q $G androidx/datastore/datastore-preferences
+          q $G androidx/hilt/hilt-navigation-compose
+          q $G androidx/splashscreen/splashscreen
+          q $G com/google/gms/google-services
+          q $G com/google/firebase/firebase-bom
+          q $G androidx/security/security-crypto
           } > versions.txt 2>&1
-          true
       - name: Publish logs to branch
         if: always()
         run: |
@@ -61,4 +54,5 @@ jobs:
           git config user.email "ci@users.noreply.github.com"
           git add -f ci-logs
           git commit -m "ci: publish logs [skip ci]" || echo "nothing to commit"
+          git pull --rebase -q origin arena/8de85148-mini-chat || true
           git push origin HEAD:arena/8de85148-mini-chat
