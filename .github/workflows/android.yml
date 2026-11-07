@@ -111,16 +111,26 @@ jobs:
           fi
           SHORT=$(echo "$GITHUB_SHA" | cut -c1-7)
           TAG="build-$SHORT"
+          {
+            echo "Automatic build of \`$GITHUB_SHA\` by GitHub Actions."
+            echo ""
+            echo "Download **app-debug.apk** below (signed with the debug key, applicationId \`com.minichat.app.debug\`) and install it with:"
+            echo ""
+            echo '```bash'
+            echo "adb install -r app-debug.apk"
+            echo '```'
+            echo ""
+            echo "\`app-release.aab\` is the App Bundle for Play Console."
+          } > /tmp/release-notes.md
           gh release delete "$TAG" --repo "$REPO" --yes --cleanup-tag >/dev/null 2>&1 || true
           gh release create "$TAG" \
             --repo "$REPO" \
             --target "$GITHUB_SHA" \
             --title "MINI CHAT debug build $SHORT" \
-            --notes "Automatic build of \`$GITHUB_SHA\`.
-
-Download **app-debug.apk** below (signed with the debug key, applicationId \`com.minichat.app.debug\`) and install it with \`adb install -r app-debug.apk\`. \`app-release.aab\` is the App Bundle for Play Console." \
-            app/build/outputs/apk/debug/*.apk \
-            app/build/outputs/bundle/release/*.aab || echo "release step failed"
+            --notes-file /tmp/release-notes.md \
+            app/build/outputs/apk/debug/app-debug.apk \
+            app/build/outputs/bundle/release/app-release.aab \
+            || echo "release step failed"
 
       - name: Publish log to issue
         if: always()
