@@ -305,6 +305,7 @@ begin
               on peer.conversation_id = new.conversation_id
              and peer.user_id = b.blocker_id
             where b.blocked_id = new.sender_id
+               or b.blocker_id = new.sender_id
         ) into peer_blocked;
 
         if peer_blocked then
@@ -542,7 +543,7 @@ select
     me.last_read_at,
     me.is_muted,
     me.is_pinned,
-    peer.user_id        as peer_id,
+    peer.id             as peer_id,
     peer.display_name   as peer_display_name,
     peer.username       as peer_username,
     peer.avatar_url     as peer_avatar_url,
