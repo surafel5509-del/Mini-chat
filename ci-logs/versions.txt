@@ -1,0 +1,88 @@
+=== io/github/jan-tennert/supabase/postgrest-kt
+
+=== io/github/jan-tennert/supabase/supabase-kt
+
+=== com/google/dagger/hilt-android
+
+=== com/google/devtools/ksp/symbol-processing-gradle-plugin
+
+=== io/coil-kt/coil-compose
+
+=== io/coil-kt/coil3/coil-compose
+
+=== org/jetbrains/kotlinx/kotlinx-serialization-json
+
+=== org/jetbrains/kotlin/kotlin-gradle-plugin
+
+=== com/android/tools/build/gradle
+
+=== androidx/compose/compose-bom (google)
+
+=== androidx/navigation/navigation-compose (google)
+
+=== androidx/activity/activity-compose (google)
+
+=== androidx/core/core-ktx (google)
+
+=== androidx/lifecycle/lifecycle-runtime-compose (google)
+
+=== androidx/datastore/datastore-preferences (google)
+
+=== androidx/hilt/hilt-navigation-compose (google)
+
+=== androidx/splashscreen/splashscreen (google)
+
+=== com/google/gms/google-services (google)
+
+=== com/google/firebase/firebase-bom (google)
+
+=== gradle current
+{
+  "version" : "9.9.0",
+  "buildTime" : "20261106154935+0000",
+  "commitId" : "dabfe84a6c2590fa6ecaab03ff6fefe5b838d558",
+  "current" : true,
+  "snapshot" : false,
+  "nightly" : false,
+  "releaseNightly" : false,
+  "activeRc" : false,
+  "rcFor" : "",
+  "milestoneFor" : "",
+  "broken" : false,
+  "downloadUrl" : "https://services.gradle.org/distributions/gradle-9.9.0-bin.zip",
+  "checksumUrl" : "https://services.gradle.org/distributions/gradle-9.9.0-bin.zip.sha256",
+  "checksum" : "0b00b0ffe07c4d4789c12d4935a44a7057d55774b7540bd4a3f76f336deb177a",
+  "wrapperChecksumUrl" : "https://services.gradle.org/distributions/gradle-9.9.0-wrapper.jar.sha256",
+  "wrapperChecksum" : "621008afc4f5d59357fcf06ffa644dd5aade5e091bdc363742710445f73cdaf8",
+  "released" : true,
+  "releasedOrActiveRc" : true,
+  "publicationSlot" : "9.9.0",
+=== android sdk
+SDK_ROOT=/usr/local/lib/android/sdk HOME=/usr/local/lib/android/sdk
+/usr/local/lib/android/sdk/build-tools:
+34.0.0
+35.0.0
+35.0.1
+36.0.0
+36.1.0
+37.0.0
+
+/usr/local/lib/android/sdk/platforms:
+android-34
+android-34-ext10
+android-34-ext11
+android-34-ext12
+android-34-ext8
+android-35
+android-35-ext14
+android-35-ext15
+android-36
+android-36-ext18
+android-36-ext19
+android-36.1
+android-37.0
+android-37.1
+android-37.2
+android-37.2-beta1
+android-37.2-beta2
+android-37.2-beta3
