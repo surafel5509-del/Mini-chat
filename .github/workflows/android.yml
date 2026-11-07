@@ -28,15 +28,17 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Verify Android SDK and AGP availability
+      - name: Install Android SDK platform
         continue-on-error: true
         run: |
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          ls "$ANDROID_SDK_ROOT/platforms" | tail -5
-          echo "=== AGP 8.x versions"
-          curl -sS "https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml" \
-            | sed -e 's/></>\n</g' | grep -oE '<version>8\.[0-9.]+</version>' | tail -12 | tr '\n' ' '
-          echo
+          ls "$ANDROID_SDK_ROOT/platforms" || true
+          SDKMANAGER=$(command -v sdkmanager || echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager")
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" --list 2>/dev/null | grep -E "platforms;android-3[0-9]" | head -20 || true
+          "$SDKMANAGER" "platforms;android-37" "build-tools;37.0.0" 2>&1 | tail -6 || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0" 2>&1 | tail -3 || true
+          ls "$ANDROID_SDK_ROOT/platforms" || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -100,7 +102,7 @@ jobs:
 
           signals = re.compile(r"^e: |FAILURE:|What went wrong|Could not resolve|Could not find|Unresolved reference"
                                r"|BUILD SUCCESSFUL|BUILD FAILED|error:|Caused by:|\* What went wrong|A problem occurred"
-                               r"|> Task :app:.*(FAILED)?|APK|aab|Caused by")
+                               r"|> Task :app:.*(FAILED)?|APK|aab|Caused by|requires|Dependency '|minCompileSdk|compile against|Android APIs")
           interesting = [line for line in log.splitlines() if signals.search(line)]
           failed = "gradle_exit=0" not in (open("build-status.txt").read() if os.path.exists("build-status.txt") else "")
           selected = (interesting[-60:] + ["...", "RAW TAIL:"] + log.splitlines()[-160:]) if failed else (interesting[-200:] or log.splitlines()[-120:])

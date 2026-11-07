@@ -41,7 +41,7 @@ val pushEnabled = configValue("PUSH_NOTIFICATIONS_ENABLED", "false").toBoolean()
 
 android {
     namespace = "com.minichat.app"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.minichat.app"
