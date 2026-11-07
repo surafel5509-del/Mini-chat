@@ -6,6 +6,7 @@ import com.minichat.app.domain.repository.AuthRepository
 import com.minichat.app.domain.repository.AuthState
 import com.minichat.app.domain.repository.SignUpOutcome
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -96,7 +97,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun resendVerificationEmail(email: String): AppResult<Unit> = safeCall {
         client.auth.resendEmail(
-            type = io.github.jan.supabase.auth.providers.builtin.OtpType.Email.SIGNUP,
+            type = OtpType.Email.SIGNUP,
             email = email.trim(),
             redirectUrl = "minichat://auth-callback",
         )

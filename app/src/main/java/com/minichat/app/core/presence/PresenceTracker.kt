@@ -31,7 +31,7 @@ class PresenceTracker @Inject constructor(
     fun start(scope: CoroutineScope) {
         if (heartbeatJob?.isActive == true) return
         realtimeService.ensureRealtimeConnected()
-        runCatching { realtimeService.startChatStream() }
+        scope.launch { runCatching { realtimeService.startChatStream() } }
         heartbeatJob = scope.launch {
             while (isActive) {
                 profileRepository.heartbeat()

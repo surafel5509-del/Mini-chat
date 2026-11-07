@@ -13,6 +13,7 @@ import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.broadcast.BroadcastPayload
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +35,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.minichat.app.core.util.onFailure
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /**
  * Owns every Realtime subscription in the app.
@@ -204,7 +207,15 @@ class RealtimeService @Inject constructor(
         val channel = typingChannels[conversationId] ?: return
         val me = currentUserId() ?: return
         runCatching {
-            channel.broadcast(TYPING_EVENT, TypingPayload(userId = me, isTyping = typing))
+            channel.broadcast(
+                TYPING_EVENT,
+                BroadcastPayload.Json(
+                    buildJsonObject {
+                        put("user_id", me)
+                        put("is_typing", typing)
+                    },
+                ),
+            )
         }
     }
 
