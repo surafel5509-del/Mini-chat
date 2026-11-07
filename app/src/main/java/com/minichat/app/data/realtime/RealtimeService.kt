@@ -1,6 +1,7 @@
 package com.minichat.app.data.realtime
 
 import android.util.Log
+import com.minichat.app.core.di.ApplicationScope
 import com.minichat.app.data.dto.MessageDto
 import com.minichat.app.data.dto.ReactionDto
 import com.minichat.app.domain.repository.ConversationSignal
@@ -53,7 +54,7 @@ import kotlinx.serialization.json.put
 class RealtimeService @Inject constructor(
     private val client: SupabaseClient,
     private val json: Json,
-    private val appScope: CoroutineScope,
+    @ApplicationScope private val appScope: CoroutineScope,
 ) : RealtimeRepository {
 
 

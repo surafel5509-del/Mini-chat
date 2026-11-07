@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.auth.SessionManager
 import io.github.jan.supabase.auth.exception.NoSessionFoundException
 import io.github.jan.supabase.auth.user.UserSession
@@ -22,7 +23,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class EncryptedSessionManager @Inject constructor(
-    context: Context,
+    @ApplicationContext context: Context,
 ) : SessionManager {
 
     private val json = Json {
