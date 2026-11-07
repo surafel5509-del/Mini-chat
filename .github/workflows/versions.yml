@@ -18,36 +18,34 @@ jobs:
           curl -sL --max-time 90 https://codeload.github.com/supabase-community/supabase-kt/tar.gz/refs/tags/3.9.0 -o /tmp/sk.tar.gz
           mkdir -p /tmp/sk && tar xzf /tmp/sk.tar.gz -C /tmp/sk --strip-components=1
           SK=/tmp/sk
-          echo "########## Auth plugin object + config"
-          sed -n '1,140p' $SK/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/Auth.kt
-          echo "########## MinimalConfig"
-          cat $SK/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/MinimalConfig.kt
-          echo "########## SessionManager"
-          find $SK -name "SessionManager*.kt" -o -name "*SessionManager.kt" | head
-          cat $(find $SK -name "SessionManager.kt" | head -1)
-          echo "########## SessionStatus"
-          cat $SK/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/status/SessionStatus.kt
-          echo "########## Email provider"
-          sed -n '1,80p' $SK/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/providers/builtin/Email.kt 2>/dev/null || find $SK/Auth -name "Email.kt"
-          echo "########## realtime usage in tests"
-          grep -rn "postgresChangeFlow\|broadcastFlow\|presenceFlow\|presenceChangeFlow\|\.subscribe(\|channel\.track\|channel(" $SK/integration-test $SK/Realtime/src --include=*.kt | head -50
-          echo "########## Realtime plugin config"
-          sed -n '1,80p' $SK/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/Realtime.kt
-          echo "########## RealtimeChannelBuilder"
-          cat $(find $SK/Realtime/src -name "RealtimeChannelBuilder.kt" | head -1)
-          echo "########## Storage bucket api"
-          grep -rn "public suspend fun \|public fun " $SK/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt | head -40
-          echo "########## Postgrest query builder"
-          grep -rn "public suspend fun \|public fun " $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt | head -40
-          echo "########## Postgrest filters/order/limit"
-          ls $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/
-          grep -rn "suspend inline fun <reified T : Any> decodeSingle\|suspend inline fun <reified T : Any> decodeList\|class PostgrestResult" $SK/Postgrest/src/commonMain -r | head -20
-          echo "########## createSupabaseClient"
-          grep -rn "fun createSupabaseClient" $SK/Supabase/src --include=*.kt -A 12 | head -60
-          echo "########## bom artifacts"
-          cat $SK/bom/build.gradle.kts | head -50
-          echo "########## auth-kt build deps (to know ktor engine need)"
-          cat $SK/Auth/build.gradle.kts | head -60
+          echo "########## gradle wrapper + android demo build"
+          cat $SK/gradle/wrapper/gradle-wrapper.properties
+          cat $SK/demos/android-login/build.gradle.kts 2>/dev/null | head -40
+          cat $SK/demos/android-login/settings.gradle.kts 2>/dev/null | head -40
+          cat $SK/demos/android-login/buildSrc/src/main/kotlin/Versions.kt
+          find $SK/demos/android-login -name "build.gradle.kts" | head
+          echo "--- android module build file"
+          cat $SK/demos/android-login/android/build.gradle.kts
+          echo "########## AuthConfig"
+          cat $(find $SK/Auth/src -name "AuthConfig.kt" | head -1)
+          echo "########## PostgrestQueryBuilder"
+          cat $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt
+          echo "########## PostgrestRequestBuilder"
+          sed -n '1,120p' $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestRequestBuilder.kt
+          echo "########## filters"
+          ls $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/filter
+          sed -n '1,80p' $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/filter/PostgrestFilterBuilder.kt
+          echo "########## decode extensions"
+          grep -rn "decodeSingle\|decodeList\|decodeSingleOrNull" $SK/Postgrest/src/commonMain --include=*.kt | head -20
+          echo "########## Request functions (select/insert/update/delete/upsert)"
+          grep -rn "suspend inline fun \|suspend fun " $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/request/*.kt | head -40
+          echo "########## Storage api files"
+          find $SK/Storage/src/commonMain -name "*.kt" | head -30
+          grep -rn "suspend fun upload\|fun publicUrl\|suspend fun delete\|suspend fun update\|suspend fun createSignedUrl\|suspend fun downloadPublic" $SK/Storage/src/commonMain --include=*.kt | head -30
+          echo "########## Storage BucketApi signature"
+          sed -n '1,120p' $(find $SK/Storage/src/commonMain -name "BucketApi.kt" | head -1)
+          echo "########## Postgrest rpc"
+          grep -rn "suspend inline fun <reified T : Any> rpc\|suspend fun rpc" $SK/Postgrest/src/commonMain --include=*.kt | head -10
           } > versions.txt 2>&1
       - name: Publish logs to branch
         if: always()
