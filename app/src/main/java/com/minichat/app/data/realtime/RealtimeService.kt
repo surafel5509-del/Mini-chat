@@ -185,6 +185,10 @@ class RealtimeService @Inject constructor(
         typingStates.remove(conversationId)
     }
 
+    override suspend fun watchConversation(conversationId: String) = openConversation(conversationId)
+
+    override suspend fun unwatchConversation(conversationId: String) = closeConversation(conversationId)
+
     override fun typingUserIds(conversationId: String): Flow<Set<String>> = channelFlow {
         val state = typingStates.getOrPut(conversationId) { MutableStateFlow(emptyMap()) }
         while (true) {

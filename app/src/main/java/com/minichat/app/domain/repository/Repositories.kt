@@ -116,6 +116,12 @@ interface ProfileRepository {
 
 /** Ephemeral, best-effort signals: typing indicators and connection health. */
 interface RealtimeRepository {
+    /** Subscribes to the ephemeral typing topic of a conversation (idempotent). */
+    suspend fun watchConversation(conversationId: String)
+
+    /** Releases the typing subscription of a conversation. */
+    suspend fun unwatchConversation(conversationId: String)
+
     /** User ids currently typing in a conversation. */
     fun typingUserIds(conversationId: String): Flow<Set<String>>
     suspend fun setTyping(conversationId: String, typing: Boolean)
