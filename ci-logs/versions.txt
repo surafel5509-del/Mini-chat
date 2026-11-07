@@ -1,588 +1,825 @@
-########## Auth plugin object + config
+########## gradle wrapper + android demo build
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.8.2-bin.zip
+networkTimeout=10000
+retries=0
+retryBackOffMs=500
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+group = "io.github.jan.supabase"
+version = "1.0-SNAPSHOT"
+
+plugins {
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlinx.plugin.serialization) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.compose) apply false
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+}
+
+// Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+}
+
+rootProject.name = "android-login"
+
+include(":android", ":desktop", ":web", ":common")
+object Versions {
+
+    const val KOIN = "3.3.3"
+    const val SUPABASE = "0.8.4"
+    const val LIFECYCLE = "2.6.0"
+    const val KTOR = "2.2.4"
+
+}/tmp/sk/demos/android-login/build.gradle.kts
+/tmp/sk/demos/android-login/buildSrc/build.gradle.kts
+/tmp/sk/demos/android-login/android/build.gradle.kts
+/tmp/sk/demos/android-login/common/build.gradle.kts
+--- android module build file
+plugins {
+    id("org.jetbrains.compose")
+    id("com.android.application")
+    kotlin("android")
+    kotlin("plugin.serialization")
+}
+
+group "io.github.jan.supabase"
+version "1.0-SNAPSHOT"
+
+repositories {
+    maven { url = uri("https://jitpack.io") }
+    mavenLocal()
+}
+
+dependencies {
+    api(project(":common"))
+    implementation(libs.androidx.activity.compose)
+}
+
+android {
+    compileSdk = 35
+    defaultConfig {
+        applicationId = "io.github.jan.supabase.android"
+        minSdk = 26
+        versionCode = 1
+        versionName = "1.0-SNAPSHOT"
+    }
+    namespace = "io.github.jan.supabase.android"
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+        }
+    }
+}
+########## AuthConfig
 package io.github.jan.supabase.auth
 
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.annotations.SupabaseExperimental
-import io.github.jan.supabase.annotations.SupabaseInternal
-import io.github.jan.supabase.auth.admin.AdminApi
-import io.github.jan.supabase.auth.api.ResolveAccessToken
-import io.github.jan.supabase.auth.event.AuthEvent
-import io.github.jan.supabase.auth.exception.AuthRestException
-import io.github.jan.supabase.auth.exception.AuthWeakPasswordException
-import io.github.jan.supabase.auth.exception.InvalidJwtException
-import io.github.jan.supabase.auth.exception.TokenExpiredException
-import io.github.jan.supabase.auth.jwt.ClaimsRequestBuilder
-import io.github.jan.supabase.auth.jwt.ClaimsResponse
-import io.github.jan.supabase.auth.mfa.MfaApi
-import io.github.jan.supabase.auth.passkey.AuthPasskeyApi
-import io.github.jan.supabase.auth.oauth.OAuthApi
-import io.github.jan.supabase.auth.providers.AuthProvider
-import io.github.jan.supabase.auth.providers.ExternalAuthConfigDefaults
-import io.github.jan.supabase.auth.providers.Google
-import io.github.jan.supabase.auth.providers.IDTokenProvider
-import io.github.jan.supabase.auth.providers.OAuthProvider
-import io.github.jan.supabase.auth.providers.builtin.Email
-import io.github.jan.supabase.auth.providers.builtin.IDToken
-import io.github.jan.supabase.auth.providers.builtin.Phone
-import io.github.jan.supabase.auth.providers.builtin.SSO
-import io.github.jan.supabase.auth.status.SessionSource
-import io.github.jan.supabase.auth.status.SessionStatus
-import io.github.jan.supabase.auth.user.UserInfo
-import io.github.jan.supabase.auth.user.UserSession
-import io.github.jan.supabase.auth.user.UserUpdateBuilder
+import io.github.jan.supabase.auth.server.HttpCallbackHtml
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+
+/**
+ * The configuration for [Auth]
+ */
+actual class AuthConfig : AuthConfigDefaults() {
+
+    /**
+     * The current http callback configuration for the web server, when logging in with OAuth or SSO.
+     */
+    var httpCallbackConfig: HttpCallbackConfig = HttpCallbackConfig()
+        internal set
+
+    /**
+     * Configures the http callback for the web server, when logging in with OAuth or SSO.
+     */
+    fun httpCallbackConfig(block: HttpCallbackConfig.() -> Unit) {
+        httpCallbackConfig = HttpCallbackConfig().apply(block)
+    }
+
+}
+
+/**
+ * Http callback configuration for the web server, when logging in with OAuth.
+ *
+ * @property httpPort The port the web server is running on, when logging in with OAuth. Defaults to 0 (random port).
+ * @property timeout The timeout for the web server, when logging in with OAuth. Defaults to 1 minute.
+ * @property htmlTitle The title of the html page, when logging in with OAuth. Defaults to "Supabase Auth".
+ * @property redirectHtml The html content of the redirect page, when logging in with OAuth. Defaults to a page with a title, text and icon.
+ */
+data class HttpCallbackConfig(
+    var httpPort: Int = 0,
+    var timeout: Duration = 1.minutes,
+    var htmlTitle: String = "Supabase Auth",
+    var redirectHtml: String = HttpCallbackHtml.redirectPage("https://supabase.com/brand-assets/supabase-logo-icon.png", "Supabase Auth", "Logged in. You may continue in your app")
+)########## PostgrestQueryBuilder
+@file:Suppress("UndocumentedPublicProperty")
+package io.github.jan.supabase.postgrest.query
+
+import io.github.jan.supabase.auth.PostgrestFilterDSL
+import io.github.jan.supabase.encodeToJsonElement
 import io.github.jan.supabase.exceptions.HttpRequestException
-import io.github.jan.supabase.exceptions.RestException
-import io.github.jan.supabase.plugins.CustomSerializationPlugin
-import io.github.jan.supabase.plugins.MainPlugin
-import io.github.jan.supabase.plugins.SupabasePluginProvider
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
+import io.github.jan.supabase.postgrest.executor.RestRequestExecutor
+import io.github.jan.supabase.postgrest.query.request.DeleteRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.InsertRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.SelectRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.UpdateRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.UpsertRequestBuilder
+import io.github.jan.supabase.postgrest.result.PostgrestResult
 import io.ktor.client.plugins.HttpRequestTimeoutException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.json.JsonObject
-
-/**
- * Plugin to interact with the Supabase Auth API
- *
- * To use it you need to install it to the [SupabaseClient]:
- * ```kotlin
- * val supabase = createSupabaseClient(supabaseUrl, supabaseKey) {
- *    install(Auth)
- * }
- * ```
- *
- * then you can use it like this:
- * ```kotlin
- * val result = supabase.auth.signUpWith(Email) {
- *   email = "example@email.com"
- *   password = "password"
- * }
- * ```
- */
-interface Auth : MainPlugin<AuthConfig>, CustomSerializationPlugin {
-
-    /**
-     * Returns the current session status
-     */
-    val sessionStatus: StateFlow<SessionStatus>
-
-    /**
-     * Events emitted by the auth plugin
-     */
-    @SupabaseExperimental
-    val events: SharedFlow<AuthEvent>
-
-    /**
-     * Whether the [sessionStatus] session is getting refreshed automatically
-     */
-    val isAutoRefreshRunning: Boolean
-
-    /**
-     * Returns the session manager instance
-     */
-    val sessionManager: SessionManager
-
-    /**
-     * Access to the auth admin api where you can manage users. Service role access token is required. Import it via [importAuthToken]. Never share it publicly
-     */
-    val admin: AdminApi
-
-    /**
-     * Access to the [MfaApi] where you can manage multi-factor authentication for the current user.
-     */
-    val mfa: MfaApi
-
-    /**
-     * Access to the [AuthPasskeyApi] where you can manage the user's passkeys
-     */
-    @SupabaseExperimental
-    val passkeys: AuthPasskeyApi
-
-    /**
-     * Namespace for the OAuth 2.1 authorization server methods.
-     * Only relevant when the OAuth 2.1 server is enabled in Supabase Auth.
-     * Used to implement the authorization code flow on the consent page.
-     */
-    val oauth: OAuthApi
-
-    /**
-     * The cache for the code verifier. This is used for PKCE authentication. Can be customized via [AuthConfig.codeVerifierCache]
-     */
-    val codeVerifierCache: CodeVerifierCache
-
-    /**
-     * The coroutine scope used for background auth requests (e.g. session refreshes)
-     */
-    @SupabaseInternal
-    val authScope: CoroutineScope
-
-    /**
-     * Signs up a new user with the specified [provider]
-     *
-     * Example:
-     * ```kotlin
-     * val result = auth.signUpWith(Email) {
-     *    email = "example@email.com"
-     *    password = "password"
-     * }
-     * ```
-     * or
-     * ```kotlin
-     * auth.signUpWith(Google) // Opens the browser to login with google
-     * ```
-     *
-     * @param provider the provider to use for signing up. E.g. [Email], [Phone] or [Google]
-     * @param redirectUrl The redirect url to use. If you don't specify this, the platform specific will be used, like deeplinks on android.
-     * @param config The configuration to use for the sign-up.
-     * @return The result of the sign-up (e.g. the user id) or null if auto-confirm is enabled (resulting in a login)
-     * @throws RestException or one of its subclasses if receiving an error response. If the error response contains a error code, an [AuthRestException] will be thrown which can be used to easier identify the problem.
-     * @throws HttpRequestTimeoutException if the request timed out
-     * @throws HttpRequestException on network related issues
-     * @throws AuthWeakPasswordException if using the [Email] or [Phone] provider and the password is too weak. You can get the reasons via [AuthWeakPasswordException.reasons]
-########## MinimalConfig
-package io.github.jan.supabase.auth
-
-/**
- * Applies minimal configuration to the [AuthConfig]. This is useful for server side applications, where you don't need to store the session or code verifier.
- * @see AuthConfigDefaults
- */
-fun AuthConfigDefaults.minimalConfig() {
-    this.alwaysAutoRefresh = false
-    this.autoLoadFromStorage = false
-    this.autoSaveToStorage = false
-    this.sessionManager = MemorySessionManager()
-    this.codeVerifierCache = MemoryCodeVerifierCache()
-    this.enableLifecycleCallbacks = false
-}
-
-########## SessionManager
-/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/SessionManager.kt
-/tmp/sk/Auth/src/settingsMain/kotlin/io/github/jan/supabase/auth/SettingsSessionManager.kt
-package io.github.jan.supabase.auth
-
-import io.github.jan.supabase.auth.exception.NoSessionFoundException
-import io.github.jan.supabase.auth.user.UserSession
-import kotlin.concurrent.atomics.AtomicReference
-
-/**
- * Represents the session manager. Used for saving and restoring the session from storage
- */
-interface SessionManager {
-
-    /**
-     * Saves the given session.
-     */
-    suspend fun saveSession(session: UserSession)
-
-    /**
-     * Loads the saved session from storage.
-     * @throws NoSessionFoundException if there is no session stored.
-     */
-    suspend fun loadSession(): UserSession
-
-    /**
-     * Loads the saved session from storage.
-     */
-    suspend fun loadSessionOrNull(): UserSession? = try {
-        loadSession()
-    } catch(e: Exception) {
-        null
-    }
-
-    /**
-     * Deletes the saved session from storage.
-     */
-    suspend fun deleteSession()
-
-}
-
-/**
- * A [SessionManager] that uses the [AtomicReference] API.
- */
-class MemorySessionManager(session: UserSession? = null): SessionManager {
-
-    private val session = AtomicReference(session)
-
-    override suspend fun saveSession(session: UserSession) {
-        this.session.store(session)
-    }
-
-    override suspend fun loadSession(): UserSession {
-        return session.load() ?: throw NoSessionFoundException()
-    }
-
-    override suspend fun deleteSession() {
-        session.store(null)
-    }
-
-}########## SessionStatus
-package io.github.jan.supabase.auth.status
-
-import io.github.jan.supabase.auth.Auth
-import io.github.jan.supabase.auth.user.UserSession
-
-/**
- * Represents the status of the current session in [Auth]
- */
-sealed interface SessionStatus {
-
-    /**
-     * This status means that the user is not logged in
-     * @param isSignOut Whether this status was caused by a sign-out
-     */
-    data class NotAuthenticated(
-        val isSignOut: Boolean = false,
-    ) : SessionStatus
-
-    /**
-     * This status means that [Auth] is currently initializing the session
-     */
-    data object Initializing : SessionStatus
-
-    /**
-     * This status means the session expired and [Auth] is trying to refresh it
-     * @param cause The cause of the error. This property will be removed in a future version. Use the new AuthEvent.RefreshFailure(cause) event to diagnose failures.
-     */
-    data class RefreshFailure(
-        @Deprecated("This property will be removed in a future version. Use the new AuthEvent.RefreshFailure(cause) event to diagnose failures.")
-        val cause: RefreshFailureCause
-    ) : SessionStatus
-
-    /**
-     * This status means that [Auth] holds a valid session
-     * @param session The session
-     * @param source The source of the session
-     */
-    data class Authenticated(
-        val session: UserSession,
-        val source: SessionSource = SessionSource.Unknown
-    ) : SessionStatus {
-
-        /**
-         * Whether the session is new, i.e. [source] is [SessionSource.SignIn], [SessionSource.SignUp] or [SessionSource.External].
-         * Use this to determine whether this status is the result of a new sign in or sign up or just a session refresh.
-         */
-        val isNew: Boolean = source is SessionSource.SignIn || source is SessionSource.SignUp || source is SessionSource.External
-
-    }
-
-}########## Email provider
-package io.github.jan.supabase.auth.providers.builtin
-
-import io.github.jan.supabase.auth.user.UserInfo
-import io.github.jan.supabase.exceptions.SupabaseEncodingException
-import io.github.jan.supabase.supabaseJson
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.MissingFieldException
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 /**
- * Authentication method with email and password
+ * The main class to build a postgrest request
  */
-data object Email : DefaultAuthProvider<Email.Config, UserInfo> {
-
-    override val grantType: String = "password"
-
-    /**
-     * The configuration for the email authentication method
-     * @param email The email of the user
-     * @param password The password of the user
-     * @param data Extra user metadata to include on signup
-     */
-    @Serializable
-    data class Config(var email: String = "", var password: String = "", var data: JsonObject? = null): DefaultAuthProvider.Config()
-
-    @OptIn(ExperimentalSerializationApi::class)
-    override fun decodeResult(json: JsonObject): UserInfo = try {
-        supabaseJson.decodeFromJsonElement(json)
-    } catch(e: MissingFieldException) {
-        throw SupabaseEncodingException("Couldn't decode sign up email result. Input: $json")
-    }
-
-    override fun encodeCredentials(credentials: Config.() -> Unit): JsonObject = supabaseJson.encodeToJsonElement(Config().apply(credentials)).jsonObject
-
-}########## realtime usage in tests
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:4:import io.github.jan.supabase.realtime.broadcastFlow
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:42:                    val channel = it.channel("channelId")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:45:                            val broadcastFlow = channel.broadcastFlow(event)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:46:                            broadcastFlow.test(FLOW_TIMEOUT) {
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:58:                            channel.subscribe(true)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:80:                    val channel = it.channel("channelId")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:83:                            val broadcastFlow = channel.broadcastFlow<JsonObject>(event)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:84:                            broadcastFlow.test(FLOW_TIMEOUT) {
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:91:                            channel.subscribe(true)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt:112:                    val channel = it.channel(expectedChannelId) {
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeHeartbeatTest.kt:67:                    val channel = it.channel(channelId)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeHeartbeatTest.kt:68:                    channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:8:import io.github.jan.supabase.realtime.postgresChangeFlow
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:33:        val channel = client.channel(channelId)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:34:        channel.postgresChangeFlow<PostgresAction>("public") { table = "table" }.launchIn(backgroundScope)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:49:        val channel = client.channel(channelId)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:50:        channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:60:        val channel = client.channel(channelId)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:61:        channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:72:        val channel = client.channel(channelId)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:82:        val channel = client.channel(channelId)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:97:        val channel = client.channel(channelId)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt:130:        channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:53:                    val channel = it.realtime.channel("test")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:76:                    val channel = it.realtime.channel("test")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:77:                    val channel2 = it.realtime.channel("test2")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:101:                    val channel = it.realtime.channel("test")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:129:                    val channel = it.realtime.channel("test")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:130:                    val channel2 = it.realtime.channel("test2")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:175:                    val channel = it.realtime.channel("test")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:182:                    it.realtime.channel("test2")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:203:                    val channel = it.realtime.channel("test")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:222:                    val channel = it.realtime.channel("test")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:226:                    channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:244:                    val channel = it.realtime.channel("channelId")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt:245:                    val channel2 = it.realtime.channel("channelId")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:19:import io.github.jan.supabase.realtime.postgresChangeFlow
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:59:                    val channel = it.channel("")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:61:                        channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:79:                    val channel = it.channel("")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:80:                    channel.subscribe(false)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:98:                    val channel = it.channel("channelId")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:101:                    channel.subscribe(blockUntilSubscribed = true)
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:130:                    val channel = it.channel("channelId") {
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:140:                    channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:158:                    val channel = it.channel("channelId")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:159:                    channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:180:                    val channel = it.channel("channelId")
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:181:                    channel.subscribe()
-/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt:197:                    val channel = it.channel("channelId")
-grep: write error: Broken pipe
-########## Realtime plugin config
-package io.github.jan.supabase.realtime
-
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.SupabaseClientBuilder
-import io.github.jan.supabase.SupabaseSerializer
-import io.github.jan.supabase.annotations.SupabaseInternal
-import io.github.jan.supabase.auth.AuthDependentPluginConfig
-import io.github.jan.supabase.auth.resolveAccessToken
-import io.github.jan.supabase.plugins.CustomSerializationConfig
-import io.github.jan.supabase.plugins.CustomSerializationPlugin
-import io.github.jan.supabase.plugins.MainConfig
-import io.github.jan.supabase.plugins.MainPlugin
-import io.github.jan.supabase.plugins.SupabasePluginProvider
-import io.github.jan.supabase.realtime.websocket.RealtimeWebsocket
-import io.github.jan.supabase.realtime.websocket.RealtimeWebsocketFactory
-import io.github.jan.supabase.serializer.KotlinXSerializer
-import io.github.jan.supabase.supabaseJson
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.times
-
-/**
- * Plugin for interacting with the supabase realtime api
- *
- * To use it you need to install it to the [SupabaseClient]:
- * ```kotlin
- * val supabase = createSupabaseClient(supabaseUrl, supabaseKey) {
- *    install(Realtime)
- * }
- * ```
- *
- * You can then create a channel:
- * ```kotlin
- * val channel = supabase.realtime.channel("channelId")
- * ```
- * Then listen to events on the channel:
- * ```kotlin
- * val productChangeFlow = channel.postgrestChangeFlow<PostgrestAction.Insert>(schema = "public") {
- *    table = "products"
- * }.map { it.decodeRecord<Product>() }
- * ```
- * And at last you have to subscribe to the channel:
- * ```kotlin
- * channel.subscribe()
- * ```
- */
-interface Realtime : MainPlugin<Realtime.Config>, CustomSerializationPlugin {
-
-    /**
-     * The current status of the realtime connection
-     */
-    val status: StateFlow<Status>
-
-    /**
-     * A map of all active the subscriptions
-     */
-    val subscriptions: Map<String, RealtimeChannel>
-
-    @SupabaseInternal
-    val websocket: RealtimeWebsocket?
-
-    /**
-     * Connects to the realtime websocket. The url will be taken from the custom provided [Realtime.Config.customUrl] or [SupabaseClient]
-     */
-    suspend fun connect()
-
-    /**
-     * Disconnects from the realtime websocket
-     */
-    fun disconnect()
-
-    /**
-     * Unsubscribes and removes a channel from the [subscriptions]
-     * @param channel The channel to remove
-     */
-    suspend fun removeChannel(channel: RealtimeChannel)
-########## RealtimeChannelBuilder
-package io.github.jan.supabase.realtime
-
-import io.github.jan.supabase.annotations.SupabaseInternal
-import io.github.jan.supabase.realtime.annotations.ChannelDsl
-
-/**
- * Used to build a realtime channel
- */
-@ChannelDsl
-class RealtimeChannelBuilder @PublishedApi internal constructor(
-    private val topic: String,
+class PostgrestQueryBuilder(
+    val postgrest: Postgrest,
+    val table: String,
+    val schema: String = postgrest.config.defaultSchema,
 ) {
 
-    private var broadcastJoinConfig = BroadcastJoinConfig(acknowledgeBroadcasts = false, receiveOwnBroadcasts = false, replicationReady = false)
-    private var presenceJoinConfig = PresenceJoinConfig("", false)
+    /**
+     * Executes vertical filtering with select on [table]
+     *
+     * @param columns The columns to retrieve, defaults to [Columns.ALL]. You can also use [Columns.list], [Columns.type] or [Columns.raw] to specify the columns
+     * @param request Additional configurations for the request including filters
+     * @return PostgrestResult which is either an error, an empty JsonArray or the data you requested as an JsonArray
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun select(
+        columns: Columns = Columns.ALL,
+        request: @PostgrestFilterDSL SelectRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = SelectRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            request()
+            select(columns)
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
+    }
 
     /**
-     * Whether this channel should be private.
+     * Perform an UPSERT on the table or view. Depending on the column(s) passed
+     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+     * `[insert] if a row with the corresponding onConflict columns doesn't
+     * exist, or if it does exist, perform an alternative action depending on
+     * [UpsertRequestBuilder.ignoreDuplicates].
+     *
+     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param body The request body as an array of json object.
+     * @param request Additional configurations for the request including filters
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
      */
-    var isPrivate = false
+    suspend inline fun upsert(
+        body: JsonArray,
+        request: UpsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = UpsertRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = body
+            request()
+            val columns = body.flatMap { it.jsonObject.keys }.distinct()
+            if(columns.isNotEmpty()) params["columns"] = listOf(columns.joinToString(",") { "\"$it\"" })
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
+    }
 
     /**
-     * Sets the broadcast join config
+     * Perform an UPSERT on the table or view. Depending on the column(s) passed
+     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+     * `[insert] if a row with the corresponding onConflict columns doesn't
+     * exist, or if it does exist, perform an alternative action depending on
+     * [UpsertRequestBuilder.ignoreDuplicates].
+     *
+     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param values The values to insert, will automatically get serialized into json.
+     * @param request Additional configurations for the request including filters
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
      */
-    fun broadcast(block: BroadcastJoinConfig.() -> Unit) {
-        broadcastJoinConfig = BroadcastJoinConfig(acknowledgeBroadcasts = false, receiveOwnBroadcasts = false, replicationReady = false).apply(block)
+    suspend inline fun <reified T : Any> upsert(
+        values: List<T>,
+        request: UpsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = upsert(
+        body = postgrest.serializer.encodeToJsonElement(values).jsonArray,
+        request = request
+    )
+
+    /**
+     * Perform an UPSERT on the table or view. Depending on the column(s) passed
+     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+     * `[insert] if a row with the corresponding onConflict columns doesn't
+     * exist, or if it does exist, perform an alternative action depending on
+     * [UpsertRequestBuilder.ignoreDuplicates].
+     *
+     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param value The value to insert, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> upsert(
+        value: T,
+        request: UpsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = upsert(listOf(value), request)
+
+    /**
+     * Executes an insert operation on the [table]
+     *
+     * @param body The request body as an array of json object.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun insert(
+        body: JsonArray,
+        request: InsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = InsertRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = body
+            request()
+            val columns = body.flatMap { it.jsonObject.keys }.distinct()
+            if(columns.isNotEmpty()) params["columns"] = listOf(columns.joinToString(",") { "\"$it\"" })
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
     }
 
     /**
-     * Sets the presence join config
-     * @param block The presence join config
+     * Executes an insert operation on the [table]
+     *
+     * @param values The values to insert, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
      */
-    fun presence(block: PresenceJoinConfig.() -> Unit) {
-        presenceJoinConfig = PresenceJoinConfig("", false).apply(block)
+    suspend inline fun <reified T : Any> insert(
+        values: List<T>,
+        request: InsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = insert(
+        body = postgrest.serializer.encodeToJsonElement(values).jsonArray,
+        request = request
+    )
+
+    /**
+     * Executes an insert operation on the [table]
+     *
+     * @param value The value to insert, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> insert(
+        value: T,
+        request: InsertRequestBuilder.() -> Unit = {}
+    ) = insert(listOf(value), request)
+
+    /**
+     * Executes an update operation on the [table].
+     *
+     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param update Specifies the fields to update via a DSL
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun update(
+        crossinline update: PostgrestUpdate.() -> Unit = {},
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = UpdateRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = buildPostgrestUpdate(postgrest.config.propertyConversionMethod, postgrest.serializer, update)
+            request()
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest,path = table, request = requestBuilder)
     }
 
-    @SupabaseInternal
-    fun build(realtime: Realtime): RealtimeChannel {
-        return RealtimeChannelImpl(
-            realtime,
-            topic,
-            broadcastJoinConfig,
-            presenceJoinConfig,
-            isPrivate
-        )
+    /**
+     * Executes an update operation on the [table].
+     *
+     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param body The request body representing the value to update.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun update(
+        body: JsonElement,
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = UpdateRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = body
+            request()
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
     }
 
-}########## Storage bucket api
-########## Postgrest query builder
-########## Postgrest filters/order/limit
-AcceptHeader.kt
-Columns.kt
-Order.kt
-PostgrestQueryBuilder.kt
-PostgrestRequestBuilder.kt
-PostgrestUpdate.kt
-filter
-request
-/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:14:class PostgrestResult(val data: String, val headers: Headers, @PublishedApi internal val postgrest: Postgrest) {
-########## createSupabaseClient
-/tmp/sk/Supabase/src/commonMain/kotlin/io/github/jan/supabase/SupabaseClientBuilder.kt:181:inline fun createSupabaseClient(supabaseUrl: String, supabaseKey: String, builder: SupabaseClientBuilder.() -> Unit) = SupabaseClientBuilder(supabaseUrl, supabaseKey).apply(builder).build()
-########## bom artifacts
-plugins {
-    `java-platform`
-}
+    /**
+     * Executes an update operation on the [table].
+     *
+     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param value The value to update, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> update(
+        value: T,
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = update(
+        body = postgrest.serializer.encodeToJsonElement(value),
+        request = request
+    )
 
-description = "A Kotlin Multiplatform Supabase Framework"
-
-val bomProject = project
-
-val excludedModules = listOf("test-common")
-
-fun shouldIncludeInBom(candidateProject: Project) =
-    excludedModules.all { !candidateProject.name.contains(it) } &&
-            candidateProject.name != bomProject.name
-
-rootProject.subprojects.filter(::shouldIncludeInBom).forEach { bomProject.evaluationDependsOn(it.path) }
-
-dependencies {
-    constraints {
-        rootProject.subprojects.filter { project ->
-            // Only declare dependencies on projects that will have publications
-            shouldIncludeInBom(project) && project.tasks.findByName("publish")?.enabled == true
-        }.forEach { api(project(it.path)) }
+    /**
+     * Executes a delete operation on the [table].
+     *
+     * By default, deleted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun delete(
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = DeleteRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply(request)
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
     }
-}
-########## auth-kt build deps (to know ktor engine need)
-plugins {
-   // alias(libs.plugins.complete.kotlin)
-    id(libs.plugins.kotlin.multiplatform.get().pluginId)
-    id(libs.plugins.android.kotlin.multiplatform.library.get().pluginId)
-}
 
-description = "Extends supabase-kt with a Auth Client"
+    companion object {
+        const val HEADER_PREFER = "Prefer"
+    }
 
-repositories {
-    mavenCentral()
 }
 
-@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
-kotlin {
-    defaultConfig()
-    applyDefaultHierarchyTemplate {
-        common {
-            settingsGroup()
-            group("desktop") {
-                withJvm()
-                withMacos()
-                withLinux()
-                withMingw()
-            }
-            group("nonDesktop") {
-                //withAndroidTarget() android has its own implementation
-                withIos()
-                withTvos()
-                withWatchos()
-                //withMingw()
-                withJs()
-                withWasmJs()
-            }
-            group("apple") {
-                group("uikit") {
-                    withIos()
-                    withTvos()
-                }
-            }
+/**
+ * Used to obtain an estimated amount of rows in a table. See [Postgrest](https://postgrest.org/en/stable/api.html#exact-count) for information about the different count algorithms
+ */
+enum class Count(val identifier: String) {
+    EXACT("exact"),
+    PLANNED("planned"),
+    ESTIMATED("estimated")
+}
+
+/**
+ * Can be used to specify whether you want e.g. the inserted row to be returned on creation with all its new fields
+ */
+sealed class Returning(val identifier: String) {
+
+    /**
+     * Doesn't return any data
+     */
+    data object Minimal: Returning("minimal")
+
+    /**
+     * Returns data based on the [columns] specified
+     * @param columns The columns to return, defaults to [Columns.ALL]. You can also use [Columns.list], [Columns.type] or [Columns.raw] to specify the columns
+     */
+    data class Representation(val columns: Columns = Columns.ALL): Returning("representation")
+}########## PostgrestRequestBuilder
+@file:Suppress("UndocumentedPublicProperty", "ConstructorParameterNaming")
+package io.github.jan.supabase.postgrest.query
+
+import io.github.jan.supabase.annotations.SupabaseExperimental
+import io.github.jan.supabase.auth.PostgrestFilterDSL
+import io.github.jan.supabase.postgrest.PropertyConversionMethod
+import io.github.jan.supabase.postgrest.query.filter.PostgrestFilterBuilder
+import io.github.jan.supabase.postgrest.result.PostgrestResult
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
+import io.ktor.util.appendAll
+import kotlinx.serialization.json.JsonElement
+import kotlin.js.JsName
+
+/**
+ * A builder for Postgrest requests.
+ */
+@PostgrestFilterDSL
+abstract class PostgrestRequestBuilder(
+    defaultSchema: String,
+    @PublishedApi internal val propertyConversionMethod: PropertyConversionMethod
+) {
+
+    /**
+     * The [Count] algorithm to use to count rows in the table or view.
+     */
+    var count: Count? = null
+        private set
+
+    /**
+     * The [Returning] option to use.
+     */
+    var returning: Returning = Returning.Minimal
+        private set
+
+    /**
+     * The database schema
+     */
+    var schema: String = defaultSchema
+
+    /**
+     * The HTTP method to use.
+     */
+    internal var httpMethod: HttpMethod = HttpMethod.Get
+
+    private var shouldStripNulls: Boolean = false
+    private var dryRun: Boolean = false
+    internal var acceptHeader: AcceptHeader = AcceptHeader.Json
+    private var explainData: ExplainData? = null
+    @PublishedApi internal var body: JsonElement? = null
+
+    @SupabaseExperimental val params: MutableMap<String, List<String>> = mutableMapOf()
+    @SupabaseExperimental val headers: HeadersBuilder = HeadersBuilder()
+
+
+    /**
+     * Whether to retry this request on transient errors (network errors, HTTP 503/520).
+     * Only applies to idempotent requests (GET, HEAD) — non-idempotent requests are never retried.
+     * Set to `false` to disable retries for this specific request.
+     */
+    var retry: Boolean = true
+        private set
+
+    /**
+     * Disables automatic retries for this request.
+     */
+    fun noRetry() {
+        this.retry = false
+    }
+
+    /**
+     * Strip null values from the response data. Properties with `null` values
+     * will be omitted from the returned JSON objects.
+     *
+     * Requires PostgREST 11.2.0+.
+     *
+     */
+    fun stripNulls() {
+        require(acceptHeader != AcceptHeader.CSV) {
+            "stripNulls() cannot be used with csv()"
+        }
+        this.shouldStripNulls = true
+    }
+
+    /**
+     * Setting [count] allows to use [PostgrestResult.countOrNull] to get the total amount of items in the database.
+     * @param count algorithm to use to count rows in the table or view.
+     */
+    fun count(count: Count) {
+        this.count = count
+    }
+
+    /**
+     * Return `data` after the query has been executed.
+     * @param columns The columns to return
+     */
+    fun select(columns: Columns = Columns.ALL) {
+        this.returning = Returning.Representation(columns).also {
+            params["select"] = listOf(it.columns.value)
         }
     }
-    allTargets()
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                addModules(SupabaseModule.SUPABASE)
-             //   implementation(libs.krypto)
-             //   implementation(libs.secure.random) replaced by crypto
-             //   api(libs.bundles.jwt)
-                api(libs.okio)
-                implementation(libs.crypto)
-                implementation(libs.crypto.optimal)
-            }
-        }
-        val desktopMain by getting {
-            dependencies {
-                api(libs.ktor.server.core)
-                api(libs.ktor.server.cio)
-            }
-        }
+
+    /**
+     * Return `data` as a single object instead of an array of objects.
+     *
+     * Query result must be one row (e.g. using `limit(1)`), otherwise this
+     * returns an error.
+     */
+    @JsName("singleValue")
+    fun single() {
+        acceptHeader = AcceptHeader.Single(false)
+    }
+
+    /**
+########## filters
+FilterOperation.kt
+FilterOperator.kt
+PostgrestFilterBuilder.kt
+TextSearchType.kt
+@file:Suppress("UndocumentedPublicProperty", "ConstructorParameterNaming")
+package io.github.jan.supabase.postgrest.query.filter
+
+import io.github.jan.supabase.auth.PostgrestFilterDSL
+import io.github.jan.supabase.postgrest.PropertyConversionMethod
+import kotlin.reflect.KProperty1
+
+/**
+ * A builder for Postgrest filters
+ */
+@PostgrestFilterDSL
+class PostgrestFilterBuilder(
+    @PublishedApi internal val propertyConversionMethod: PropertyConversionMethod,
+    @PublishedApi internal val _params: MutableMap<String, List<String>> = mutableMapOf(),
+    val isInLogicalExpression: Boolean = false
+) {
+
+    val params: Map<String, List<String>>
+        get() = _params.toMap()
+
+    /**
+     * Adds a negated filter to the query
+     */
+    fun filterNot(column: String, operator: FilterOperator, value: Any?) = filterNot(FilterOperation(column, operator, value))
+
+    /**
+     * Adds a negated filter to the query
+     */
+    fun filterNot(operation: FilterOperation) {
+        val columnValue = params[operation.column] ?: emptyList()
+        _params[operation.column] = columnValue + listOf("not.${operation.operator.identifier}.${operation.escapedValue(isInLogicalExpression)}")
+    }
+
+    /**
+     * Adds a filter to the query
+     */
+    fun filter(column: String, operator: FilterOperator, value: Any?) {
+        filter(FilterOperation(column, operator, value))
+    }
+
+    /**
+     * Adds a filter to the query
+     */
+    fun filter(operation: FilterOperation) {
+        val columnValue = params[operation.column] ?: emptyList()
+        _params[operation.column] = columnValue + listOf("${operation.operator.identifier}.${operation.escapedValue(isInLogicalExpression)}")
+    }
+
+    /**
+     * Finds all rows where the value of the [column] is equal to [value]
+     */
+    fun eq(column: String, value: Any) = filter(column, FilterOperator.EQ, value)
+
+    /**
+     * Finds all rows where the value of the [column] is not equal to [value]
+     */
+    fun neq(column: String, value: Any) = filter(column, FilterOperator.NEQ, value)
+
+    /**
+     * Finds all rows where the value of the [column] is greater than [value]
+     */
+    fun gt(column: String, value: Any) = filter(column, FilterOperator.GT, value)
+
+    /**
+     * Finds all rows where the value of the [column] is greater than or equal to [value]
+     */
+    fun gte(column: String, value: Any) = filter(column, FilterOperator.GTE, value)
+
+    /**
+     * Finds all rows where the value of the [column] is less than or equal to [value]
+     */
+    fun lte(column: String, value: Any) = filter(column, FilterOperator.LTE, value)
+
+    /**
+     * Finds all rows where the value of the [column] is less than [value]
+     */
+    fun lt(column: String, value: Any) = filter(column, FilterOperator.LT, value)
+
+    /**
+     * Finds all rows where the value of the [column] matches the specified [pattern]
+########## decode extensions
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:48:    inline fun <reified T> decodeList(): List<T> = decodeAs()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:53:    inline fun <reified T> decodeSingle(): T = decodeList<T>().first()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:58:    inline fun <reified T> decodeSingleOrNull(): T? = decodeList<T>().firstOrNull()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:37: * }.decodeSingle<Product>()
+########## Request functions (select/insert/update/delete/upsert)
+########## Storage api files
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/StorageListFilter.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/UploadSignedUrl.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketUrlBuilder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/DownloadOptionBuilder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/FileUploadResponse.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/UploadOptionBuilder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/PurgeCacheOptions.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableClient.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/MemoryResumableCache.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/StreamContent.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableUploadState.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/Fingerprint.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableCache.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableUpload.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/SignedUrl.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/NetworkStatus.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/StorageRestException.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/FlowExtension.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/ImageTransformation.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/FileObject.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/AnalyticBucket.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/StorageAnalyticsClient.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/IcebergClientConfiguration.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/SortOrder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/StorageItem.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/vectors/index/VectorDataType.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/vectors/index/VectorIndexApi.kt
+find: ‘standard output’: Broken pipe
+find: write error
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableUpload.kt:156:    private suspend fun uploadChunk(): Int {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:101:    suspend fun updateBucket(id: String, builder: BucketBuilder.() -> Unit = {})
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:129:    suspend fun deleteBucket(bucketId: String)
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:267:    override suspend fun deleteBucket(bucketId: String) {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:287:    override suspend fun updateBucket(id: String, builder: BucketBuilder.() -> Unit) {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:53:    suspend fun upload(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:68:    suspend fun upload(path: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:82:    suspend fun uploadToSignedUrl(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:104:    suspend fun uploadToSignedUrl(path: String, token: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:117:    suspend fun update(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:132:    suspend fun update(path: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:141:    suspend fun delete(paths: Collection<String>)
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:150:    suspend fun delete(vararg paths: String) = delete(paths.toList())
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:193:    suspend fun createSignedUrl(path: String, expiresIn: Duration, builder: SignedUrlBuilder.() -> Unit = {}): String
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:205:    suspend fun createSignedUrls(expiresIn: Duration, paths: Collection<String>, builder: SignedUrlsBuilder.() -> Unit = {}): List<SignedUrl>
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:217:    suspend fun createSignedUrls(expiresIn: Duration, vararg paths: String, builder: SignedUrlsBuilder.() -> Unit = {}) = createSignedUrls(expiresIn, paths.toList(), builder)
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:250:    suspend fun downloadPublic(path: String, options: DownloadOptionBuilder.() -> Unit = {}): ByteArray
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:261:    suspend fun downloadPublic(path: String, channel: ByteWriteChannel, options: DownloadOptionBuilder.() -> Unit = {})
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:333:    fun publicUrl(path: String, builder: PublicUrlBuilder.() -> Unit = {}): String
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/StorageAnalyticsClient.kt:58:    suspend fun deleteBucket(name: String): String
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/StorageAnalyticsClient.kt:84:    override suspend fun deleteBucket(name: String): String {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:75:    override suspend fun update(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:84:    override suspend fun uploadToSignedUrl(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:110:    override suspend fun upload(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:119:    override suspend fun delete(paths: Collection<String>) {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:145:    override suspend fun createSignedUrl(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:167:    override suspend fun createSignedUrls(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:196:    override suspend fun downloadPublic(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:222:    override suspend fun downloadPublic(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:301:    internal suspend fun uploadOrUpdate(
+########## Storage BucketApi signature
+package io.github.jan.supabase.storage
+
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.resolveAccessToken
+import io.github.jan.supabase.exceptions.HttpRequestException
+import io.github.jan.supabase.exceptions.RestException
+import io.github.jan.supabase.storage.resumable.ResumableClient
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.ByteWriteChannel
+import kotlin.time.Duration
+
+/**
+ * The api for interacting with a bucket
+ */
+interface BucketApi {
+
+    /**
+     * The id of the bucket
+     */
+    val bucketId: String
+
+    /**
+     * The current [SupabaseClient]
+     */
+    val supabaseClient: SupabaseClient
+
+    /**
+     * The client for interacting with the resumable upload api
+     */
+    val resumable: ResumableClient
+
+    /**
+     * Set an HTTP header for the request.
+     * Creates a shallow copy of headers to avoid mutating shared state.
+     * @param name Header name
+     * @param value Header value
+     * @returns this - For method chaining
+     */
+    fun setHeader(name: String, value: String): BucketApi
+
+    /**
+     * Uploads a file in [bucketId] under [path]
+     * @param path The path to upload the file to
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key to the uploaded file
+     * @throws IllegalArgumentException if data to upload is empty
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun upload(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+        require(data.isNotEmpty()) { "The data to upload should not be empty" }
+        return upload(path, UploadData(ByteReadChannel(data), data.size.toLong()), options)
+    }
+
+    /**
+     * Uploads a file in [bucketId] under [path]
+     * @param path The path to upload the file to
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key to the uploaded file
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun upload(path: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+
+    /**
+     * Uploads a file in [bucketId] under [path] using a pre-signed url
+     * @param path The path to upload the file to
+     * @param token The pre-signed url token
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key of the uploaded file
+     * @throws IllegalArgumentException if data to upload is empty
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun uploadToSignedUrl(
+        path: String,
+        token: String,
+        data: ByteArray,
+        options: UploadOptionBuilder.() -> Unit = {}
+    ): FileUploadResponse {
+        require(data.isNotEmpty()) { "The data to upload should not be empty" }
+        return uploadToSignedUrl(path, token, UploadData(ByteReadChannel(data), data.size.toLong()), options)
+    }
+
+    /**
+     * Uploads a file in [bucketId] under [path] using a presigned url
+     * @param path The path to upload the file to
+     * @param token The presigned url token
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key of the uploaded file
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun uploadToSignedUrl(path: String, token: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+
+    /**
+     * Updates a file in [bucketId] under [path]
+     * @param path The path to update the file to
+     * @param data The new data
+     * @param options Additional options for the upload
+     * @return the key to the updated file
+     * @throws IllegalArgumentException if data to upload is empty
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun update(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+        require(data.isNotEmpty()) { "The data to upload should not be empty" }
+        return update(path, UploadData(ByteReadChannel(data), data.size.toLong()), options)
+    }
+########## Postgrest rpc
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:77:    suspend fun rpc(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:92:    suspend fun rpc(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/PostgrestImpl.kt:61:    override suspend fun rpc(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/PostgrestImpl.kt:67:    override suspend fun rpc(function: String, request: RpcRequestBuilder.() -> Unit): PostgrestResult = rpcRequest(function, null, request)
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/PostgrestImpl.kt:69:    private suspend fun rpcRequest(function: String, body: JsonObject? = null, request: RpcRequestBuilder.() -> Unit): PostgrestResult {
