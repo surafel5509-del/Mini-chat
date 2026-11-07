@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
   push:
     branches: ['arena/8de85148-mini-chat']
-    paths: ['VERSIONS_TRIGGER']
 permissions:
   contents: write
 jobs:
@@ -52,7 +51,7 @@ jobs:
           echo "SDK_ROOT=$ANDROID_SDK_ROOT HOME=$ANDROID_HOME"
           ls "${ANDROID_SDK_ROOT}/platforms" "${ANDROID_SDK_ROOT}/build-tools" 2>/dev/null
           } > versions.txt 2>&1
-          echo "deliberate failure" && exit 1
+          true
       - name: Publish logs to branch
         if: always()
         run: |
