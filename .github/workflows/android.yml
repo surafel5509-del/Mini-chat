@@ -81,15 +81,61 @@ jobs:
           mkdir -p ci-logs
           cp build.log ci-logs/build.log 2>/dev/null || true
           cp build-status.txt ci-logs/build-status.txt 2>/dev/null || true
-          rm -rf ci-logs/outputs
-          mkdir -p ci-logs/outputs
-          cp app/build/outputs/apk/debug/*.apk ci-logs/outputs/ 2>/dev/null || true
-          cp app/build/outputs/apk/release/*.apk ci-logs/outputs/ 2>/dev/null || true
-          cp app/build/outputs/bundle/release/*.aab ci-logs/outputs/ 2>/dev/null || true
-          ls -la ci-logs/outputs >> ci-logs/build-status.txt 2>/dev/null || true
           git config user.name "mini-chat-ci"
           git config user.email "ci@users.noreply.github.com"
           git add -f ci-logs gradle/wrapper gradlew gradlew.bat
           git commit -m "ci: build log [skip ci]" || echo "nothing to commit"
           git pull --rebase --autostash -q origin ${{ github.ref_name }} || true
           git push origin HEAD:${{ github.ref_name }} || echo "push failed"
+
+      - name: Publish log to issue (readable channel)
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, urllib.request
+
+          token = os.environ["GH_TOKEN"]
+          repo = os.environ["REPO"]
+          api = f"https://api.github.com/repos/{repo}"
+
+          def request(method, url, payload=None):
+              data = json.dumps(payload).encode() if payload is not None else None
+              req = urllib.request.Request(
+                  url, data=data, method=method,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Accept": "application/vnd.github+json",
+                      "User-Agent": "minichat-ci",
+                      "Content-Type": "application/json",
+                  },
+              )
+              with urllib.request.urlopen(req) as response:
+                  return json.loads(response.read().decode() or "{}")
+
+          log = ""
+          for path in ("build.log", "ci-logs/build.log"):
+              if os.path.exists(path):
+                  log = open(path, encoding="utf-8", errors="replace").read()
+                  break
+
+          interesting = [
+              line for line in log.splitlines()
+              if re.search(r"^e: |FAILURE|What went wrong|Could not resolve|Could not find|BUILD SUCCESSFUL|BUILD FAILED|error:|> Task :app:|Caused by|^\* Exception|Unresolved reference|warning: ", line)
+          ]
+          selected = interesting[-260:] if interesting else log.splitlines()[-200:]
+          body = "sha: `%s`\n\n```\n%s\n```" % (
+              os.environ.get("GITHUB_SHA", "?")[:8],
+              "\n".join(selected)[-60000:],
+          )
+
+          issues = request("GET", f"{api}/issues?state=all&per_page=20")
+          target = next((i for i in issues if i.get("title") == "CI build log"), None)
+          if target is None:
+              target = request("POST", f"{api}/issues", {"title": "CI build log", "body": "Automated build log sink."})
+          request("POST", f"{api}/issues/{target['number']}/comments", {"body": body})
+          print("log published")
+          PY
