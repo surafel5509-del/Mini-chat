@@ -1,240 +1,344 @@
-=== com/android/tools/build/gradle -> HTTP 200
-9.4.0-alpha05 9.4.0-alpha06 9.4.0-alpha07 9.4.0-alpha08 9.4.0-rc01 9.4.0-rc02 9.4.0 9.4.1 9.5.0-alpha01 9.5.0-alpha02 9.5.0-alpha03 9.5.0-alpha04 9.5.0-alpha05 9.5.0-alpha06 9.5.0-alpha07 9.5.0-alpha08 9.5.0-alpha09 9.5.0-alpha10 9.5.0-rc01 9.5.0-rc02 9.5.0 9.5.1 9.6.0-alpha01 9.6.0-alpha02 9.6.0-alpha03 
-=== org/jetbrains/kotlin/kotlin-gradle-plugin -> HTTP 200
-2.3.20-RC 2.3.20-RC2 2.3.20-RC3 2.3.20 2.3.21-RC 2.3.21-RC2 2.3.21 2.4.0-Beta1 2.4.0-Beta2 2.4.0-RC 2.4.0-RC2 2.4.0 2.4.10-RC 2.4.10-RC2 2.4.10 2.4.20-Beta1 2.4.20-Beta2 2.4.20-RC 2.4.20-RC2 2.4.20-RC3 2.4.20 2.4.21-RC 2.4.21 2.5.0-Beta1 2.5.0-Beta2 
-=== com/google/devtools/ksp/symbol-processing-gradle-plugin -> HTTP 200
-2.2.20-Beta1-2.0.2 2.2.20-Beta2-2.0.2 2.2.20-RC-2.0.2 2.2.20-RC2-2.0.2 2.2.20-2.0.2 2.2.20-2.0.3 2.2.20-2.0.4 2.2.21-RC-2.0.4 2.2.21-RC2-2.0.4 2.2.21-2.0.4 2.2.21-2.0.5 2.3.0 2.3.1 2.3.2 2.3.3 2.3.4 2.3.5 2.3.6 2.3.7 2.3.8 2.3.9 2.3.10 2.3.11 2.3.12 2.3.13 
-=== io/ktor/ktor-client-okhttp -> HTTP 200
-3.0.1 3.0.2 3.0.3 3.1.0 3.1.1 3.1.2 3.1.3 3.2.0 3.2.1 3.2.2 3.2.3 3.2.4 3.3.0 3.3.1 3.3.2 3.3.3 3.4.0 3.4.1 3.4.2 3.4.3 3.5.0 3.5.1 3.5.2 3.6.0 3.6.1 
-=== io/ktor/ktor-client-core -> HTTP 200
-3.0.1 3.0.2 3.0.3 3.1.0 3.1.1 3.1.2 3.1.3 3.2.0 3.2.1 3.2.2 3.2.3 3.2.4 3.3.0 3.3.1 3.3.2 3.3.3 3.4.0 3.4.1 3.4.2 3.4.3 3.5.0 3.5.1 3.5.2 3.6.0 3.6.1 
-=== androidx/compose/compose-bom -> HTTP 200
-2025.06.01 2025.07.00 2025.08.00 2025.08.01 2025.09.00 2025.09.01 2025.10.00 2025.10.01 2025.11.00 2025.11.01 2025.12.00 2025.12.01 2026.01.00 2026.01.01 2026.02.00 2026.02.01 2026.03.00 2026.03.01 2026.04.01 2026.05.00 2026.05.01 2026.06.00 2026.06.01 2026.08.00 2026.09.00 
-=== androidx/compose/material3/material3 -> HTTP 200
-1.5.0-alpha08 1.5.0-alpha09 1.5.0-alpha10 1.5.0-alpha11 1.5.0-alpha12 1.5.0-alpha13 1.5.0-alpha14 1.5.0-alpha15 1.5.0-alpha16 1.5.0-alpha17 1.5.0-alpha18 1.5.0-alpha19 1.5.0-alpha20 1.5.0-alpha21 1.5.0-alpha22 1.5.0-alpha23 1.5.0-alpha24 1.5.0-alpha25 1.5.0-alpha26 1.5.0-alpha27 1.5.0-alpha28 1.5.0-alpha29 1.5.0-beta01 1.5.0-beta02 1.5.0-rc01 
-=== androidx/navigation/navigation-compose -> HTTP 200
-2.9.0-alpha07 2.9.0-alpha08 2.9.0-alpha09 2.9.0-beta01 2.9.0-rc01 2.9.0 2.9.1 2.9.2 2.9.3 2.9.4 2.9.5 2.9.6 2.9.7 2.9.8 2.10.0-alpha01 2.10.0-alpha02 2.10.0-alpha03 2.10.0-alpha04 2.10.0-alpha05 2.10.0-alpha06 2.10.0-beta01 2.10.0-rc01 2.10.0 2.10.1 2.10.2 
-=== androidx/core/core-splashscreen -> HTTP 200
-1.0.0-alpha01 1.0.0-alpha02 1.0.0-beta01 1.0.0-beta02 1.0.0-rc01 1.0.0 1.0.1 1.1.0-alpha01 1.1.0-alpha02 1.1.0-rc01 1.2.0-alpha01 1.2.0-alpha02 1.2.0-beta01 1.2.0-beta02 1.2.0-rc01 1.2.0 
-=== androidx/datastore/datastore-preferences -> HTTP 200
-1.1.2 1.1.3 1.1.4 1.1.5 1.1.6 1.1.7 1.2.0-alpha01 1.2.0-alpha02 1.2.0-beta01 1.2.0-rc01 1.2.0 1.2.1 1.3.0-alpha01 1.3.0-alpha02 1.3.0-alpha03 1.3.0-alpha04 1.3.0-alpha05 1.3.0-alpha06 1.3.0-alpha07 1.3.0-alpha08 1.3.0-alpha09 1.3.0-alpha10 1.3.0-alpha11 1.3.0-rc01 1.3.0 
-=== supabase-kt 3.9.0 repo
---- top dirs
-Auth
-CHANGELOG.md
-CODEOWNERS
-CONTRIBUTING.md
-Functions
-GoTrue
-LICENSE
-MIGRATION.md
-Postgrest
-README.md
-Realtime
-Storage
-Supabase
-TROUBLESHOOTING.md
-bom
-build.gradle.kts
-buildSrc
-demos
-detekt.yml
-gradle
-gradle.properties
-gradlew
-gradlew.bat
-integration-test
-plugins
-refactor.MD
-sample
-script
-sdk-compliance.yaml
-serializers
-settings.gradle.kts
-test-common
---- modules
-/tmp/sk/Auth/
-/tmp/sk/Functions/
-/tmp/sk/GoTrue/
-/tmp/sk/Postgrest/
-/tmp/sk/Realtime/
-/tmp/sk/Storage/
-/tmp/sk/Supabase/
-/tmp/sk/bom/
-/tmp/sk/buildSrc/
-/tmp/sk/demos/
-/tmp/sk/gradle/
-/tmp/sk/integration-test/
-/tmp/sk/plugins/
-/tmp/sk/sample/
-/tmp/sk/script/
-/tmp/sk/serializers/
-/tmp/sk/test-common/
---- versions toml (supabase deps)
-[versions]
-kotlin = "2.4.21"
-accompanist-permissions = "0.37.3"
-ktor = "3.6.0"
-dokka = "2.2.0"
-kotlinx-datetime = "0.8.0"
-kermit = "2.2.0"
-coroutines = "1.11.0"
-android-lifecycle = "2.11.0"
-androidx-startup = "1.2.0"
-androidx-activity-compose = "1.13.0"
-multiplatform-settings = "1.3.0"
-complete-kotlin = "1.1.0"
-agp = "9.2.1"
-maven-publish = "0.37.0"
-apollo-kotlin = "5.0.1"
-serialization = "1.11.0"
-#korlibs = "6.0.0"
-detekt = "1.23.8"
-moshi = "1.15.2"
-jackson = "2.22.3"
-browser = "1.10.0"
-compose = "1.11.1"
-coil2 = "2.7.0"
-okio = "3.18.2"
-koin = "4.2.2"
-androidx-core = "1.19.1"
-androidx-compat = "1.8.0"
-androidx-lifecycle = "2.11.0"
-filekit = "0.8.8"
-kotlinx-browser = "0.5.0"
-immutable-collections = "0.5.2"
-crypto = "0.6.0"
-jwt-kt = "1.2.1"
-supabase-kt-plugins = "3.8.0" # https://github.com/supabase-community/supabase-kt-plugins
+########## MIGRATION.md (2.x -> 3.x)
+# Migrating from version 2.X to 3.0.0
 
-[plugins]
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-kotlinx-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-complete-kotlin = { id = "com.louiscad.complete-kotlin", version.ref = "complete-kotlin" }
-android-library = { id = "com.android.library", version.ref = "agp" }
-android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+### Ktor 3
 
-compose-plugin = { id = "org.jetbrains.compose", version.ref = "compose" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+Starting with `3.0.0`, supabase-kt now uses Ktor 3. This brings WASM support, but projects using Ktor 2 will be incompatible.
+Ktor `3.0.0-rc-1` or later has to be used.
 
-power-assert = { id = "org.jetbrains.kotlin.plugin.power-assert", version.ref = "kotlin" }
+### Rename gotrue-kt to auth-kt and rename the package name
 
-[libraries]
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-kotlinx-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "immutable-collections" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+- **The `gotrue-kt` module is no longer being published starting with version `3.0.0`. Use the new `auth-kt` module.**
+- **Rename `auth-kt` package name from `io.github.jan.supabase.gotrue` to `io.github.jan.supabase.auth`**.
+- Refactor SessionStatus
+  - Move `SessionStatus` to its own `status` package
+  - Rename `SessionStatus#LoadingFromStorage` to `SessionStatus#Initializing`
+  - Rename and refactor `SessionStatus#NetworkError` to `SessionStatus#RefreshFailure(cause)`
+    *Note: The cause can be either `RefreshFailureCause#NetworkError` or `RefreshFailureCause#InternalServerError`. In both cases the refreshing will be retried and the session not cleared from storage. During that time, the session is obviously not usable.*
 
-kotlin-multiplatform-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-power-assert-gradle = { module = "org.jetbrains.kotlin.plugin.power-assert:org.jetbrains.kotlin.plugin.power-assert.gradle.plugin", version.ref = "kotlin" }
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-detekt-gradle = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-publishing-gradle = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "maven-publish" }
-compose-gradle = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
-android-library-gradle = { module = "com.android.kotlin.multiplatform.library:com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "agp" }
+### New plugin & Kotlin targets
 
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
-ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
-ktor-client-ios = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
-ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
-ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
-ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
+- New [coil3-integration](/plugins/Coil3Integration)
+- New wasm-js support for almost all plugins
 
-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+### File uploading & downloading 
 
-android-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "android-lifecycle" }
-androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
-androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
-androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-androidx-compat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-compat" }
-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
-multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
-multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
-multiplatform-settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatform-settings" }
+- Each uploading method (upload, update, uploadAsFlow ...) now has a `options` DSL. Currently you can configure three things:
+1. Whether to upsert or not
+2. The content type (will still be inferred like in 2.X if null)
+3. Additional HTTP request configurations
+   Example:
+```kotlin
+supabase.storage.from("test").upload("test.txt", "Hello World!".encodeToByteArray()) {
+    contentType = ContentType.Text.Plain
+    upsert = true
+}
+```
+- Each downloading method (downloadPublic, downloadAuthenticated, downloadPublicAsFlow, ...) now has a `options` DSL. Currently you can only configure the image transformation
+  Example:
+```kotlin
+supabase.storage.from("test").downloadAuthenticated("test.jpg") {
+    transform {
+        size(100, 100)
+    }
+}
+```
+- Uploading options such as `upsert` or `contentType` for resumable uploads are now getting cached. If an upload is resumed, the options from the initial upload will be used.
 
-apollo-kotlin = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo-kotlin" }
+### Postgrest Changes
 
-#krypto = { module = "com.soywiz:korlibs-crypto", version.ref = "korlibs" }
-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+- Move all optional function parameters for `PostgrestQueryBuilder#select()`, `insert()`, `upsert()` and `Postgrest#rpc()` to the request DSL
+  Example:
+```kotlin
+supabase.from("table").upsert(myValue) {
+    defaultToNull = false
+    ignoreDuplicates = false
+}
+```
+- Move the non-parameter variant of `Postgrest#rpc()` to the `Postgrest` interface. It was an extension function before
+- Add a non-generic parameter variant of `Postgrest#rpc()` to the `Postgrest` interface. This function will be called from the existing generic variant
 
-moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
+### Realtime changes
 
-jackson = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
-jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+- `RealtimeChannel#presenceChangeFlow` is now a member function of `RealtimeChannel`. (It was an extension function before)
 
-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
+### Apollo GraphQL plugin
 
-coil2 = { module = "io.coil-kt:coil", version.ref = "coil2" }
+The Apollo GraphQL plugin now uses Apollo GraphQL 4.0.0.
 
-crypto = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "crypto" }
-crypto-optimal = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "crypto" }
+<details>
+<summary>Migrating from version 1.4.X to 2.0.0</summary>
 
-# Sample dependencies
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
-filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
-filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit" }
-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
---- demo projects
-/tmp/sk/demos
-/tmp/sk/sample
-/tmp/sk/sample/chat-demo-mpp
-/tmp/sk/sample/chat-demo-mpp/chatdemoios
---- kotlin files in demos
-/tmp/sk/demos/android-login/buildSrc/src/main/kotlin/Versions.kt
-/tmp/sk/demos/android-login/android/src/main/java/io/github/jan/supabase/android/MainActivity.kt
-/tmp/sk/demos/android-login/android/src/main/java/io/github/jan/supabase/android/MainApplication.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/AppViewModel.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/components/PasswordField.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/components/OAuthWebView.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/screen/OAuthScreen.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/screen/LoginScreen.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/viewModelModule.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/supabaseModule.kt
-/tmp/sk/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/koin.kt
-/tmp/sk/demos/android-login/common/src/androidMain/kotlin/io/github/jan/supabase/common/di/platformGoTrueConfig.kt
-/tmp/sk/demos/android-login/common/src/androidMain/kotlin/io/github/jan/supabase/common/di/viewModel.kt
-/tmp/sk/demos/android-login/common/src/androidMain/kotlin/io/github/jan/supabase/common/MPViewModel.kt
-/tmp/sk/demos/multiplatform-deeplinks/buildSrc/src/main/kotlin/Versions.kt
-/tmp/sk/demos/multiplatform-deeplinks/android/src/main/java/io/github/jan/supabase/android/MainActivity.kt
-/tmp/sk/demos/multiplatform-deeplinks/android/src/main/java/io/github/jan/supabase/android/MainApplication.kt
-/tmp/sk/demos/multiplatform-deeplinks/desktop/src/main/kotlin/Main.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/desktopMain/kotlin/io/github/jan/supabase/common/ui/components/AlertDialog.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/desktopMain/kotlin/io/github/jan/supabase/common/di/platformGoTrueConfig.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/desktopMain/kotlin/io/github/jan/supabase/common/di/viewModel.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/desktopMain/kotlin/io/github/jan/supabase/common/MPViewModel.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/AppViewModel.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/components/PasswordField.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/components/AlertDialog.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/components/GoogleButton.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/icons/Google.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/screen/AppScreen.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/screen/LoginScreen.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/netModule.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/viewModelModule.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/supabaseModule.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/koin.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/commonMain/kotlin/io/github/jan/supabase/common/App.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/androidMain/kotlin/io/github/jan/supabase/common/ui/components/AlertDialog.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/androidMain/kotlin/io/github/jan/supabase/common/di/platformGoTrueConfig.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/androidMain/kotlin/io/github/jan/supabase/common/di/viewModel.kt
-/tmp/sk/demos/multiplatform-deeplinks/common/src/androidMain/kotlin/io/github/jan/supabase/common/MPViewModel.kt
+# Migrating from version 1.4.X to 2.0.0
+
+## GoTrue
+
+The GoTrue module had a lot of changes including many renames:
+- Rename `GoTrue` plugin to `Auth`
+- Rename `GoTrueConfig` to `AuthConfig`
+- Rename `SupabaseClient#gotrue` to `SupabaseClient#auth`
+- Rename `Auth#loginWith` to `Auth#signInWith`
+- Rename `Auth#logout` to `Auth#signOut`
+- Rename `LogoutScope` to `SignOutScope`
+- Rename `AdminUserUpdateBuilder#phoneNumber` to `AdminUserUpdateBuilder#phone`
+- Rename `UserUpdateBuilder#phoneNumber` to `UserUpdateBuilder#phone`
+- Rename `Phone.Config#phoneNumber` to `Phone.Config#phone`
+- Rename `Auth#sendRecoveryEmail` to `Auth#resetPasswordForEmail`
+
+#### The process of signing in with an OTP & SSO has also been refactored. 
+#### There is now a new `OTP` Auth Provider which does the same as the old `sendOtpTo`:
+
+Old:
+```kotlin
+supabase.gotrue.sendOtpTo(Email) {
+    email = "example@email.com"
+}
+//or
+supabase.gotrue.sendOtpTo(Phone) {
+    phoneNumber = "+123456789"
+}
+```
+
+New:
+```kotlin
+supabase.auth.signInWith(OTP) {
+    email = "example@email.com"
+    //or
+    phone = "+123456789"
+}
+```
+
+#### Similarly, the SSO Auth Provider was also refactored to match the other Auth Providers:
+
+Old:
+```kotlin
+supabase.gotrue.loginWith(SSO.withProvider("provider"))
+//or
+supabase.gotrue.loginWith(SSO.withDomain("domain"))
+```
+
+New:
+```kotlin
+supabase.auth.signInWith(SSO) {
+    providerId = "providerId"
+    //or
+    domain = "domain"
+}
+```
+
+## Realtime
+
+The Realtime module also had a few renames:
+- Rename `Realtime#createChannel` to `Realtime#channel`
+- Remove `RealtimeChannel#join` and add new `RealtimeChannel#subscribe` method, which does the same but also connects to the realtime websocket automatically
+- Add `Realtime.Config#connectOnSubscribe` to disable this behaviour
+- Rename `RealtimeChannel#leave` to `RealtimeChannel#unsubscribe`
+- Add `SupabaseClient#channel` extension function delegating to `Realtime#channel`
+- Rename `Realtime.Status` to reflect the new methods:
+    - `UNSUBSCRIBED`
+    - `SUBSCRIBING`
+    - `SUBSCRIBED`
+    - `UNSUBSCRIBING`
+
+## Postgrest
+
+The syntax for interacting with the PostgREST API has been refactored significantly. Each database method (`SELECT`, `UPDATE`, etc.)
+now have a new builder and most of the properties which were a method parameter are now in this builder.
+
+The filters now get applied within a `filter {}` block.
+
+### **Examples:**
+
+**Select**
+
+Old:
+```kotlin
+supabase.postgrest.from("countries").select(count = Count.EXACT) {
+    eq("id", 1)
+}
+```
+
+New:
+```kotlin
+supabase.postgrest.from("countries").select {
+    count(Count.EXACT)
+    filter {
+        eq("id", 1)
+    }
+}
+```
+
+**Insert**
+
+Old:
+```kotlin
+supabase.postgrest.from("countries").update(country, returning = Returning.REPRESENTATION) { //Returning is representation by default
+    eq("id", 1)
+}
+```
+
+New:
+```kotlin
+supabase.postgrest.from("countries").update(country) {
+    select() //Without this the "returning" parameter is `MINIMAL`, meaning you will not receive the data. 
+    filter {
+        eq("id", 1)
+    }
+}
+```
+
+The same applies for all other database methods. Additionally, new methods have been added to this builder:
+
+Example:
+```kotlin
+val result = supabase.postgrest["messages"].select {
+     single() //receive an object rather than an array
+     count(Count.EXACT) //receive amount of database entries
+     limit(10) //limit amount of results
+     range(2, 3) //change range of results
+     select() //return the data when updating/deleting/upserting (same as settings 'returning' to REPRESENTATION before)
+     csv() //Receive the data as csv
+     geojson() //Receive the data as geojson
+########## android demo supabase module + viewmodel
+package io.github.jan.supabase.common.di
+
+import io.github.jan.supabase.compose.auth.ComposeAuth
+import io.github.jan.supabase.compose.auth.googleNativeLogin
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.gotrue.GoTrue
+import io.github.jan.supabase.gotrue.GoTrueConfig
+import org.koin.dsl.module
+
+expect fun GoTrueConfig.platformGoTrueConfig()
+
+const val SERVER_CLIENT_ID = "1009828726778-ofegbrc0pg8hs9hc8hnb817e52jpjuh2.apps.googleusercontent.com" //Don't put in your android client id
+
+val supabaseModule = module {
+    single {
+        createSupabaseClient(
+            supabaseUrl = "https://uafjlnwkkmubykxywuds.supabase.co",
+            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZmpsbndra211YnlreHl3dWRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODg4NTE5MTQsImV4cCI6MjAwNDQyNzkxNH0.ZUGbB-9dHz18Cfwl8CgSpli-xw06JOBTRiY2NnV_Fo0"
+        ) {
+            install(GoTrue) {
+                platformGoTrueConfig()
+            }
+            install(ComposeAuth) {
+                googleNativeLogin(SERVER_CLIENT_ID)
+            }
+        }
+    }
+}package io.github.jan.supabase.common
+
+
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.annotations.SupabaseInternal
+import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.gotrue.parseFragmentAndImportSession
+import io.github.jan.supabase.gotrue.providers.Google
+import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.gotrue.providers.builtin.IDToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+
+expect open class MPViewModel() {
+
+    val coroutineScope: CoroutineScope
+
+}
+
+class AppViewModel(
+    val supabaseClient: SupabaseClient,
+) : MPViewModel() {
+
+    val sessionStatus = supabaseClient.gotrue.sessionStatus
+    val loginAlert = MutableStateFlow<String?>(null)
+
+    //Auth
+
+    fun signUp(email: String, password: String) {
+        coroutineScope.launch {
+            kotlin.runCatching {
+                supabaseClient.gotrue.signUpWith(Email) {
+                    this.email = email
+                    this.password = password
+                }
+            }.onSuccess {
+                loginAlert.value = "Successfully registered! Check your E-Mail to verify your account."
+            }.onFailure {
+                loginAlert.value = "There was an error while registering: ${it.message}"
+            }
+        }
+    }
+
+    fun login(email: String, password: String) {
+        coroutineScope.launch {
+            kotlin.runCatching {
+                supabaseClient.gotrue.loginWith(Email) {
+                    this.email = email
+                    this.password = password
+                }
+            }.onFailure {
+                it.printStackTrace()
+                loginAlert.value = "There was an error while logging in. Check your credentials and try again."
+            }
+        }
+    }
+
+    fun loginWithIdToken(idToken: String) {
+        coroutineScope.launch {
+            kotlin.runCatching {
+                supabaseClient.gotrue.loginWith(IDToken)  {
+                    this.idToken = idToken
+                    provider = Google
+                }
+            }.onFailure {
+                it.printStackTrace()
+            }
+        }
+    }
+
+    @OptIn(SupabaseInternal::class)
+    fun parseFragment(fragment: String) {
+        coroutineScope.launch {
+            kotlin.runCatching {
+                supabaseClient.gotrue.parseFragmentAndImportSession(fragment)
+            }.onFailure {
+                it.printStackTrace()
+            }
+        }
+    }
+
+    fun loginWithGoogle() {
+        coroutineScope.launch {
+            kotlin.runCatching {
+                supabaseClient.gotrue.loginWith(Google)
+            }
+        }
+    }
+
+    fun logout() {
+        coroutineScope.launch {
+            kotlin.runCatching {
+                supabaseClient.gotrue.logout()
+            }
+        }
+    }
+
+}package io.github.jan.supabase.common.di
+
+import io.github.jan.supabase.common.AppViewModel
+import org.koin.core.module.Module
+import org.koin.core.scope.Scope
+import org.koin.dsl.module
+
+expect fun Module.viewModel()
+
+fun Scope.createViewModule() = AppViewModel(get())
+
+val viewModelModule = module {
+    viewModel()
+}########## chat-demo files
 /tmp/sk/sample/chat-demo-mpp/web/src/jsMain/kotlin/Main.kt
 /tmp/sk/sample/chat-demo-mpp/android/src/main/java/io/github/jan/supabase/android/MainActivity.kt
 /tmp/sk/sample/chat-demo-mpp/android/src/main/java/io/github/jan/supabase/android/MainApplication.kt
@@ -257,3 +361,230 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 /tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/icons/Google.kt
 /tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/screen/ChatScreen.kt
 /tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/ui/screen/LoginScreen.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/netModule.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/viewModelModule.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/supabaseModule.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/koin.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/commonMain/kotlin/io/github/jan/supabase/common/App.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/jsMain/kotlin/io/github/jan/supabase/common/di/platformGoTrueConfig.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/jsMain/kotlin/io/github/jan/supabase/common/di/viewModel.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/jsMain/kotlin/io/github/jan/supabase/common/MPViewModel.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/androidMain/kotlin/io/github/jan/supabase/common/di/platformGoTrueConfig.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/androidMain/kotlin/io/github/jan/supabase/common/di/viewModel.kt
+/tmp/sk/sample/chat-demo-mpp/common/src/androidMain/kotlin/io/github/jan/supabase/common/MPViewModel.kt
+########## chat-demo realtime usage
+########## Auth public api
+66:    val sessionStatus: StateFlow<SessionStatus>
+72:    val events: SharedFlow<AuthEvent>
+77:    val isAutoRefreshRunning: Boolean
+82:    val sessionManager: SessionManager
+87:    val admin: AdminApi
+92:    val mfa: MfaApi
+98:    val passkeys: AuthPasskeyApi
+105:    val oauth: OAuthApi
+110:    val codeVerifierCache: CodeVerifierCache
+116:    val authScope: CoroutineScope
+142:    suspend fun <C, R, Provider : AuthProvider<C, R>> signUpWith(
+170:    suspend fun <C, R, Provider : AuthProvider<C, R>> signInWith(
+187:    suspend fun signInAnonymously(data: JsonObject? = null, captchaToken: String? = null)
+207:    suspend fun linkIdentity(
+231:    suspend fun linkIdentityWithIdToken(
+245:    suspend fun unlinkIdentity(
+258:    suspend fun retrieveSSOUrl(redirectUrl: String? = defaultRedirectUrl(), config: SSO.Config.() -> Unit): SSO.Result
+268:    suspend fun updateUser(
+284:    suspend fun resendEmail(type: OtpType.Email, email: String, captchaToken: String? = null, redirectUrl: String? = defaultRedirectUrl())
+295:    suspend fun resendPhone(type: OtpType.Phone, phone: String, captchaToken: String? = null)
+305:    suspend fun resetPasswordForEmail(email: String, redirectUrl: String? = defaultRedirectUrl(), captchaToken: String? = null)
+313:    suspend fun reauthenticate()
+329:    suspend fun verifyEmailOtp(type: OtpType.Email, email: String, token: String, captchaToken: String? = null): OtpVerifyResult
+344:    suspend fun verifyEmailOtp(type: OtpType.Email, tokenHash: String, captchaToken: String? = null): OtpVerifyResult
+355:    suspend fun verifyPhoneOtp(type: OtpType.Phone, phone: String, token: String, captchaToken: String? = null)
+363:    suspend fun retrieveUser(jwt: String): UserInfo
+372:    suspend fun retrieveUserForCurrentSession(updateSession: Boolean = false): UserInfo
+382:    suspend fun signOut(scope: SignOutScope = SignOutScope.LOCAL)
+387:    suspend fun importSession(session: UserSession, autoRefresh: Boolean = config.alwaysAutoRefresh, source: SessionSource = SessionSource.Unknown)
+395:    suspend fun importAuthToken(accessToken: String, refreshToken: String = "", retrieveUser: Boolean = false, autoRefresh: Boolean = if(refreshToken.isNotBlank()) config.alwaysAutoRefresh else false) = importSession(UserSession(accessToken, refreshToken, "", "", 0L, "", if(retrieveUser) tryToGetUser(accessToken) else null), autoRefresh)
+401:    suspend fun loadFromStorage(autoRefresh: Boolean = config.alwaysAutoRefresh): Boolean
+411:    suspend fun refreshSession(refreshToken: String): UserSession
+419:    suspend fun refreshCurrentSession()
+424:    suspend fun clearSession()
+430:    fun setSessionStatus(status: SessionStatus)
+436:    fun emitEvent(event: AuthEvent)
+446:    suspend fun exchangeCodeForSession(code: String, saveSession: Boolean = true): UserSession
+451:    suspend fun startAutoRefreshForCurrentSession()
+471:    suspend fun getClaims(
+486:    fun getOAuthUrl(provider: OAuthProvider, redirectUrl: String? = defaultRedirectUrl(), url: String = "authorize", additionalConfig: ExternalAuthConfigDefaults.() -> Unit = {}): String
+491:    fun stopAutoRefreshForCurrentSession()
+498:    fun autoRefreshInformation(): SessionRefreshInformation?
+503:    fun currentAccessTokenOrNull() = currentSessionOrNull()?.accessToken
+508:    fun currentSessionOrNull() = when(val status = sessionStatus.value) {
+516:    fun currentUserOrNull() = currentSessionOrNull()?.user
+521:    fun currentIdentitiesOrNull() = currentUserOrNull()?.identities
+528:    suspend fun awaitInitialization()
+566:        fun defaultResolveAccessToken(supabaseClient: SupabaseClient): ResolveAccessToken = { token, fallback -> supabaseClient.resolveAccessToken(token, fallback) }
+########## Auth plugin config
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/oauth/OAuthAuthorizationClient.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/oauth/OAuthApi.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/oauth/OAuthGrant.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/oauth/OAuthRedirect.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/oauth/OAuthAuthorizationDetails.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/oauth/OAuthAuthorizationDetailsResponse.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/oauth/OAuthAuthorizationUser.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/Auth.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/api/AuthenticatedApiExtensions.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/api/AuthenticatedApiConfig.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/api/AuthenticatedSupabaseApi.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/AuthImpl.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/AuthSessionMissingException.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/InvalidJwtException.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/AuthRestException.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/NoSessionFoundException.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/TokenExpiredException.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/SessionRequiredException.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/AuthWeakPasswordException.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/exception/AuthErrorCode.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/event/AuthEvent.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/MinimalConfig.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/status/RefreshFailureCause.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/status/SessionStatus.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/status/SessionSource.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/RedirectUrl.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/AuthExtensions.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/AccessToken.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/SignOutScope.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/CodeVerifierCache.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/UrlUtils.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/user/UserSession.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/user/UserUpdateBuilder.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/user/UserInfo.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/user/Identity.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/UrlLauncher.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/providers/ExternalAuthConfig.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/providers/Providers.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/providers/OAuthProvider.kt
+/tmp/sk/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/providers/IDTokenProvider.kt
+find: ‘standard output’: Broken pipe
+find: write error
+########## GoTrue extension funcs
+grep: /tmp/sk/GoTrue/src/commonMain: No such file or directory
+########## Realtime channel builder
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelBroadcastTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeWSMock.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/CallbackManagerTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeHeartbeatTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeSerializerTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTestUtils.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTopicTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelRejoinTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimePostgresFilterBuilderTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeEventTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeChannelTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/RealtimeExtTest.kt
+/tmp/sk/Realtime/src/commonTest/kotlin/ScriptedWebsocket.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/RealtimeCallback.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/RealtimeJoinPayload.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/RealtimeChannelExt.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/RealtimeExt.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/Realtime.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/RealtimeProtocolVersion.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RTokenExpiredEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RCloseEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RSystemReplyEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RSystemEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RPostgresServerChangesEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RPresenceStateEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RPresenceDiffEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RErrorEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RBroadcastEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RPostgresChangesEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/event/RealtimeEvent.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/PostgresChangeFilter.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/annotations/ChannelDsl.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/websocket/RealtimeWebsocket.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/websocket/KtorRealtimeWebsocket.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/websocket/KtorRealtimeWebsocketFactory.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/websocket/RealtimeWebsocketFactory.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/PostgresAction.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/PostgrestExtensions.kt
+/tmp/sk/Realtime/src/commonMain/kotlin/io/github/jan/supabase/realtime/RealtimeTopic.kt
+find: ‘standard output’: Broken pipe
+find: write error
+########## Storage api
+########## Postgrest api
+41:    suspend inline fun select(
+67:    suspend inline fun upsert(
+95:    suspend inline fun <reified T : Any> upsert(
+118:    suspend inline fun <reified T : Any> upsert(
+132:    suspend inline fun insert(
+154:    suspend inline fun <reified T : Any> insert(
+171:    suspend inline fun <reified T : Any> insert(
+187:    suspend inline fun update(
+209:    suspend inline fun update(
+231:    suspend inline fun <reified T : Any> update(
+249:    suspend inline fun delete(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:48:    inline fun <reified T> decodeList(): List<T> = decodeAs()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:53:    inline fun <reified T> decodeSingle(): T = decodeList<T>().first()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:58:    inline fun <reified T> decodeSingleOrNull(): T? = decodeList<T>().firstOrNull()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:35: * val product = supabase.postgrest["products"].select {
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:37: * }.decodeSingle<Product>()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/Columns.kt:7: * Represents a list of columns to select
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/Columns.kt:8: * @param value The columns to select, separated by a comma
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/Columns.kt:22:         * @param value The columns to select, separated by a comma
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/Columns.kt:28:         * @param columns The columns to select
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/Columns.kt:34:         * @param columns The columns to select
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/Columns.kt:39:         * Select all columns of type [T]'s class properties. Example: If you specify a class 'User' with the fields 'id' and 'name', this will select 'id,name'
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/Columns.kt:40:         * @param T The type of the columns to select
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:32:     * Executes vertical filtering with select on [table]
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:41:    suspend inline fun select(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:47:            select(columns)
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:54:     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:59:     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:67:    suspend inline fun upsert(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:82:     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:87:     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:95:    suspend inline fun <reified T : Any> upsert(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:98:    ): PostgrestResult = upsert(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:105:     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:110:     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:118:    suspend inline fun <reified T : Any> upsert(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:121:    ): PostgrestResult = upsert(listOf(value), request)
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:179:     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:201:     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:223:     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt:242:     * By default, deleted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/request/UpsertRequestBuilder.kt:8: * Request builder for [PostgrestQueryBuilder.upsert]
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/request/UpsertRequestBuilder.kt:35:        return buildPrefer(upsert = true, ignoreDuplicates = ignoreDuplicates)
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/request/SelectRequestBuilder.kt:9: * Request builder for [PostgrestQueryBuilder.select]
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/request/InsertRequestBuilder.kt:28:        upsert: Boolean,
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/request/InsertRequestBuilder.kt:32:            if (upsert) add("resolution=${if (ignoreDuplicates) "ignore" else "merge"}-duplicates")
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/request/InsertRequestBuilder.kt:38:        return buildPrefer(upsert = false, ignoreDuplicates = false)
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestRequestBuilder.kt:103:    fun select(columns: Columns = Columns.ALL) {
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestRequestBuilder.kt:105:            params["select"] = listOf(it.columns.value)
+########## createSupabaseClient
+/tmp/sk/Supabase/src/commonMain/kotlin/io/github/jan/supabase/SupabaseClientBuilder.kt:181:inline fun createSupabaseClient(supabaseUrl: String, supabaseKey: String, builder: SupabaseClientBuilder.() -> Unit) = SupabaseClientBuilder(supabaseUrl, supabaseKey).apply(builder).build()
+########## bom contents
+plugins {
+    `java-platform`
+}
+
+description = "A Kotlin Multiplatform Supabase Framework"
+
+val bomProject = project
+
+val excludedModules = listOf("test-common")
+
+fun shouldIncludeInBom(candidateProject: Project) =
+    excludedModules.all { !candidateProject.name.contains(it) } &&
+            candidateProject.name != bomProject.name
+
+rootProject.subprojects.filter(::shouldIncludeInBom).forEach { bomProject.evaluationDependsOn(it.path) }
+
+dependencies {
+    constraints {
+        rootProject.subprojects.filter { project ->
+            // Only declare dependencies on projects that will have publications
+            shouldIncludeInBom(project) && project.tasks.findByName("publish")?.enabled == true
+        }.forEach { api(project(it.path)) }
+    }
+}
