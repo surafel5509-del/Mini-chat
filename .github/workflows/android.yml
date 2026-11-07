@@ -28,10 +28,15 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Verify Android SDK
+      - name: Verify Android SDK and AGP availability
+        continue-on-error: true
         run: |
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
           ls "$ANDROID_SDK_ROOT/platforms" | tail -5
+          echo "=== AGP 8.x versions"
+          curl -sS "https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml" \
+            | sed -e 's/></>\n</g' | grep -oE '<version>8\.[0-9.]+</version>' | tail -12 | tr '\n' ' '
+          echo
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -95,9 +100,10 @@ jobs:
 
           signals = re.compile(r"^e: |FAILURE:|What went wrong|Could not resolve|Could not find|Unresolved reference"
                                r"|BUILD SUCCESSFUL|BUILD FAILED|error:|Caused by:|\* What went wrong|A problem occurred"
-                               r"|> Task :app:.*(FAILED)?|APK|aab")
+                               r"|> Task :app:.*(FAILED)?|APK|aab|Caused by")
           interesting = [line for line in log.splitlines() if signals.search(line)]
-          selected = interesting[-250:] if interesting else log.splitlines()[-120:]
+          failed = "gradle_exit=0" not in (open("build-status.txt").read() if os.path.exists("build-status.txt") else "")
+          selected = (interesting[-60:] + ["...", "RAW TAIL:"] + log.splitlines()[-160:]) if failed else (interesting[-200:] or log.splitlines()[-120:])
 
           status = ""
           if os.path.exists("build-status.txt"):
