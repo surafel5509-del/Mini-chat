@@ -15,34 +15,37 @@ jobs:
         run: |
           set +e
           {
-          C=https://repo1.maven.org/maven2
-          G=https://dl.google.com/dl/android/maven2
-          q() {
-            local base="$1" path="$2"
-            local code
-            code=$(curl -sS -o /tmp/meta.xml -w '%{http_code}' --max-time 30 "$base/$path/maven-metadata.xml")
-            echo "=== $path -> HTTP $code"
-            sed -e 's/></>\n</g' /tmp/meta.xml | grep -oE '<version>[^<]+' | sed -e 's/<version>//' | tail -25 | tr '\n' ' '
-            echo
-          }
-          q $G com/android/tools/build/gradle
-          q $C org/jetbrains/kotlin/kotlin-gradle-plugin
-          q $C com/google/devtools/ksp/symbol-processing-gradle-plugin
-          q $C io/ktor/ktor-client-okhttp
-          q $C io/ktor/ktor-client-core
-          q $G androidx/compose/compose-bom
-          q $G androidx/compose/material3/material3
-          q $G androidx/navigation/navigation-compose
-          q $G androidx/core/core-splashscreen
-          q $G androidx/datastore/datastore-preferences
-          echo "=== supabase-kt 3.9.0 repo"
           curl -sL --max-time 90 https://codeload.github.com/supabase-community/supabase-kt/tar.gz/refs/tags/3.9.0 -o /tmp/sk.tar.gz
           mkdir -p /tmp/sk && tar xzf /tmp/sk.tar.gz -C /tmp/sk --strip-components=1
-          echo "--- top dirs"; ls /tmp/sk
-          echo "--- modules"; ls /tmp/sk/*/ -d 2>/dev/null | head -30
-          echo "--- versions toml (supabase deps)"; sed -n '1,120p' /tmp/sk/gradle/libs.versions.toml
-          echo "--- demo projects"; find /tmp/sk -maxdepth 3 -type d -name "*demo*" -o -maxdepth 3 -type d -name "*sample*" | head -20
-          echo "--- kotlin files in demos"; find /tmp/sk -path "*demo*" -name "*.kt" | head -60
+          SK=/tmp/sk
+          echo "########## MIGRATION.md (2.x -> 3.x)"
+          sed -n '1,200p' $SK/MIGRATION.md
+          echo "########## android demo supabase module + viewmodel"
+          cat $SK/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/supabaseModule.kt
+          cat $SK/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/AppViewModel.kt
+          cat $SK/demos/android-login/common/src/commonMain/kotlin/io/github/jan/supabase/common/di/viewModelModule.kt
+          echo "########## chat-demo files"
+          find $SK/sample/chat-demo-mpp -name "*.kt" | head -40
+          echo "########## chat-demo realtime usage"
+          grep -rn "channel\|postgresChangeFlow\|broadcastFlow\|presenceFlow\|subscribe\|track(" $SK/sample/chat-demo-mpp --include=*.kt | head -60
+          echo "########## Auth public api"
+          grep -rn "    suspend fun \|    fun \|    val " $SK/Auth/src/commonMain/kotlin/io/github/jan/supabase/auth/Auth.kt | head -80
+          echo "########## Auth plugin config"
+          find $SK/Auth/src/commonMain -name "*.kt" | head -40
+          echo "########## GoTrue extension funcs"
+          grep -rn "public suspend fun \|public fun " $SK/GoTrue/src/commonMain --include=*.kt | head -80
+          echo "########## Realtime channel builder"
+          find $SK/Realtime/src -name "*.kt" | head -40
+          grep -rn "public fun \|public suspend fun " $SK/Realtime/src/commonMain --include=*.kt | head -120
+          echo "########## Storage api"
+          grep -rn "public suspend fun \|public fun " $SK/Storage/src/commonMain --include=*.kt | head -60
+          echo "########## Postgrest api"
+          grep -rn "public suspend fun \|public fun \|suspend inline fun " $SK/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/query/PostgrestQueryBuilder.kt | head -40
+          grep -rn "decodeSingle\|decodeList\|select\|upsert" $SK/Postgrest/src/commonMain -r --include=*.kt | head -40
+          echo "########## createSupabaseClient"
+          grep -rn "fun createSupabaseClient" $SK/Supabase/src --include=*.kt
+          echo "########## bom contents"
+          cat $SK/bom/build.gradle.kts | head -60
           } > versions.txt 2>&1
       - name: Publish logs to branch
         if: always()
