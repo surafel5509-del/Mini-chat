@@ -62,8 +62,8 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:packageDebugResources
 > Task :app:processDebugNavigationResources
 > Task :app:parseDebugLocalResources
-> Task :app:javaPreCompileDebug
 > Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:javaPreCompileDebug
 > Task :app:generateDebugRFile
 > Task :app:mergeDebugAssets
 > Task :app:compressDebugAssets
@@ -78,11 +78,11 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:compileDebugNavigationResources
 > Task :app:createDebugCompatibleScreenManifests
 > Task :app:extractDeepLinksDebug
+> Task :app:mergeDebugResources
 > Task :app:processDebugMainManifest
 > Task :app:processDebugManifest
-> Task :app:processDebugManifestForPackage
 > Task :app:mergeDebugJniLibFolders
-> Task :app:mergeDebugResources
+> Task :app:processDebugManifestForPackage
 > Task :app:mergeDebugNativeLibs
 
 > Task :app:stripDebugDebugSymbols
@@ -92,11 +92,10 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:validateSigningDebug
 > Task :app:writeDebugAppMetadata
 > Task :app:writeDebugSigningConfigVersions
+
 > Task :app:compileDebugKotlin
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:33:39 Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:37:22 Unresolved reference 'onFailure' on receiver of type 'AppResult<Unit>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:37:66 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/realtime/RealtimeService.kt:206:45 Argument type mismatch: actual type is 'RealtimeService.TypingPayload', but 'BroadcastPayload' was expected.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:34:39 Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/realtime/RealtimeService.kt:207:45 Argument type mismatch: actual type is 'RealtimeService.TypingPayload', but 'BroadcastPayload' was expected.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/AuthRepositoryImpl.kt:99:66 Unresolved reference 'OtpType'.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:53:16 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:55:17 Unresolved reference 'order'.
@@ -233,118 +232,48 @@ e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/a
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:207:20 Unresolved reference 'from' on receiver of type 'SupabaseClient'.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:209:21 Unresolved reference 'filter'.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:209:30 Unresolved reference 'eq'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:82:26 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118:77 Unresolved reference 'ChevronRight'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:164:14 This annotation is not repeatable.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/domain/repository/Repositories.kt:55:44 Unresolved reference 'Reaction'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/domain/repository/Repositories.kt:56:46 Unresolved reference 'Reaction'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:175:69 Unresolved reference 'Lock'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:177:59 Unresolved reference 'VisibilityOff'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:179:59 Unresolved reference 'Visibility'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:167:58 Unresolved reference 'messageId'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:168:78 Unresolved reference 'id'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:181:58 Unresolved reference 'messageId'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:182:108 Unresolved reference 'id'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:318:54 Unresolved reference 'onFailure' on receiver of type 'AppResult<Unit>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:318:66 Cannot infer type for value parameter 'failure'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:319:59 Unresolved reference 'message'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:344:48 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<ConversationSummary>>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:344:60 Cannot infer type for value parameter 'conversations'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:345:64 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:353:18 Unresolved reference 'onFailure' on receiver of type 'AppResult<Message>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:353:30 Cannot infer type for value parameter 'failure'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:353:83 Unresolved reference 'message'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:383:55 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Instant?>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatViewModel.kt:383:67 Cannot infer type for value parameter 'readAt'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:112:30 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:135:30 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:179:30 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverScreen.kt:172:14 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverScreen.kt:210:22 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverViewModel.kt:51:45 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<Profile>>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverViewModel.kt:51:57 Cannot infer type for value parameter 'peers'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverViewModel.kt:96:53 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:82:58 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<BlockedUser>>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:82:70 Cannot infer type for value parameter 'blocks'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:84:69 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:88:58 Unresolved reference 'onSuccess' on receiver of type 'AppResult<List<BlockedUser>>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:88:70 Cannot infer type for value parameter 'blocks'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:89:89 Unresolved reference 'size'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:164:52 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:166:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:175:54 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:177:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:186:61 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileViewModel.kt:188:15 Cannot infer type for type parameter 'T'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:101:18 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:279:14 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:465:34 None of the following candidates is applicable:
-
-fun Modifier.clickable(enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., interactionSource: MutableInteractionSource? = ..., onClick: () -> Unit): Modifier:
-  No parameter with name 'indication' found.
-
-fun Modifier.clickable(interactionSource: MutableInteractionSource?, indication: Indication?, enabled: Boolean = ..., onClickLabel: String? = ..., role: Role? = ..., onClick: () -> Unit): Modifier:
-  No value passed for parameter 'interactionSource'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:36:53 Unresolved reference 'asStateFlow' on receiver of type 'MutableStateFlow<SettingsViewModel.BlockedState>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:39:49 Unresolved reference 'asStateFlow' on receiver of type 'MutableStateFlow<Profile?>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:61:43 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Profile>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:61:72 Unresolved reference 'it'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsViewModel.kt:99:60 Unresolved reference 'onSuccess' on receiver of type 'AppResult<Unit>'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118:84 Unresolved reference 'KeyboardArrowRight'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:1 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:9 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:10 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:17 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:18 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:26 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:27 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:32 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:33 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:40 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:48:41 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:1 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:9 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:10 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:17 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:18 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:26 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:27 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:32 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:33 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:40 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:49:41 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:1 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:9 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:10 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:17 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:18 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:26 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:27 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:32 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:33 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:40 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:50:41 Syntax error: Expecting a top level declaration.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:178:69 Unresolved reference 'Lock'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:180:59 Unresolved reference 'VisibilityOff'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/AuthComponents.kt:182:59 Unresolved reference 'Visibility'.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:7:35 Unresolved reference 'slideIntoContainer'.
 e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:8:35 Unresolved reference 'slideOutOfContainer'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/notifications/PushTokenManager.kt:32:14 Unresolved reference 'onFailure' on receiver of type 'AppResult<Unit>'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/notifications/PushTokenManager.kt:32:71 Unresolved reference 'it'.
 
 > Task :app:compileDebugKotlin FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794054078580.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794054405545.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
@@ -356,7 +285,7 @@ Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.j
    > Kotlin compiler: ILLEGAL_SUSPEND_FUNCTION_CALL
        Kotlin compiler error
          Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
-         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:33
+         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:34
 
 * Try:
 > Run with --info or --debug option to get more log output.
@@ -391,6 +320,36 @@ org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:com
 	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:475)
 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:392)
+	at org.gradle.execution.plan.DefaultPlanExecutor.process(DefaultPlanExecutor.java:118)
+	at org.gradle.execution.DefaultBuildWorkExecutor.executePlan(DefaultBuildWorkExecutor.java:143)
+	at org.gradle.execution.DefaultBuildWorkExecutor.displayOrExecutePlan(DefaultBuildWorkExecutor.java:128)
+	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:79)
+	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:75)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.execution.DefaultBuildWorkExecutor.execute(DefaultBuildWorkExecutor.java:75)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$executeTasks$0(DefaultBuildLifecycleController.java:322)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:324)
+	at org.gradle.internal.model.StateTransitionController.lambda$tryTransition$0(StateTransitionController.java:235)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:45)
+	at org.gradle.internal.model.StateTransitionController.tryTransition(StateTransitionController.java:235)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.executeTasks(DefaultBuildLifecycleController.java:313)
+	at org.gradle.internal.build.DefaultBuildWorkGraphController$DefaultBuildWorkGraph.runWork(DefaultBuildWorkGraphController.java:207)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+	at org.gradle.composite.internal.DefaultBuildController.doRun(DefaultBuildController.java:182)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.lambda$run$0(DefaultBuildController.java:199)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.run(DefaultBuildController.java:199)
 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
@@ -511,7 +470,7 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
 	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
-	... 25 more
+	... 55 more
 Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
 	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
 	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
@@ -549,5 +508,5 @@ Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Suspend 
 	... 2 more
 
 
-BUILD FAILED in 3m 34s
+BUILD FAILED in 2m 30s
 32 actionable tasks: 32 executed
