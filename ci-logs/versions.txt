@@ -1,88 +1,38 @@
-=== io/github/jan-tennert/supabase/postgrest-kt
+=== io/github/jan-tennert/supabase/postgrest-kt -> HTTP 200  (9037 bytes)
+3.3.0-beta-1 3.3.0-rc-1 3.3.0 3.4.0 3.4.1 3.5.0 3.6.0 3.7.0-beta-1 3.7.0 3.8.0 3.9.0-beta-1 3.9.0 
+=== io/github/jan-tennert/supabase/supabase-kt -> HTTP 200  (9036 bytes)
+3.3.0-beta-1 3.3.0-rc-1 3.3.0 3.4.0 3.4.1 3.5.0 3.6.0 3.7.0-beta-1 3.7.0 3.8.0 3.9.0-beta-1 3.9.0 
+=== com/google/dagger/hilt-android -> HTTP 200  (2376 bytes)
+2.56 2.56.1 2.56.2 2.57 2.57.1 2.57.2 2.58 2.59 2.59.1 2.59.2 2.60 2.60.1 
+=== com/google/devtools/ksp/symbol-processing-gradle-plugin -> HTTP 200  (6728 bytes)
+2.3.2 2.3.3 2.3.4 2.3.5 2.3.6 2.3.7 2.3.8 2.3.9 2.3.10 2.3.11 2.3.12 2.3.13 
+=== io/coil-kt/coil-compose -> HTTP 200  (1191 bytes)
+2.0.0-rc02 2.0.0-rc03 2.0.0 2.1.0 2.2.0 2.2.1 2.2.2 2.3.0 2.4.0 2.5.0 2.6.0 2.7.0 
+=== org/jetbrains/kotlinx/kotlinx-serialization-json -> HTTP 200  (1539 bytes)
+1.7.1 1.7.2 1.7.3 1.8.0-RC 1.8.0 1.8.1 1.9.0 1.10.0-RC 1.10.0 1.11.0 1.12.0-RC 1.12.0 
+=== org/jetbrains/kotlin/kotlin-gradle-plugin -> HTTP 200  (10696 bytes)
+2.4.10-RC2 2.4.10 2.4.20-Beta1 2.4.20-Beta2 2.4.20-RC 2.4.20-RC2 2.4.20-RC3 2.4.20 2.4.21-RC 2.4.21 2.5.0-Beta1 2.5.0-Beta2 
+=== com/android/tools/build/gradle -> HTTP 200  (2712 bytes)
+1.2.0 1.2.1 1.2.2 1.2.3 1.3.0 1.3.1 1.5.0 2.0.0 2.1.0 2.1.2 2.1.3 2.3.0 
+=== androidx/compose/compose-bom -> HTTP 200  (2916 bytes)
+2026.01.01 2026.02.00 2026.02.01 2026.03.00 2026.03.01 2026.04.01 2026.05.00 2026.05.01 2026.06.00 2026.06.01 2026.08.00 2026.09.00 
+=== androidx/navigation/navigation-compose -> HTTP 200  (4621 bytes)
+2.9.8 2.10.0-alpha01 2.10.0-alpha02 2.10.0-alpha03 2.10.0-alpha04 2.10.0-alpha05 2.10.0-alpha06 2.10.0-beta01 2.10.0-rc01 2.10.0 2.10.1 2.10.2 
+=== androidx/activity/activity-compose -> HTTP 200  (4041 bytes)
+1.12.0-rc01 1.12.0 1.12.1 1.12.2 1.12.3 1.12.4 1.13.0-alpha01 1.13.0-rc01 1.13.0 1.14.0-alpha01 1.14.0-alpha02 1.14.0-alpha03 
+=== androidx/core/core-ktx -> HTTP 200  (5108 bytes)
+1.17.0-alpha01 1.17.0-beta01 1.17.0-rc01 1.17.0 1.18.0-alpha01 1.18.0-rc01 1.18.0 1.19.0-alpha01 1.19.0-alpha02 1.19.0-rc01 1.19.0 1.19.1 
+=== androidx/lifecycle/lifecycle-runtime-compose -> HTTP 200  (2946 bytes)
+2.11.0-alpha01 2.11.0-alpha02 2.11.0-alpha03 2.11.0-beta01 2.11.0-beta02 2.11.0-rc01 2.11.0 2.12.0-alpha01 2.12.0-alpha02 2.12.0-alpha03 2.12.0-alpha04 2.12.0-alpha05 
+=== androidx/datastore/datastore-preferences -> HTTP 200  (2186 bytes)
+1.3.0-alpha02 1.3.0-alpha03 1.3.0-alpha04 1.3.0-alpha05 1.3.0-alpha06 1.3.0-alpha07 1.3.0-alpha08 1.3.0-alpha09 1.3.0-alpha10 1.3.0-alpha11 1.3.0-rc01 1.3.0 
+=== androidx/hilt/hilt-navigation-compose -> HTTP 200  (1149 bytes)
+1.2.0-beta01 1.2.0-rc01 1.2.0 1.3.0-alpha01 1.3.0-alpha02 1.3.0-beta01 1.3.0-rc01 1.3.0 1.4.0-alpha01 1.4.0-beta01 1.4.0-rc01 1.4.0 
+=== androidx/splashscreen/splashscreen -> HTTP 404  (1449 bytes)
 
-=== io/github/jan-tennert/supabase/supabase-kt
-
-=== com/google/dagger/hilt-android
-
-=== com/google/devtools/ksp/symbol-processing-gradle-plugin
-
-=== io/coil-kt/coil-compose
-
-=== io/coil-kt/coil3/coil-compose
-
-=== org/jetbrains/kotlinx/kotlinx-serialization-json
-
-=== org/jetbrains/kotlin/kotlin-gradle-plugin
-
-=== com/android/tools/build/gradle
-
-=== androidx/compose/compose-bom (google)
-
-=== androidx/navigation/navigation-compose (google)
-
-=== androidx/activity/activity-compose (google)
-
-=== androidx/core/core-ktx (google)
-
-=== androidx/lifecycle/lifecycle-runtime-compose (google)
-
-=== androidx/datastore/datastore-preferences (google)
-
-=== androidx/hilt/hilt-navigation-compose (google)
-
-=== androidx/splashscreen/splashscreen (google)
-
-=== com/google/gms/google-services (google)
-
-=== com/google/firebase/firebase-bom (google)
-
-=== gradle current
-{
-  "version" : "9.9.0",
-  "buildTime" : "20261106154935+0000",
-  "commitId" : "dabfe84a6c2590fa6ecaab03ff6fefe5b838d558",
-  "current" : true,
-  "snapshot" : false,
-  "nightly" : false,
-  "releaseNightly" : false,
-  "activeRc" : false,
-  "rcFor" : "",
-  "milestoneFor" : "",
-  "broken" : false,
-  "downloadUrl" : "https://services.gradle.org/distributions/gradle-9.9.0-bin.zip",
-  "checksumUrl" : "https://services.gradle.org/distributions/gradle-9.9.0-bin.zip.sha256",
-  "checksum" : "0b00b0ffe07c4d4789c12d4935a44a7057d55774b7540bd4a3f76f336deb177a",
-  "wrapperChecksumUrl" : "https://services.gradle.org/distributions/gradle-9.9.0-wrapper.jar.sha256",
-  "wrapperChecksum" : "621008afc4f5d59357fcf06ffa644dd5aade5e091bdc363742710445f73cdaf8",
-  "released" : true,
-  "releasedOrActiveRc" : true,
-  "publicationSlot" : "9.9.0",
-=== android sdk
-SDK_ROOT=/usr/local/lib/android/sdk HOME=/usr/local/lib/android/sdk
-/usr/local/lib/android/sdk/build-tools:
-34.0.0
-35.0.0
-35.0.1
-36.0.0
-36.1.0
-37.0.0
-
-/usr/local/lib/android/sdk/platforms:
-android-34
-android-34-ext10
-android-34-ext11
-android-34-ext12
-android-34-ext8
-android-35
-android-35-ext14
-android-35-ext15
-android-36
-android-36-ext18
-android-36-ext19
-android-36.1
-android-37.0
-android-37.1
-android-37.2
-android-37.2-beta1
-android-37.2-beta2
-android-37.2-beta3
+=== com/google/gms/google-services -> HTTP 200  (1364 bytes)
+4.3.9 4.3.10 4.3.12 4.3.13 4.3.14 4.3.15 4.4.0 4.4.1 4.4.2 4.4.3 4.4.4 4.5.0 
+=== com/google/firebase/firebase-bom -> HTTP 200  (5739 bytes)
+34.13.0 34.14.0 34.14.1 34.15.0 34.16.0 34.17.0 34.18.0 34.19.0 35.0.0 35.0.1 35.0.2 35.1.0 
+=== androidx/security/security-crypto -> HTTP 200  (941 bytes)
+1.0.0-rc03 1.0.0-rc04 1.0.0 1.1.0-alpha01 1.1.0-alpha02 1.1.0-alpha03 1.1.0-alpha04 1.1.0-alpha05 1.1.0-alpha06 1.1.0-alpha07 1.1.0-beta01 1.1.0 
