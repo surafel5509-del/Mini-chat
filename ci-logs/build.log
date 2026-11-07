@@ -78,11 +78,11 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:compileDebugNavigationResources
 > Task :app:createDebugCompatibleScreenManifests
 > Task :app:extractDeepLinksDebug
-> Task :app:mergeDebugResources
 > Task :app:processDebugMainManifest
 > Task :app:processDebugManifest
-> Task :app:mergeDebugJniLibFolders
 > Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugResources
 > Task :app:mergeDebugNativeLibs
 
 > Task :app:stripDebugDebugSymbols
@@ -92,14 +92,10 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:validateSigningDebug
 > Task :app:writeDebugAppMetadata
 > Task :app:writeDebugSigningConfigVersions
-> Task :app:compileDebugKotlin
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:34:39 Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/realtime/RealtimeService.kt:207:45 Argument type mismatch: actual type is 'RealtimeService.TypingPayload', but 'BroadcastPayload' was expected.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/AuthRepositoryImpl.kt:99:66 Unresolved reference 'OtpType'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118:31 Unresolved reference 'Icons'.
 
 > Task :app:compileDebugKotlin FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794054646399.json
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118:31 Unresolved reference 'Icons'.
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794055441762.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
@@ -108,10 +104,10 @@ FAILURE: Build failed with an exception.
 * What went wrong:
 Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.jetbrains.kotlin.android').
 > A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
-   > Kotlin compiler: ILLEGAL_SUSPEND_FUNCTION_CALL
+   > Kotlin compiler: UNRESOLVED_REFERENCE
        Kotlin compiler error
-         Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
-         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/presence/PresenceTracker.kt:34
+         Unresolved reference 'Icons'.
+         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/Rows.kt:118
 
 * Try:
 > Run with --info or --debug option to get more log output.
@@ -267,7 +263,7 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
 	... 25 more
-Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Suspend function 'suspend fun startChatStream(): Unit' can only be called from a coroutine or another suspend function.
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Unresolved reference 'Icons'.
 	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
 	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
 	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
@@ -304,5 +300,5 @@ Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Suspend 
 	... 2 more
 
 
-BUILD FAILED in 3m 33s
+BUILD FAILED in 2m 52s
 32 actionable tasks: 32 executed
