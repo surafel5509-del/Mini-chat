@@ -84,6 +84,8 @@ fun ChatScreen(
     var forwardMessage by remember { mutableStateOf<Message?>(null) }
     var showConversationSheet by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf<Message?>(null) }
+    var confirmBlock by remember { mutableStateOf<com.minichat.app.domain.model.Profile?>(null) }
+    var confirmClear by remember { mutableStateOf(false) }
     val forwardTargets by viewModel.forwardTargets.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
