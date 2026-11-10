@@ -47,17 +47,32 @@ object Validators {
     }
 
     fun validateUsername(username: String): String? {
-        val value = username.trim().lowercase()
+        // Validate the raw, trimmed value — do NOT lowercase here. Silently
+        // accepting "Ada" hides a real problem: the database stores usernames
+        // verbatim, so an auto-capitalised keyboard would create a handle that
+        // never matches what the person sees. Reject it and say why.
+        val value = username.trim()
         return when {
             value.isEmpty() -> "Pick a username"
+            value.length > 24 -> "Usernames are at most 24 characters"
+            value.length < 3 -> "Usernames are at least 3 characters"
+            value != value.lowercase() -> "Use lowercase letters only (try '${value.lowercase()}')"
             !usernamePattern.matches(value) ->
-                "3–24 characters, starting with a letter. Lowercase letters, numbers and underscores only"
+                "Start with a letter. Lowercase letters, numbers and underscores only"
             else -> null
         }
     }
 
-    fun sanitizeUsername(raw: String): String =
-        raw.lowercase().filter { it.isLetterOrDigit() || it == '_' }.take(24)
+    /**
+     * Live input sanitiser for the username field: lowercases, drops illegal
+     * characters, and guarantees the value starts with a letter so the field is
+     * practically impossible to make invalid by typing.
+     */
+    fun sanitizeUsername(raw: String): String {
+        val cleaned = raw.lowercase().filter { it.isLetterOrDigit() || it == '_' }
+        val withoutLeadingNonLetters = cleaned.dropWhile { !it.isLetter() }
+        return withoutLeadingNonLetters.take(24)
+    }
 
     fun validateBio(bio: String): String? = when {
         bio.length > MAX_BIO_LENGTH -> "Bios are limited to $MAX_BIO_LENGTH characters"
