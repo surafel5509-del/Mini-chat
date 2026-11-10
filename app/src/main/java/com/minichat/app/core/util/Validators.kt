@@ -7,7 +7,7 @@ package com.minichat.app.core.util
 object Validators {
 
     private val emailPattern = Regex("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}$")
-    private val usernamePattern = Regex("^[a-z0-9_]{3,24}$")
+    private val usernamePattern = Regex("^[a-z][a-z0-9_]{2,23}$")
 
     const val MAX_MESSAGE_LENGTH = 4000
     const val MAX_BIO_LENGTH = 240
@@ -51,7 +51,7 @@ object Validators {
         return when {
             value.isEmpty() -> "Pick a username"
             !usernamePattern.matches(value) ->
-                "3–24 characters: lowercase letters, numbers and underscores"
+                "3–24 characters, starting with a letter. Lowercase letters, numbers and underscores only"
             else -> null
         }
     }
