@@ -78,11 +78,11 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:compileDebugNavigationResources
 > Task :app:createDebugCompatibleScreenManifests
 > Task :app:extractDeepLinksDebug
-> Task :app:mergeDebugResources
 > Task :app:processDebugMainManifest
 > Task :app:processDebugManifest
-> Task :app:mergeDebugJniLibFolders
 > Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugResources
 > Task :app:mergeDebugNativeLibs
 
 > Task :app:stripDebugDebugSymbols
@@ -171,7 +171,7 @@ ValidatorsTest > usernames are lowercased and restricted FAILED
 21 tests completed, 1 failed
 
 > Task :app:testDebugUnitTest FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794337011114.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794338519688.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
@@ -326,5 +326,5 @@ Caused by: org.gradle.api.internal.exceptions.MarkedVerificationException: There
 	... 25 more
 
 
-BUILD FAILED in 3m 38s
+BUILD FAILED in 3m 55s
 52 actionable tasks: 52 executed
