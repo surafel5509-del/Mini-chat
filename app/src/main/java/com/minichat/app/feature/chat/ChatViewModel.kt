@@ -37,6 +37,8 @@ class ChatViewModel @Inject constructor(
     private val realtimeRepository: RealtimeRepository,
     private val noteRepository: NoteRepository,
     private val userPreferences: UserPreferences,
+    private val voiceRecorder: com.minichat.app.core.audio.VoiceRecorder,
+    private val voicePlayer: com.minichat.app.core.audio.VoicePlayer,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -59,6 +61,18 @@ class ChatViewModel @Inject constructor(
         val peerNote: com.minichat.app.domain.model.Note? = null,
         /** My own live note, so "reply with a note" can be offered. */
         val myNote: com.minichat.app.domain.model.Note? = null,
+        /** True while the microphone is open. */
+        val isRecording: Boolean = false,
+        /** Milliseconds captured so far, drives the recorder bar. */
+        val recordingMs: Int = 0,
+        /** Normalised input level 0..1 for the live meter. */
+        val recordingLevel: Float = 0f,
+        /** Uploading the finished clip. */
+        val isSendingVoice: Boolean = false,
+        /** Signed URLs for voice notes, keyed by message id. */
+        val voiceUrls: Map<String, String> = emptyMap(),
+        /** The note currently being fetched, so its bubble can spin. */
+        val loadingVoiceId: String? = null,
     ) {
         val isBlocked: Boolean get() = isBlockedByPeer
         val canSend: Boolean get() = composerText.isNotBlank() && !isBlockedByPeer
@@ -77,8 +91,13 @@ class ChatViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
+    /** Exposed so a voice bubble can draw its own progress. */
+    val playback: StateFlow<com.minichat.app.core.audio.VoicePlayer.PlaybackState> = voicePlayer.state
+
     private val _forwardTargets = MutableStateFlow<List<ConversationSummary>>(emptyList())
     val forwardTargets: StateFlow<List<ConversationSummary>> = _forwardTargets.asStateFlow()
+
+    private var recordingTickerJob: Job? = null
 
     private var typingJob: Job? = null
     private var typingSentAt: Long = 0L
@@ -86,6 +105,13 @@ class ChatViewModel @Inject constructor(
 
     init {
         openConversation()
+    }
+
+    override fun onCleared() {
+        recordingTickerJob?.cancel()
+        voiceRecorder.cancel()
+        voicePlayer.release()
+        super.onCleared()
     }
 
     private fun openConversation() {
@@ -330,6 +356,214 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Voice notes
+    // -------------------------------------------------------------------------
+
+    /**
+     * Opens the microphone and starts the recorder bar.
+     *
+     * The timer is owned here rather than in the composable: a rotation or a
+     * background/foreground cycle must not stop the clip mid-word, and the 7
+     * second cap has to fire even if the UI is not drawing frames.
+     */
+    fun startRecording() {
+        if (_uiState.value.isRecording) return
+        if (_uiState.value.isBlockedByPeer) {
+            _uiState.update { it.copy(error = "You can't send messages in this chat.") }
+            return
+        }
+        if (!voiceRecorder.start()) {
+            _uiState.update {
+                it.copy(error = "Microphone unavailable. Check that Mini Chat can record audio.")
+            }
+            return
+        }
+
+        _uiState.update {
+            it.copy(isRecording = true, recordingMs = 0, recordingLevel = 0f, error = null)
+        }
+
+        recordingTickerJob = viewModelScope.launch {
+            while (true) {
+                delay(RECORDING_TICK_MS)
+                val elapsed = voiceRecorder.elapsedMs()
+                _uiState.update {
+                    it.copy(
+                        recordingMs = elapsed,
+                        recordingLevel = pseudoLevel(elapsed),
+                    )
+                }
+                if (elapsed >= com.minichat.app.core.audio.VoiceRecorder.MAX_DURATION_MS) {
+                    // Hard stop at the cap: the clip is never longer than 7s.
+                    finishRecording(send = true)
+                    return@launch
+                }
+            }
+        }
+    }
+
+    /** Discards an in-progress recording. */
+    fun cancelRecording() {
+        recordingTickerJob?.cancel()
+        recordingTickerJob = null
+        voiceRecorder.cancel()
+        _uiState.update {
+            it.copy(isRecording = false, recordingMs = 0, recordingLevel = 0f)
+        }
+    }
+
+    /** Stops the microphone and, when [send] is true, uploads and posts the clip. */
+    fun finishRecording(send: Boolean) {
+        recordingTickerJob?.cancel()
+        recordingTickerJob = null
+
+        if (!send) {
+            cancelRecording()
+            return
+        }
+
+        val recording = voiceRecorder.stop()
+        _uiState.update {
+            it.copy(isRecording = false, recordingMs = 0, recordingLevel = 0f)
+        }
+
+        if (recording == null) {
+            _uiState.update { it.copy(error = "That recording was too short to send.") }
+            return
+        }
+
+        val state = _uiState.value
+        val durationMs = recording.durationMs.coerceIn(
+            com.minichat.app.core.audio.VoiceRecorder.MIN_DURATION_MS,
+            com.minichat.app.core.audio.VoiceRecorder.MAX_DURATION_MS,
+        )
+        val replyTo = state.replyTo
+        val optimisticId = "local-${UUID.randomUUID()}"
+
+        val optimistic = Message(
+            id = optimisticId,
+            conversationId = conversationId,
+            senderId = state.myId,
+            content = "",
+            createdAt = Instant.now(),
+            replyToId = replyTo?.id,
+            replyPreview = replyTo?.let {
+                com.minichat.app.domain.model.ReplyPreview(
+                    messageId = it.id,
+                    senderName = if (it.isMine) "You" else (state.conversation?.peer?.displayName ?: "Them"),
+                    snippet = it.displayText.take(120),
+                )
+            },
+            status = MessageStatus.Sending,
+            isMine = true,
+            messageType = com.minichat.app.domain.model.MessageType.Voice,
+            durationMs = durationMs,
+        )
+
+        _uiState.update {
+            it.copy(
+                isSendingVoice = true,
+                replyTo = null,
+                messages = it.messages + optimistic,
+                error = null,
+            )
+        }
+
+        viewModelScope.launch {
+            val bytes = runCatching { recording.file.readBytes() }.getOrNull()
+            recording.file.delete()
+
+            if (bytes == null || bytes.isEmpty()) {
+                markVoiceFailed(optimisticId, "We couldn't read that recording. Please try again.")
+                return@launch
+            }
+
+            runCatching { realtimeRepository.setTyping(conversationId, false) }
+            when (
+                val result = chatRepository.sendVoiceMessage(
+                    conversationId = conversationId,
+                    audio = bytes,
+                    durationMs = durationMs,
+                    replyToId = replyTo?.id,
+                )
+            ) {
+                is AppResult.Success -> _uiState.update { st ->
+                    st.copy(
+                        isSendingVoice = false,
+                        messages = st.messages
+                            .filterNot { it.id == optimisticId }
+                            .let { list ->
+                                if (list.any { it.id == result.data.id }) list else list + result.data
+                            }
+                            .sortedBy { it.createdAt ?: Instant.EPOCH },
+                    )
+                }
+
+                is AppResult.Failure -> markVoiceFailed(optimisticId, result.message)
+            }
+        }
+    }
+
+    private fun markVoiceFailed(localId: String, message: String) {
+        _uiState.update { st ->
+            st.copy(
+                isSendingVoice = false,
+                messages = st.messages.map {
+                    if (it.id == localId) it.copy(status = MessageStatus.Failed) else it
+                },
+                error = message,
+            )
+        }
+    }
+
+    /**
+     * Resolves a playable URL for a voice note, then plays it. Signed URLs are
+     * cached for the life of the screen because they last an hour.
+     */
+    fun toggleVoicePlayback(message: Message) {
+        if (message.isExpired) {
+            _uiState.update { it.copy(error = "This voice message has expired.") }
+            return
+        }
+        val path = message.mediaUrl
+        if (path.isNullOrBlank()) {
+            _uiState.update { it.copy(error = "This voice message is unavailable.") }
+            return
+        }
+
+        val known = _uiState.value.voiceUrls[message.id]
+        if (known != null) {
+            voicePlayer.toggle(message.id, known, message.durationMs ?: 0)
+            return
+        }
+
+        _uiState.update { it.copy(loadingVoiceId = message.id) }
+        viewModelScope.launch {
+            when (val result = chatRepository.signedMediaUrl(path)) {
+                is AppResult.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            loadingVoiceId = null,
+                            voiceUrls = it.voiceUrls + (message.id to result.data),
+                        )
+                    }
+                    voicePlayer.toggle(message.id, result.data, message.durationMs ?: 0)
+                }
+
+                is AppResult.Failure -> _uiState.update {
+                    it.copy(loadingVoiceId = null, error = result.message)
+                }
+            }
+        }
+    }
+
+    /** Deterministic, gently varying meter value so the bars feel alive. */
+    private fun pseudoLevel(elapsedMs: Int): Float {
+        val beat = kotlin.math.sin(elapsedMs / 130.0).toFloat()
+        return (0.45f + beat * 0.35f).coerceIn(0.15f, 1f)
+    }
+
     fun retry(message: Message) {
         if (message.status != MessageStatus.Failed) return
         _uiState.update { st -> st.copy(messages = st.messages.filterNot { it.id == message.id }) }
@@ -485,6 +719,8 @@ class ChatViewModel @Inject constructor(
     }
 
     private companion object {
+        const val RECORDING_TICK_MS = 60L
+
         const val PAGE_SIZE = 40
         const val TYPING_THROTTLE_MS = 2_500L
         const val TYPING_IDLE_MS = 2_000L

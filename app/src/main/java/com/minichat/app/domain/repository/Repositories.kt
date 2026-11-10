@@ -4,7 +4,9 @@ import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.model.BlockedUser
 import com.minichat.app.domain.model.ConversationSummary
 import com.minichat.app.domain.model.Message
+import com.minichat.app.domain.model.ConversationMember
 import com.minichat.app.domain.model.FriendNote
+import com.minichat.app.domain.model.GroupRole
 import com.minichat.app.domain.model.Note
 import com.minichat.app.domain.model.Profile
 import com.minichat.app.domain.model.StartedConversation
@@ -40,6 +42,19 @@ interface AuthRepository {
     suspend fun resendVerificationEmail(email: String): AppResult<Unit>
     suspend fun updatePassword(newPassword: String): AppResult<Unit>
     suspend fun refreshSession(): AppResult<Unit>
+
+    // ---- 6-digit email verification ---------------------------------------
+    /**
+     * Emails a fresh 6-digit code. Works for both purposes: confirming a new
+     * account and starting a password reset.
+     */
+    suspend fun requestOtp(email: String): AppResult<OtpSendInfo>
+
+    /** Checks a code. `SIGNUP` confirms an account, `RECOVERY` unlocks a reset. */
+    suspend fun verifyOtp(email: String, code: String, purpose: OtpPurpose): AppResult<Unit>
+
+    /** True when Supabase already has a session for this address (code confirmed). */
+    fun hasSession(): Boolean
 
     /**
      * Completes a Supabase recovery deep link (`minichat://auth-callback#access_token=…`).
@@ -95,6 +110,41 @@ interface ChatRepository {
     suspend fun setPinned(conversationId: String, pinned: Boolean): AppResult<Unit>
     suspend fun setMuted(conversationId: String, muted: Boolean): AppResult<Unit>
     suspend fun peerReadAt(conversationId: String): AppResult<Instant?>
+
+    // ---- Voice notes -------------------------------------------------------
+    /** Uploads a recorded clip and posts it as a voice message. */
+    suspend fun sendVoiceMessage(
+        conversationId: String,
+        audio: ByteArray,
+        durationMs: Int,
+        replyToId: String? = null,
+    ): AppResult<Message>
+
+    /** A short lived signed URL for a private chat-media object. */
+    suspend fun signedMediaUrl(path: String, expiresInSeconds: Int = 3600): AppResult<String>
+}
+
+/** Group creation and administration. Every call is authorised in Postgres. */
+interface GroupRepository {
+    suspend fun createGroup(
+        title: String,
+        description: String?,
+        memberIds: List<String>,
+    ): AppResult<String>
+
+    suspend fun members(conversationId: String): AppResult<List<ConversationMember>>
+
+    suspend fun addMembers(conversationId: String, userIds: List<String>): AppResult<Int>
+    suspend fun removeMember(conversationId: String, userId: String): AppResult<Unit>
+    suspend fun setRole(conversationId: String, userId: String, role: GroupRole): AppResult<Unit>
+
+    suspend fun updateGroup(conversationId: String, title: String?, description: String?): AppResult<Unit>
+
+    suspend fun leave(conversationId: String): AppResult<Unit>
+    suspend fun deleteGroup(conversationId: String): AppResult<Unit>
+
+    /** Uploads a group photo and stores it on the conversation row. */
+    suspend fun uploadGroupAvatar(conversationId: String, bytes: ByteArray, extension: String): AppResult<String>
 }
 
 interface ProfileRepository {
@@ -164,3 +214,13 @@ interface NoteRepository {
     /** Remove my note immediately. */
     suspend fun deleteNote(): AppResult<Unit>
 }
+
+/** Why a code was sent. Both paths use the same six digit mechanism. */
+enum class OtpPurpose { Signup, Recovery }
+
+/** What the user should be told after a code is emailed. */
+data class OtpSendInfo(
+    val codeLength: Int = 6,
+    val expiresInMinutes: Int = 10,
+    val message: String = "",
+)

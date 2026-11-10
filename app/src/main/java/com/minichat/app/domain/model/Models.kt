@@ -62,7 +62,32 @@ data class Message(
     val status: MessageStatus = MessageStatus.Sent,
     val senderName: String = "",
     val isMine: Boolean = false,
+    val messageType: MessageType = MessageType.Text,
+    val mediaUrl: String? = null,
+    val durationMs: Int? = null,
+    /** Voice notes expire after 24h; text messages never do. */
+    val expiresAt: Instant? = null,
 ) {
+    val isVoice: Boolean get() = messageType == MessageType.Voice
+    val isSystem: Boolean get() = messageType == MessageType.System
+    val isExpired: Boolean
+        get() = expiresAt?.isBefore(Instant.now()) == true
+
+    /** "0:07" style label for a voice note. */
+    val durationLabel: String
+        get() {
+            val totalSeconds = ((durationMs ?: 0) / 1000).coerceAtLeast(0)
+            return "%d:%02d".format(totalSeconds / 60, totalSeconds % 60)
+        }
+
+    /** Text the bubble shows, with media / system fallbacks. */
+    val displayText: String
+        get() = when {
+            isDeleted -> "This message was deleted"
+            isExpired -> "Voice message expired"
+            messageType == MessageType.Voice -> "Voice message"
+            else -> content
+        }
 
     companion object {
         fun preview(content: String, isDeleted: Boolean): String = when {
@@ -80,6 +105,9 @@ data class MessagePreview(
     val sentAt: Instant?,
     val isDeleted: Boolean = false,
     val isMine: Boolean = false,
+    val messageType: MessageType = MessageType.Text,
+    val durationMs: Int? = null,
+    val senderName: String? = null,
 )
 
 /** Row rendered on the home screen. */
@@ -92,9 +120,28 @@ data class ConversationSummary(
     val isPinned: Boolean = false,
     val isMuted: Boolean = false,
     val peerTyping: Boolean = false,
+    val isGroup: Boolean = false,
+    val title: String? = null,
+    val groupAvatarUrl: String? = null,
+    val description: String? = null,
+    val memberCount: Int = 1,
+    val myRole: GroupRole = GroupRole.Member,
+    val lastMessageSenderName: String? = null,
 ) {
-    val displayName: String get() = peer?.displayName ?: "Unknown"
+    val displayName: String get() = if (isGroup) title?.ifBlank { "Group" } ?: "Group" else peer?.displayName ?: "Unknown"
     val sortKey: Instant get() = lastActivityAt ?: Instant.EPOCH
+    val avatarUrl: String? get() = if (isGroup) groupAvatarUrl else peer?.avatarUrl
+    val handleLabel: String
+        get() = if (isGroup) {
+            when (memberCount) {
+                1 -> "1 member"
+                else -> "$memberCount members"
+            }
+        } else {
+            peer?.handle.orEmpty()
+        }
+    val subtitleLabel: String get() = if (isGroup) subtitleLabelGroup else handleLabel
+    private val subtitleLabelGroup: String get() = "$memberCount members"
 }
 
 /** Result of opening a direct conversation with somebody. */
@@ -144,4 +191,47 @@ data class Note(
 data class FriendNote(
     val note: Note,
     val author: Profile,
+)
+
+/** Roles inside a group conversation. Mirrors `conversation_members.role`. */
+enum class GroupRole {
+    Owner,
+    Admin,
+    Member;
+
+    val isAdmin: Boolean get() = this == Owner || this == Admin
+
+    companion object {
+        fun from(value: String?): GroupRole = when (value?.lowercase()) {
+            "owner" -> Owner
+            "admin" -> Admin
+            else -> Member
+        }
+    }
+}
+
+/** What kind of content a bubble holds. */
+enum class MessageType {
+    Text,
+    Voice,
+    Image,
+    System;
+
+    companion object {
+        fun from(value: String?): MessageType = when (value?.lowercase()) {
+            "voice" -> Voice
+            "image" -> Image
+            "system" -> System
+            else -> Text
+        }
+    }
+}
+
+/** A member of a conversation, with the public profile that renders them. */
+data class ConversationMember(
+    val userId: String,
+    val profile: Profile,
+    val role: GroupRole = GroupRole.Member,
+    val joinedAt: Instant? = null,
+    val lastReadAt: Instant? = null,
 )

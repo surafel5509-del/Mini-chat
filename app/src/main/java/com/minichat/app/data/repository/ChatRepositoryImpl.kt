@@ -22,6 +22,7 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.serialization.json.Json
@@ -116,12 +117,16 @@ class ChatRepositoryImpl @Inject constructor(
         // Phase 3 — reactions for the page.
         val reactionsByMessage = loadReactionsFor(rows.map { it.id })
 
+        // Phase 4 — sender names. Only groups need them (a direct chat renders
+        // two people), so direct conversations skip the extra request entirely.
+        val senderNames = loadSenderNames(rows.map { it.senderId }.distinct(), userId)
+
         rows.map { row ->
             row.toDomain(
                 currentUserId = userId,
                 reactions = reactionsByMessage[row.id].orEmpty(),
                 replyPreview = row.replyToId?.let { replies[it] },
-            )
+            ).copy(senderName = senderNames[row.senderId].orEmpty())
         }
     }
 
@@ -241,6 +246,86 @@ class ChatRepositoryImpl @Inject constructor(
             ?.let { TimeFormat.parse(it) }
     }
 
+    /**
+     * Display names for the senders on a page of messages.
+     *
+     * This is a plain profile read, not an embed: group bubbles need a name per
+     * sender, and reading `profiles` by id is both cheaper and immune to the
+     * PostgREST relationship problems that broke embeds before.
+     */
+    private suspend fun loadSenderNames(senderIds: List<String>, myId: String): Map<String, String> {
+        val others = senderIds.filter { it.isNotBlank() && it != myId }
+        if (others.isEmpty()) return emptyMap()
+
+        return runCatching {
+            client.from(TABLE_PROFILES)
+                .select(columns = Columns.list("id", "display_name")) {
+                    filter { isIn("id", others) }
+                }
+                .decodeList<SenderNameDto>()
+                .associate { it.id to it.displayName }
+        }.getOrDefault(emptyMap())
+    }
+
+    // -------------------------------------------------------------------------
+    // Voice notes
+    // -------------------------------------------------------------------------
+
+    /**
+     * Uploads the clip to the private `chat-media` bucket, then posts a `voice`
+     * message. The object path is prefixed with the conversation id because the
+     * storage policy checks membership against that first path segment — an
+     * outsider with a guessed path still cannot read the audio.
+     *
+     * If the insert fails after the upload, the object is deleted so no orphan
+     * audio is left behind.
+     */
+    override suspend fun sendVoiceMessage(
+        conversationId: String,
+        audio: ByteArray,
+        durationMs: Int,
+        replyToId: String?,
+    ): AppResult<Message> = safeCall {
+        val userId = me() ?: error("You must be signed in to send a voice message.")
+        if (audio.isEmpty()) error("That recording was empty. Try again.")
+        if (durationMs <= 0) error("That recording was too short.")
+        if (durationMs > MAX_VOICE_MS) error("Voice notes are limited to ${MAX_VOICE_MS / 1000} seconds.")
+
+        val path = "$conversationId/voice_${System.currentTimeMillis()}.m4a"
+        val bucket = client.storage.from(BUCKET_CHAT_MEDIA)
+        bucket.upload(path, audio) { upsert = false }
+
+        try {
+            val row = client.from(TABLE_MESSAGES)
+                .insert(
+                    MessageInsertDto(
+                        conversationId = conversationId,
+                        senderId = userId,
+                        content = "",
+                        replyToId = replyToId,
+                        messageType = "voice",
+                        mediaUrl = path,
+                        durationMs = durationMs,
+                    ),
+                ) {
+                    select(columns = Columns.list(*MESSAGE_COLUMNS))
+                }
+                .decodeSingle<MessageRowDto>()
+
+            val replyPreview = replyToId?.let { loadReplyPreviews(listOf(it), userId)[it] }
+            row.toDomain(currentUserId = userId, replyPreview = replyPreview)
+        } catch (failure: Throwable) {
+            runCatching { bucket.delete(path) }
+            throw failure
+        }
+    }
+
+    override suspend fun signedMediaUrl(path: String, expiresInSeconds: Int): AppResult<String> = safeCall {
+        if (me() == null) error("You must be signed in.")
+        client.storage.from(BUCKET_CHAT_MEDIA)
+            .createSignedUrl(path, expiresInSeconds.coerceIn(60, 86_400))
+    }
+
     // -------------------------------------------------------------------------
     // Reply previews + reactions (replace the self embed)
     // -------------------------------------------------------------------------
@@ -310,6 +395,7 @@ class ChatRepositoryImpl @Inject constructor(
     private companion object {
         const val VIEW_CONVERSATIONS = "conversation_overview"
         const val TABLE_MESSAGES = "messages"
+        const val TABLE_PROFILES = "profiles"
         const val TABLE_REACTIONS = "message_reactions"
         const val TABLE_MEMBERS = "conversation_members"
 
@@ -348,6 +434,21 @@ class ChatRepositoryImpl @Inject constructor(
             "is_deleted",
             "created_at",
             "updated_at",
+            "message_type",
+            "media_url",
+            "duration_ms",
         )
+
+        const val BUCKET_CHAT_MEDIA = "chat-media"
+
+        /** Hard ceiling for a voice note; the UI stops recording at 7s anyway. */
+        const val MAX_VOICE_MS = 60_000
     }
 }
+
+/** Just enough of a profile to label a group bubble. */
+@kotlinx.serialization.Serializable
+internal data class SenderNameDto(
+    val id: String,
+    @kotlinx.serialization.SerialName("display_name") val displayName: String = "",
+)

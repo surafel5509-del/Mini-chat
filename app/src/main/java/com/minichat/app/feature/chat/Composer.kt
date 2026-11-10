@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.EmojiEmotions
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -65,9 +66,13 @@ fun MessageComposer(
     onCancelContext: () -> Unit,
     onOpenEmoji: () -> Unit,
     enabled: Boolean,
+    onStartRecording: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val canSend = text.isNotBlank() && enabled
+    // Telegram behaviour: with an empty field the send button becomes a
+    // microphone, so recording is always one tap away and never hidden in a menu.
+    val showMic = text.isBlank() && editing == null && enabled
     val sendScale by animateFloatAsState(
         targetValue = if (canSend) 1f else 0.86f,
         animationSpec = spring(dampingRatio = 0.55f, stiffness = 700f),
@@ -189,7 +194,7 @@ fun MessageComposer(
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(
-                        if (canSend) {
+                        if (canSend || showMic) {
                             Brush.linearGradient(listOf(MiniChatColors.YellowPrimary, MiniChatColors.AmberSecondary))
                         } else {
                             Brush.linearGradient(
@@ -203,15 +208,27 @@ fun MessageComposer(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = LocalIndication.current,
-                        enabled = canSend,
-                        onClick = onSend,
+                        enabled = canSend || showMic,
+                        onClick = if (showMic) onStartRecording else onSend,
                     ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = if (editing != null) Icons.Rounded.Edit else Icons.Rounded.Send,
-                    contentDescription = if (editing != null) "Save" else "Send",
-                    tint = if (canSend) MiniChatColors.OnYellow else MiniChatTheme.extra.textSecondary,
+                    imageVector = when {
+                        editing != null -> Icons.Rounded.Edit
+                        showMic -> Icons.Rounded.Mic
+                        else -> Icons.Rounded.Send
+                    },
+                    contentDescription = when {
+                        editing != null -> "Save"
+                        showMic -> "Record a voice message"
+                        else -> "Send"
+                    },
+                    tint = if (canSend || showMic) {
+                        MiniChatColors.OnYellow
+                    } else {
+                        MiniChatTheme.extra.textSecondary
+                    },
                     modifier = Modifier.size(21.dp),
                 )
             }

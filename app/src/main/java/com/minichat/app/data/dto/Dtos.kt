@@ -37,6 +37,15 @@ data class ProfileDto(
 @Serializable
 data class ConversationOverviewDto(
     @SerialName("conversation_id") val conversationId: String,
+    @SerialName("conversation_type") val conversationType: String = "direct",
+    @SerialName("conversation_title") val conversationTitle: String? = null,
+    @SerialName("conversation_avatar_url") val conversationAvatarUrl: String? = null,
+    @SerialName("conversation_description") val conversationDescription: String? = null,
+    @SerialName("my_role") val myRole: String? = null,
+    @SerialName("member_count") val memberCount: Long = 1,
+    @SerialName("last_message_type") val lastMessageType: String? = null,
+    @SerialName("last_message_duration_ms") val lastMessageDurationMs: Int? = null,
+    @SerialName("last_message_sender_name") val lastMessageSenderName: String? = null,
     @SerialName("peer_id") val peerId: String? = null,
     @SerialName("peer_display_name") val peerDisplayName: String? = null,
     @SerialName("peer_username") val peerUsername: String? = null,
@@ -75,6 +84,9 @@ data class ConversationOverviewDto(
                 sentAt = TimeFormat.parse(lastMessageAt),
                 isDeleted = lastMessageIsDeleted,
                 isMine = lastMessageSenderId == currentUserId,
+                messageType = com.minichat.app.domain.model.MessageType.from(lastMessageType),
+                durationMs = lastMessageDurationMs,
+                senderName = lastMessageSenderName,
             )
         }
 
@@ -87,6 +99,13 @@ data class ConversationOverviewDto(
             unreadCount = unreadCount.coerceAtLeast(0).toInt(),
             isPinned = isPinned,
             isMuted = isMuted,
+            isGroup = conversationType == "group",
+            title = conversationTitle,
+            groupAvatarUrl = conversationAvatarUrl,
+            description = conversationDescription,
+            memberCount = memberCount.coerceAtLeast(1).toInt(),
+            myRole = com.minichat.app.domain.model.GroupRole.from(myRole),
+            lastMessageSenderName = lastMessageSenderName,
         )
     }
 }
@@ -124,8 +143,11 @@ data class MessageDto(
 data class MessageInsertDto(
     @SerialName("conversation_id") val conversationId: String,
     @SerialName("sender_id") val senderId: String,
-    val content: String,
+    val content: String = "",
     @SerialName("reply_to_id") val replyToId: String? = null,
+    @SerialName("message_type") val messageType: String = "text",
+    @SerialName("media_url") val mediaUrl: String? = null,
+    @SerialName("duration_ms") val durationMs: Int? = null,
 )
 
 /** Row of `public.message_reactions`. */
@@ -202,6 +224,9 @@ data class MessageRowDto(
     @SerialName("is_deleted") val isDeleted: Boolean = false,
     @SerialName("created_at") val createdAt: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("message_type") val messageType: String? = null,
+    @SerialName("media_url") val mediaUrl: String? = null,
+    @SerialName("duration_ms") val durationMs: Int? = null,
 ) {
     /**
      * Reaction and reply context are supplied by the repository (loaded in bulk
@@ -227,7 +252,19 @@ data class MessageRowDto(
         reactions = reactions,
         status = if (senderId == currentUserId) MessageStatus.Sent else MessageStatus.Delivered,
         isMine = senderId == currentUserId,
+        messageType = com.minichat.app.domain.model.MessageType.from(messageType),
+        mediaUrl = mediaUrl,
+        durationMs = durationMs,
+        expiresAt = if (messageType == "voice") {
+            TimeFormat.parse(createdAt)?.plusSeconds(VOICE_TTL_SECONDS)
+        } else {
+            null
+        },
     )
+
+    private companion object {
+        const val VOICE_TTL_SECONDS = 24L * 60 * 60
+    }
 }
 
 /** Minimal row for the joined profile when the app needs to render a sender name. */

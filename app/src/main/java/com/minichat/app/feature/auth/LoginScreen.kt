@@ -1,5 +1,8 @@
 package com.minichat.app.feature.auth
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -105,13 +108,29 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (state.verificationEmail != null) {
-            Spacer(Modifier.height(14.dp))
-            Text(
-                text = "Your email isn't verified yet. Check your inbox.",
-                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.error,
-            )
+        // Signing in before confirming the address is the most common dead end:
+        // offer the code right here instead of sending the user hunting through
+        // their inbox for a link that no longer exists.
+        if (state.formError?.contains("not confirmed", ignoreCase = true) == true ||
+            state.formError?.contains("verify", ignoreCase = true) == true
+        ) {
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Need a new code? ",
+                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                    color = MiniChatTheme.extra.textSecondary,
+                )
+                TextButtonSmall(
+                    text = "Email me one",
+                    onClick = viewModel::startEmailVerification,
+                    color = MiniChatColors.AmberSecondary,
+                )
+            }
         }
     }
 }

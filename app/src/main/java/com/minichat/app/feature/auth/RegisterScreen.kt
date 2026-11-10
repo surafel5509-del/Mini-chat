@@ -58,14 +58,23 @@ fun RegisterScreen(
         }
     }
 
-    val verificationEmail = state.verificationEmail
-    if (verificationEmail != null) {
-        VerificationPendingState(
-            email = verificationEmail,
-            resending = state.isLoading,
-            onResend = viewModel::resendVerification,
-            onBackToSignIn = onSignIn,
-            error = state.formError,
+    // A 6-digit code, not a link.
+    val otpEmail = state.otpEmail
+    if (otpEmail != null) {
+        OtpCodeScreen(
+            email = otpEmail,
+            code = state.otpCode,
+            isLoading = state.isLoading,
+            error = state.otpError,
+            resendIn = state.otpResendIn,
+            shakeSignal = state.otpShake,
+            onCodeChange = viewModel::onOtpChange,
+            onVerify = viewModel::verifyOtp,
+            onResend = viewModel::resendOtp,
+            onBack = {
+                viewModel.dismissOtp()
+                onBack()
+            },
         )
         return
     }
@@ -178,71 +187,6 @@ private fun PasswordStrength(password: String) {
             text = label,
             style = MaterialTheme.typography.labelSmall,
             color = MiniChatTheme.extra.textSecondary,
-        )
-    }
-}
-
-@Composable
-private fun VerificationPendingState(
-    email: String,
-    resending: Boolean,
-    onResend: () -> Unit,
-    onBackToSignIn: () -> Unit,
-    error: String?,
-) {
-    AuthScaffold(
-        title = "Check your inbox",
-        subtitle = "We sent a verification link to $email. Tap it to activate your MINI CHAT account.",
-        onBack = onBackToSignIn,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(78.dp)
-                .clip(CircleShape)
-                .background(MiniChatColors.YellowPrimary.copy(alpha = 0.24f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.MarkEmailRead,
-                contentDescription = null,
-                tint = MiniChatColors.OnYellow,
-                modifier = Modifier.size(32.dp),
-            )
-        }
-        Spacer(Modifier.height(24.dp))
-
-        if (error != null) {
-            InlineError(message = error)
-            Spacer(Modifier.height(16.dp))
-        }
-
-        Text(
-            text = "Didn't get it? Check spam, or send it again.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MiniChatTheme.extra.textSecondary,
-        )
-        Spacer(Modifier.height(18.dp))
-
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            GhostButton(
-                text = if (resending) "Sending…" else "Resend email",
-                onClick = onResend,
-                enabled = !resending,
-                modifier = Modifier.weight(1f),
-            )
-            GhostButton(
-                text = "Back to sign in",
-                onClick = onBackToSignIn,
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = "Tip: open the link on this phone and MINI CHAT will finish setting up automatically.",
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-            color = MiniChatTheme.extra.textSecondary,
-            modifier = Modifier.padding(horizontal = 2.dp),
         )
     }
 }

@@ -87,6 +87,7 @@ fun ChatScreen(
     var confirmBlock by remember { mutableStateOf<com.minichat.app.domain.model.Profile?>(null) }
     var confirmClear by remember { mutableStateOf(false) }
     val forwardTargets by viewModel.forwardTargets.collectAsStateWithLifecycle()
+    val playback by viewModel.playback.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onScreenStarted()
@@ -160,6 +161,16 @@ fun ChatScreen(
                                     onLongPress = { actionMessage = message },
                                     onRetry = { viewModel.retry(message) },
                                     onReactionTap = { emoji -> viewModel.toggleReaction(message, emoji) },
+                                    voicePlaying = playback.messageId == message.id && playback.isPlaying,
+                                    voicePositionMs = if (playback.messageId == message.id) playback.positionMs else 0,
+                                    voiceDurationMs = if (playback.messageId == message.id) {
+                                        playback.durationMs
+                                    } else {
+                                        message.durationMs ?: 0
+                                    },
+                                    voiceLoading = state.loadingVoiceId == message.id ||
+                                        (message.mediaUrl == null && message.isVoice),
+                                    onToggleVoice = { viewModel.toggleVoicePlayback(message) },
                                 )
                             }
                         }
@@ -187,16 +198,28 @@ fun ChatScreen(
             }
         }
 
-        MessageComposer(
-            text = state.composerText,
-            onTextChange = viewModel::onComposerTextChange,
-            onSend = viewModel::send,
-            replyTo = state.replyTo,
-            editing = state.editing,
-            onCancelContext = viewModel::cancelReplyOrEdit,
-            onOpenEmoji = { showEmojiSheet = true },
-            enabled = !state.isBlocked,
-        )
+        if (state.isRecording || state.isSendingVoice) {
+            VoiceRecorderBar(
+                elapsedMs = state.recordingMs,
+                level = state.recordingLevel,
+                isUploading = state.isSendingVoice,
+                onCancel = viewModel::cancelRecording,
+                onSend = { viewModel.finishRecording(send = true) },
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        } else {
+            MessageComposer(
+                text = state.composerText,
+                onTextChange = viewModel::onComposerTextChange,
+                onSend = viewModel::send,
+                replyTo = state.replyTo,
+                editing = state.editing,
+                onCancelContext = viewModel::cancelReplyOrEdit,
+                onOpenEmoji = { showEmojiSheet = true },
+                enabled = !state.isBlocked,
+                onStartRecording = viewModel::startRecording,
+            )
+        }
     }
 
     if (showEmojiSheet) {

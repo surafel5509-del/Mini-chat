@@ -3,10 +3,12 @@ package com.minichat.app.core.di
 import com.minichat.app.data.realtime.RealtimeService
 import com.minichat.app.data.repository.AuthRepositoryImpl
 import com.minichat.app.data.repository.ChatRepositoryImpl
+import com.minichat.app.data.repository.GroupRepositoryImpl
 import com.minichat.app.data.repository.NoteRepositoryImpl
 import com.minichat.app.data.repository.ProfileRepositoryImpl
 import com.minichat.app.domain.repository.AuthRepository
 import com.minichat.app.domain.repository.ChatRepository
+import com.minichat.app.domain.repository.GroupRepository
 import com.minichat.app.domain.repository.NoteRepository
 import com.minichat.app.domain.repository.ProfileRepository
 import com.minichat.app.domain.repository.RealtimeRepository
@@ -39,4 +41,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindNoteRepository(impl: NoteRepositoryImpl): NoteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGroupRepository(impl: GroupRepositoryImpl): GroupRepository
 }

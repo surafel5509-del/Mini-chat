@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minichat.app.core.util.TimeFormat
@@ -57,7 +58,19 @@ fun MessageBubble(
     onRetry: () -> Unit,
     onReactionTap: (String) -> Unit,
     modifier: Modifier = Modifier,
+    voicePlaying: Boolean = false,
+    voicePositionMs: Int = 0,
+    voiceDurationMs: Int = 0,
+    voiceLoading: Boolean = false,
+    onToggleVoice: () -> Unit = {},
 ) {
+    // System rows ("X joined", "X created the group") are centred chips, never
+    // bubbles with a tail.
+    if (message.isSystem) {
+        SystemMessageChip(text = message.content, modifier = modifier)
+        return
+    }
+
     val mine = message.isMine
     val bubbleColor = if (mine) MiniChatTheme.extra.bubbleOutgoing else MiniChatTheme.extra.bubbleIncoming
     val textColor = if (mine) MiniChatTheme.extra.bubbleOutgoingText else MiniChatTheme.extra.bubbleIncomingText
@@ -87,9 +100,9 @@ fun MessageBubble(
             horizontalAlignment = if (mine) Alignment.End else Alignment.Start,
             modifier = Modifier.widthIn(max = 310.dp),
         ) {
-            if (showSenderName && !mine) {
+            if (showSenderName && !mine && !message.isSystem) {
                 Text(
-                    text = peerName,
+                    text = message.senderName.ifBlank { peerName },
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                     color = MiniChatColors.AmberSecondary,
                     modifier = Modifier.padding(start = 10.dp, bottom = 3.dp),
@@ -143,14 +156,30 @@ fun MessageBubble(
                         Spacer(Modifier.height(7.dp))
                     }
 
-                    if (message.isDeleted) {
-                        Text(
+                    when {
+                        message.isDeleted -> Text(
                             text = "This message was deleted",
                             style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
                             color = textColor.copy(alpha = 0.6f),
                         )
-                    } else {
-                        Text(
+
+                        message.isExpired -> Text(
+                            text = "Voice message expired",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
+                            color = textColor.copy(alpha = 0.6f),
+                        )
+
+                        message.isVoice -> VoiceMessageContent(
+                            message = message,
+                            isMine = mine,
+                            isPlaying = voicePlaying,
+                            positionMs = voicePositionMs,
+                            durationMs = voiceDurationMs,
+                            isLoading = voiceLoading,
+                            onTogglePlay = onToggleVoice,
+                        )
+
+                        else -> Text(
                             text = message.content,
                             style = MaterialTheme.typography.bodyLarge,
                             color = textColor,
@@ -324,5 +353,33 @@ fun TypingBubble(peerName: String, modifier: Modifier = Modifier) {
                 color = MiniChatTheme.extra.textSecondary,
             )
         }
+    }
+}
+
+/**
+ * Centred pill for server-authored rows (member added, role changed, group
+ * renamed). Deliberately has no tail, no status ticks and no reactions — it is
+ * a log line, not something a person said.
+ */
+@Composable
+fun SystemMessageChip(text: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+            color = MiniChatTheme.extra.textSecondary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .background(
+                    MiniChatTheme.extra.surfaceMuted.copy(alpha = 0.75f),
+                    RoundedCornerShape(50),
+                )
+                .padding(horizontal = 12.dp, vertical = 5.dp),
+        )
     }
 }
