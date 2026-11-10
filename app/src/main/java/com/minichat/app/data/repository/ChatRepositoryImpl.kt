@@ -54,6 +54,8 @@ class ChatRepositoryImpl @Inject constructor(
             }
         }
 
+    override fun allMessageEvents(): Flow<MessageEvent> = realtime.messageEvents
+
     override suspend fun loadConversations(): AppResult<List<ConversationSummary>> = safeCall {
         val userId = me().orEmpty()
         client.from(VIEW_CONVERSATIONS)

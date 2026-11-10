@@ -9,6 +9,10 @@
     <!-- Voice messages. RECORD_AUDIO is requested at runtime on first tap of the mic. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- Keeps the Supabase realtime socket alive for instant notifications.
+         A dataSync foreground service is the supported way to do this. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:name=".MiniChatApplication"
@@ -53,22 +57,14 @@
             </intent-filter>
         </activity>
 
+        <!-- Instant notifications come from Supabase Realtime, not Firebase: this
+             service holds the socket open so inserts arrive while the app is in
+             the background. -->
         <service
-            android:name=".notifications.MiniChatMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_notification" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/minichat_notification_accent" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="messages" />
+            android:name=".notifications.RealtimeNotificationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false" />
     </application>
 </manifest>

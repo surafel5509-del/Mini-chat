@@ -7,7 +7,6 @@ import com.minichat.app.core.datastore.UserSettings
 import com.minichat.app.design.theme.ThemeMode
 import com.minichat.app.domain.repository.AuthRepository
 import com.minichat.app.domain.repository.AuthState
-import com.minichat.app.notifications.PushTokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +23,6 @@ import javax.inject.Inject
 class RootViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userPreferences: UserPreferences,
-    private val pushTokenManager: PushTokenManager,
 ) : ViewModel() {
 
     data class UiState(
@@ -48,13 +46,6 @@ class RootViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             authRepository.awaitReady()
-        }
-        viewModelScope.launch {
-            authRepository.authState.collect { state ->
-                if (state is AuthState.SignedIn) {
-                    pushTokenManager.syncCurrentToken()
-                }
-            }
         }
     }
 

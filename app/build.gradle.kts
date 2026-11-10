@@ -37,7 +37,6 @@ val supabasePublishableKey = configValue(
     "SUPABASE_PUBLISHABLE_KEY",
     "sb_publishable_QYSdGqx7wR4nkTYUAceYXQ_AnL5KLlX",
 )
-val pushEnabled = configValue("PUSH_NOTIFICATIONS_ENABLED", "false").toBoolean()
 
 android {
     namespace = "com.minichat.app"
@@ -55,7 +54,6 @@ android {
 
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"$supabasePublishableKey\"")
-        buildConfigField("boolean", "PUSH_NOTIFICATIONS_ENABLED", pushEnabled.toString())
     }
 
     signingConfigs {
@@ -179,6 +177,8 @@ dependencies {
 
     // Images
     implementation(libs.coil.compose)
+    // EXIF orientation for avatars picked from the camera roll
+    implementation(libs.androidx.exifinterface)
 
     // Serialization + coroutines
     implementation(libs.kotlinx.serialization.json)
@@ -191,10 +191,6 @@ dependencies {
     implementation(libs.supabase.realtime)
     implementation(libs.supabase.storage)
     implementation(libs.ktor.client.okhttp)
-
-    // Push
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.messaging)
 
     // Secure session storage
     implementation(libs.androidx.security.crypto)
@@ -209,9 +205,5 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
 }
 
-// Firebase is optional: the Google Services plugin only runs when a
-// google-services.json is present, so the project builds without a Firebase
-// project configured (push notifications simply stay disabled).
-if (file("google-services.json").exists()) {
-    apply(plugin = libs.plugins.google.services.get().pluginId)
-}
+// Push notifications are delivered over Supabase Realtime (see
+// RealtimeNotificationService), so no Firebase / Google Services plugin is needed.

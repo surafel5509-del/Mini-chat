@@ -1,5 +1,8 @@
 package com.minichat.app.feature.profile
 
+import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +25,7 @@ import com.minichat.app.core.util.onFailure
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    private val avatarProcessor: com.minichat.app.core.image.AvatarProcessor,
     private val profileRepository: ProfileRepository,
     private val noteRepository: NoteRepository,
     private val authRepository: AuthRepository,
@@ -187,6 +191,44 @@ class ProfileViewModel @Inject constructor(
 
                 is AppResult.Failure -> _uiState.update {
                     it.copy(isSaving = false, error = result.message)
+                }
+            }
+        }
+    }
+
+    /**
+     * Normalises and uploads a picked photo.
+     *
+     * The picker hands back a content:// URI that may be a 12 MB HEIC with an
+     * EXIF rotation flag. [AvatarProcessor] samples, rotates, crops and re-encodes
+     * it to a 512 px JPEG first — that is what makes the upload actually succeed.
+     */
+    fun onAvatarPicked(uri: Uri) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isUploadingAvatar = true, error = null) }
+
+            val processed = withContext(Dispatchers.IO) { avatarProcessor.process(uri) }
+            if (processed == null) {
+                _uiState.update {
+                    it.copy(
+                        isUploadingAvatar = false,
+                        error = "That image couldn't be read. Try a different photo.",
+                    )
+                }
+                return@launch
+            }
+
+            when (val result = profileRepository.uploadAvatar(processed.bytes, processed.extension)) {
+                is AppResult.Success -> _uiState.update { state ->
+                    state.copy(
+                        isUploadingAvatar = false,
+                        profile = state.profile?.copy(avatarUrl = result.data),
+                        info = "Photo updated",
+                    )
+                }
+
+                is AppResult.Failure -> _uiState.update {
+                    it.copy(isUploadingAvatar = false, error = result.message)
                 }
             }
         }

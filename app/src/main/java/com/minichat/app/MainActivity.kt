@@ -27,7 +27,7 @@ import com.minichat.app.core.presence.PresenceTracker
 import com.minichat.app.core.util.onSuccess
 import com.minichat.app.design.theme.MiniChatTheme
 import com.minichat.app.navigation.MiniChatNavHost
-import com.minichat.app.notifications.PushTokenManager
+import com.minichat.app.notifications.RealtimeNotificationService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
     private val rootViewModel: RootViewModel by viewModels()
 
     @Inject lateinit var presenceTracker: PresenceTracker
-    @Inject lateinit var pushTokenManager: PushTokenManager
     @Inject lateinit var authRepository: com.minichat.app.domain.repository.AuthRepository
 
     private var deepLinkConversationId by mutableStateOf<String?>(null)
@@ -65,9 +64,9 @@ class MainActivity : ComponentActivity() {
             ) { /* result handled by the OS; notifications simply stay off if denied */ }
 
             LaunchedEffect(Unit) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                    BuildConfig.PUSH_NOTIFICATIONS_ENABLED
-                ) {
+                // Notifications are opt-in at the system level; asking here (rather
+                // than at first message) means the prompt appears with context.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
@@ -126,9 +125,14 @@ class MainActivity : ComponentActivity() {
                 rootViewModel.uiState.collect { state ->
                     if (state.authState is com.minichat.app.domain.repository.AuthState.SignedIn) {
                         presenceTracker.start(lifecycleScope)
-                        pushTokenManager.syncCurrentToken()
+                        // Hold the realtime socket so messages arrive while the
+                        // app is not on screen.
+                        if (state.settings.notificationsEnabled) {
+                            RealtimeNotificationService.start(this@MainActivity)
+                        }
                     } else {
                         presenceTracker.stop()
+                        RealtimeNotificationService.stop(this@MainActivity)
                     }
                 }
             }

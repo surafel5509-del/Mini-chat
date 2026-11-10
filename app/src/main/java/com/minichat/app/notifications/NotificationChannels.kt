@@ -18,6 +18,13 @@ object NotificationChannels {
     const val MESSAGES = "messages"
     const val SYSTEM = "system"
 
+    /**
+     * The silent, minimum-importance channel the realtime listener runs on.
+     * Android requires a foreground service to post a notification; this one is
+     * deliberately invisible in practice (no sound, no vibration, no badge).
+     */
+    const val SERVICE = "realtime_service"
+
     fun ensureCreated(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = context.getSystemService<NotificationManager>() ?: return
@@ -50,6 +57,19 @@ object NotificationChannels {
             setShowBadge(false)
         }
 
-        manager.createNotificationChannels(listOf(messages, system))
+        // Minimum importance + no badge: this channel exists only because a
+        // foreground service is required to keep the socket alive.
+        val service = NotificationChannel(
+            SERVICE,
+            "Background sync",
+            NotificationManager.IMPORTANCE_MIN,
+        ).apply {
+            description = "Keeps your messages arriving while Mini Chat is closed"
+            setShowBadge(false)
+            enableVibration(false)
+            setSound(null, null)
+        }
+
+        manager.createNotificationChannels(listOf(messages, system, service))
     }
 }

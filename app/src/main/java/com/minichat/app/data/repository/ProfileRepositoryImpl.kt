@@ -13,6 +13,7 @@ import com.minichat.app.domain.repository.ProfileRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
@@ -74,17 +75,28 @@ class ProfileRepositoryImpl @Inject constructor(
             .takeIf { it in setOf("jpg", "jpeg", "png", "webp") } ?: "jpg"
         val path = "$userId/avatar_${System.currentTimeMillis()}.$extension"
 
-        val bucket = client.storage.from(BUCKET_AVATARS)
-        bucket.upload(path, bytes) {
-            upsert = true
+        // The bucket caps objects at 5 MB. Check here so the user gets a sentence
+        // instead of a 413 with a JSON body.
+        if (bytes.size > MAX_AVATAR_BYTES) {
+            error("That photo is too large. Pick one under 5 MB.")
         }
+        if (bytes.isEmpty()) error("That photo was empty. Try another one.")
+
+        val bucket = client.storage.from(BUCKET_AVATARS)
+        bucket.upload(path, bytes) { upsert = true }
+
         val publicUrl = bucket.publicUrl(path)
 
+        // Keep the profile row in step with storage. If this failed silently the
+        // new photo would upload and then never appear, which reads as "upload
+        // is broken" to the user.
         client.from(TABLE_PROFILES).update(
             { set("avatar_url", publicUrl) },
         ) {
             filter { eq("id", userId) }
+            select(columns = Columns.list("id", "avatar_url"))
         }
+
         publicUrl
     }
 
@@ -231,6 +243,9 @@ class ProfileRepositoryImpl @Inject constructor(
     }
 
     private companion object {
+        /** Matches the bucket's own object size limit. */
+        const val MAX_AVATAR_BYTES = 5 * 1024 * 1024
+
         const val TABLE_PROFILES = "profiles"
         const val TABLE_BLOCKS = "user_blocks"
         const val TABLE_REPORTS = "user_reports"

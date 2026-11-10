@@ -407,21 +407,22 @@ fun EditProfileScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    // PickVisualMedia asks the system picker for an image only, which avoids the
+    // document-provider detour GetContent takes and never returns a video.
     val pickImage = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
+        contract = ActivityResultContracts.PickVisualMedia(),
     ) { uri: Uri? ->
-        if (uri != null) {
-            val bytes = runCatching {
-                context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            }.getOrNull()
-            if (bytes != null) {
-                val extension = context.contentResolver.getType(uri)
-                    ?.substringAfterLast('/')
-                    ?.let { if (it == "jpeg") "jpg" else it }
-                    ?: "jpg"
-                viewModel.uploadAvatar(bytes, extension)
-            }
-        }
+        // The thumbnail, EXIF fix, downscale and JPEG encode all happen in the
+        // ViewModel: doing it here would block composition on a large decode.
+        uri?.let(viewModel::onAvatarPicked)
+    }
+
+    val launchPicker = {
+        pickImage.launch(
+            androidx.activity.result.PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.ImageOnly,
+            ),
+        )
     }
 
     Column(
@@ -442,7 +443,7 @@ fun EditProfileScreen(
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { pickImage.launch("image/*") },
+                        .clickable { launchPicker() },
                 ) {
                     MiniChatAvatar(
                         displayName = state.displayName.ifBlank { "You" },
@@ -473,7 +474,7 @@ fun EditProfileScreen(
                         .size(32.dp)
                         .background(MiniChatColors.YellowPrimary, CircleShape)
                         .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
-                        .clickable { pickImage.launch("image/*") },
+                        .clickable { launchPicker() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(

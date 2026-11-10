@@ -89,6 +89,12 @@ interface ChatRepository {
 
     fun messageEvents(conversationId: String): Flow<MessageEvent>
 
+    /**
+     * Every message event regardless of conversation. Used by the notification
+     * service, which must hear about chats the user does not have open.
+     */
+    fun allMessageEvents(): Flow<MessageEvent>
+
     suspend fun loadMessages(
         conversationId: String,
         limit: Int = 40,
