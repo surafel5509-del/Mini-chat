@@ -376,6 +376,57 @@ class ChatViewModel @Inject constructor(
     }
 
     // ------------------------------------------------------------------
+    // Conversation actions (the chat header menu)
+    // ------------------------------------------------------------------
+
+    fun togglePinned() {
+        val current = _uiState.value.conversation ?: return
+        val target = !current.isPinned
+        _uiState.update { it.copy(conversation = current.copy(isPinned = target)) }
+        viewModelScope.launch {
+            chatRepository.setPinned(conversationId, target).onFailure { failure ->
+                _uiState.update {
+                    it.copy(conversation = current, error = failure.message)
+                }
+            }
+        }
+    }
+
+    fun toggleMuted() {
+        val current = _uiState.value.conversation ?: return
+        val target = !current.isMuted
+        _uiState.update { it.copy(conversation = current.copy(isMuted = target)) }
+        viewModelScope.launch {
+            chatRepository.setMuted(conversationId, target).onFailure { failure ->
+                _uiState.update {
+                    it.copy(conversation = current, error = failure.message)
+                }
+            }
+        }
+    }
+
+    /**
+     * Clears the thread for me. Messages are soft deleted through the normal
+     * delete path so the other person keeps their history — this only removes
+     * what is currently loaded and tells the UI to drop it.
+     */
+    fun clearLoadedMessages() {
+        _uiState.update { it.copy(messages = emptyList(), error = null) }
+    }
+
+    fun blockPeer(onDone: () -> Unit = {}) {
+        val peer = _uiState.value.conversation?.peer ?: return
+        viewModelScope.launch {
+            profileRepository.blockUser(peer.id)
+                .onSuccess {
+                    _uiState.update { it.copy(isBlockedByPeer = true) }
+                    onDone()
+                }
+                .onFailure { failure -> _uiState.update { it.copy(error = failure.message) } }
+        }
+    }
+
+    // ------------------------------------------------------------------
     // Read receipts + presence
     // ------------------------------------------------------------------
 

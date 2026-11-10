@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material3.Icon
@@ -316,17 +317,41 @@ fun ChatScreen(
                 SettingsRow(
                     icon = Icons.Rounded.PushPin,
                     title = if (state.conversation?.isPinned == true) "Unpin conversation" else "Pin conversation",
-                    onClick = { showConversationSheet = false },
+                    subtitle = if (state.conversation?.isPinned == true) {
+                        "Currently pinned to the top of your chats"
+                    } else {
+                        "Keep this chat at the top of your list"
+                    },
+                    onClick = {
+                        viewModel.togglePinned()
+                        showConversationSheet = false
+                    },
                 )
                 SettingsRow(
-                    icon = Icons.Rounded.NotificationsOff,
-                    title = "Mute notifications",
-                    onClick = { showConversationSheet = false },
+                    icon = if (state.conversation?.isMuted == true) {
+                        Icons.Rounded.NotificationsActive
+                    } else {
+                        Icons.Rounded.NotificationsOff
+                    },
+                    title = if (state.conversation?.isMuted == true) "Unmute notifications" else "Mute notifications",
+                    subtitle = if (state.conversation?.isMuted == true) {
+                        "You won't be alerted about new messages"
+                    } else {
+                        "Silence alerts for this conversation"
+                    },
+                    onClick = {
+                        viewModel.toggleMuted()
+                        showConversationSheet = false
+                    },
                 )
                 SettingsRow(
                     icon = Icons.Rounded.Block,
                     title = "Block this person",
-                    onClick = { showConversationSheet = false },
+                    subtitle = "They can no longer message you",
+                    onClick = {
+                        showConversationSheet = false
+                        confirmBlock = state.conversation?.peer
+                    },
                     iconTint = MiniChatTheme.extra.danger,
                     iconBackground = MiniChatTheme.extra.danger.copy(alpha = 0.14f),
                     titleColor = MiniChatTheme.extra.danger,
@@ -334,13 +359,47 @@ fun ChatScreen(
                 SettingsRow(
                     icon = Icons.Rounded.DeleteSweep,
                     title = "Clear chat",
-                    onClick = { showConversationSheet = false },
+                    subtitle = "Removes the messages loaded on this device",
+                    onClick = {
+                        showConversationSheet = false
+                        confirmClear = true
+                    },
                     iconTint = MiniChatTheme.extra.danger,
                     iconBackground = MiniChatTheme.extra.danger.copy(alpha = 0.14f),
                     titleColor = MiniChatTheme.extra.danger,
                 )
             }
         }
+    }
+
+    confirmBlock?.let { peer ->
+        ConfirmDialog(
+            title = "Block ${peer.displayName}?",
+            message = "They won't be able to message you and you won't see their notes. You can unblock them later in Settings.",
+            confirmLabel = "Block",
+            destructive = true,
+            onConfirm = {
+                viewModel.blockPeer()
+                confirmBlock = null
+            },
+            onDismiss = { confirmBlock = null },
+        )
+    }
+
+    if (confirmClear) {
+        ConfirmDialog(
+            title = "Clear this chat?",
+            message = "This hides the loaded messages on this device. ${
+                state.conversation?.peer?.displayName ?: "The other person"
+            } keeps their copy.",
+            confirmLabel = "Clear",
+            destructive = true,
+            onConfirm = {
+                viewModel.clearLoadedMessages()
+                confirmClear = false
+            },
+            onDismiss = { confirmClear = false },
+        )
     }
 
     confirmDelete?.let { message ->

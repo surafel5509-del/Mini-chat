@@ -61,23 +61,27 @@ jobs:
           touch build.log
 
       - name: Assemble debug APK
-        continue-on-error: true
         run: |
-          set +e
           if [ -x ./gradlew ]; then GRADLE_CMD=./gradlew; else GRADLE_CMD=gradle; fi
           echo "using $GRADLE_CMD" > build.log
-          $GRADLE_CMD :app:assembleDebug --stacktrace --no-daemon --console=plain >> build.log 2>&1
-          echo "gradle_exit=$?" > build-status.txt
-          tail -n 120 build.log
+          set +e
+          $GRADLE_CMD :app:assembleDebug :app:testDebugUnitTest --stacktrace --no-daemon --console=plain >> build.log 2>&1
+          STATUS=$?
+          set -e
+          echo "gradle_exit=$STATUS" > build-status.txt
+          tail -n 160 build.log
+          exit $STATUS
 
       - name: Assemble release APK and AAB
-        continue-on-error: true
         run: |
-          set +e
           if [ -x ./gradlew ]; then GRADLE_CMD=./gradlew; else GRADLE_CMD=gradle; fi
+          set +e
           $GRADLE_CMD :app:assembleRelease :app:bundleRelease --stacktrace --no-daemon --console=plain > release.log 2>&1
-          echo "release_gradle_exit=$?" >> build-status.txt
-          tail -n 60 release.log
+          STATUS=$?
+          set -e
+          echo "release_gradle_exit=$STATUS" >> build-status.txt
+          tail -n 80 release.log
+          exit $STATUS
 
       - name: Collect outputs
         if: always()

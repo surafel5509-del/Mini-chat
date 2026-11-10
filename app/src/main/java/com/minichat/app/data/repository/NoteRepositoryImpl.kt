@@ -4,9 +4,11 @@ import com.minichat.app.core.util.AppResult
 import com.minichat.app.core.util.TimeFormat
 import com.minichat.app.core.util.safeCall
 import com.minichat.app.data.dto.NoteDto
+import com.minichat.app.data.dto.ProfileDto
 import com.minichat.app.data.dto.SetNoteParams
 import com.minichat.app.domain.model.FriendNote
 import com.minichat.app.domain.model.Note
+import com.minichat.app.domain.model.Profile
 import com.minichat.app.domain.repository.NoteRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
@@ -17,6 +19,7 @@ import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import java.time.Instant
 import javax.inject.Inject
@@ -51,8 +54,8 @@ class NoteRepositoryImpl @Inject constructor(
 
     override suspend fun friendNotes(limit: Int): AppResult<List<FriendNote>> = safeCall {
         val userId = me().orEmpty()
-        client.from(TABLE_NOTES)
-            .select(columns = Columns.raw(NOTE_SELECT)) {
+        val rows = client.from(TABLE_NOTES)
+            .select(columns = Columns.list(*NOTE_COLUMNS)) {
                 filter {
                     gt("expires_at", liveFilter())
                     neq("author_id", userId)
@@ -61,12 +64,19 @@ class NoteRepositoryImpl @Inject constructor(
                 limit(limit.toLong())
             }
             .decodeList<NoteDto>()
-            .mapNotNull { dto ->
-                val note = dto.toDomain() ?: return@mapNotNull null
-                val author = dto.author?.toDomain() ?: return@mapNotNull null
-                FriendNote(note = note, author = author)
-            }
-            .sortedByDescending { it.note.expiresAt }
+
+        if (rows.isEmpty()) return@safeCall emptyList()
+
+        // Author profiles are fetched separately, never through a PostgREST
+        // embed — the same principle that fixed message loading. Two simple
+        // queries can never fail on a relationship-cache miss.
+        val authors = profilesByIds(rows.map { it.authorId }.distinct())
+
+        rows.mapNotNull { dto ->
+            val note = dto.toDomain() ?: return@mapNotNull null
+            val author = authors[dto.authorId] ?: return@mapNotNull null
+            FriendNote(note = note, author = author)
+        }.sortedByDescending { it.note.expiresAt }
     }
 
     override suspend fun setNote(body: String, minutes: Int): AppResult<Note> = safeCall {
@@ -81,8 +91,8 @@ class NoteRepositoryImpl @Inject constructor(
         val raw = client.postgrest.rpc(
             function = "set_my_note",
             parameters = buildJsonObject {
-                put("p_body", trimmed)
-                put("p_minutes", safeMinutes)
+                put("p_body", JsonPrimitive(trimmed))
+                put("p_minutes", JsonPrimitive(safeMinutes))
             },
         ).data
 
@@ -101,9 +111,9 @@ class NoteRepositoryImpl @Inject constructor(
         client.postgrest.rpc(function = "delete_my_note", parameters = buildJsonObject { })
     }
 
-    private suspend fun readOne(authorId: String): Note? =
-        client.from(TABLE_NOTES)
-            .select(columns = Columns.raw(NOTE_SELECT)) {
+    private suspend fun readOne(authorId: String): Note? {
+        val dto = client.from(TABLE_NOTES)
+            .select(columns = Columns.list(*NOTE_COLUMNS)) {
                 filter {
                     eq("author_id", authorId)
                     gt("expires_at", liveFilter())
@@ -111,8 +121,20 @@ class NoteRepositoryImpl @Inject constructor(
                 limit(1)
             }
             .decodeList<NoteDto>()
-            .firstOrNull()
-            ?.toDomain()
+            .firstOrNull() ?: return null
+
+        return dto.toDomain()?.copy(author = profilesByIds(listOf(authorId))[authorId])
+    }
+
+    /** One query for every author on screen. Best effort: a note can render without a photo. */
+    private suspend fun profilesByIds(ids: List<String>): Map<String, Profile> = runCatching {
+        client.from("profiles")
+            .select(columns = Columns.list("id", "username", "display_name", "avatar_url", "bio", "last_seen_at", "created_at")) {
+                filter { isIn("id", ids) }
+            }
+            .decodeList<ProfileDto>()
+            .associate { it.id to it.toDomain() }
+    }.getOrDefault(emptyMap())
 
     /** The row `set_my_note` returns (a composite `public.notes`). */
     @Serializable
@@ -132,9 +154,13 @@ class NoteRepositoryImpl @Inject constructor(
         const val TABLE_NOTES = "notes"
         const val MAX_NOTE_LENGTH = 80
 
-        /** The author profile travels with the note so the story row needs one query. */
-        const val NOTE_SELECT =
-            "author_id,body,expires_at,created_at,updated_at," +
-                "profiles(id,username,display_name,avatar_url,bio,last_seen_at,created_at)"
+        /** Plain columns only — author profiles are joined in a second query. */
+        val NOTE_COLUMNS = arrayOf(
+            "author_id",
+            "body",
+            "expires_at",
+            "created_at",
+            "updated_at",
+        )
     }
 }
