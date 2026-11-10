@@ -153,7 +153,12 @@ class AuthRepositoryImpl @Inject constructor(
         val address = email.trim().lowercase()
         if (Validators.validateEmail(address) != null) error("Enter a valid email address.")
 
-        val response = callOtpGuard("resend", buildJsonObject { put("email", address) })
+        val response = callOtpGuard(
+            buildJsonObject {
+                put("action", "resend")
+                put("email", address)
+            },
+        )
 
         if (response.optBoolean("ok", false).not()) {
             error(response.optString("message").ifBlank { "We couldn't send that code." })
@@ -182,8 +187,8 @@ class AuthRepositoryImpl @Inject constructor(
         if (digits.length != CODE_LENGTH) error("Enter the 6-digit code from your email.")
 
         val response = callOtpGuard(
-            "verify",
             buildJsonObject {
+                put("action", "verify")
                 put("email", address)
                 put("code", digits)
             },
@@ -216,9 +221,9 @@ class AuthRepositoryImpl @Inject constructor(
      * headers or auth refresh behaviour. The publishable key is sent because the
      * gateway expects it, not because the function trusts it.
      */
-    private suspend fun callOtpGuard(action: String, body: JsonObject): JsonObject =
+    private suspend fun callOtpGuard(body: JsonObject): JsonObject =
         withContext(Dispatchers.IO) {
-            val endpoint = "${BuildConfig.SUPABASE_URL.trimEnd('/')}/functions/v1/otp-guard/$action"
+            val endpoint = "${BuildConfig.SUPABASE_URL.trimEnd('/')}/functions/v1/otp-guard"
             val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 connectTimeout = 15_000

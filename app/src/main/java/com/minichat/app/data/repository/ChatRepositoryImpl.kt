@@ -23,6 +23,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.storage.storage
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.serialization.json.Json
@@ -323,7 +324,10 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun signedMediaUrl(path: String, expiresInSeconds: Int): AppResult<String> = safeCall {
         if (me() == null) error("You must be signed in.")
         client.storage.from(BUCKET_CHAT_MEDIA)
-            .createSignedUrl(path, expiresInSeconds.coerceIn(60, 86_400))
+            .createSignedUrl(
+                path = path,
+                expiresIn = expiresInSeconds.coerceIn(60, 86_400).seconds,
+            )
     }
 
     // -------------------------------------------------------------------------

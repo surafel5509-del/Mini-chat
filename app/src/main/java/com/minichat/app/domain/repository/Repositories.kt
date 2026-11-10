@@ -134,6 +134,9 @@ interface GroupRepository {
 
     suspend fun members(conversationId: String): AppResult<List<ConversationMember>>
 
+    /** Group metadata straight from `conversation_overview` (title, photo, role). */
+    suspend fun groupOverview(conversationId: String): AppResult<GroupInfo>
+
     suspend fun addMembers(conversationId: String, userIds: List<String>): AppResult<Int>
     suspend fun removeMember(conversationId: String, userId: String): AppResult<Unit>
     suspend fun setRole(conversationId: String, userId: String, role: GroupRole): AppResult<Unit>
@@ -214,6 +217,16 @@ interface NoteRepository {
     /** Remove my note immediately. */
     suspend fun deleteNote(): AppResult<Unit>
 }
+
+/** Headline facts about a group, as the info screen needs them. */
+data class GroupInfo(
+    val conversationId: String,
+    val title: String?,
+    val description: String?,
+    val avatarUrl: String?,
+    val myRole: GroupRole,
+    val memberCount: Int,
+)
 
 /** Why a code was sent. Both paths use the same six digit mechanism. */
 enum class OtpPurpose { Signup, Recovery }

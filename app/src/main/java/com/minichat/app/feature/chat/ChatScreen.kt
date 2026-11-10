@@ -73,6 +73,7 @@ import com.minichat.app.domain.model.Message
 fun ChatScreen(
     onBack: () -> Unit,
     onOpenProfile: (String) -> Unit,
+    onOpenGroupInfo: () -> Unit = {},
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,13 +113,19 @@ fun ChatScreen(
         ChatTopBar(
             displayName = state.conversation?.displayName ?: "Conversation",
             subtitle = state.subtitle,
-            avatarUrl = state.conversation?.peer?.avatarUrl,
+            avatarUrl = state.conversation?.avatarUrl,
             username = state.conversation?.peer?.username.orEmpty(),
-            online = TimeFormat.isOnline(state.conversation?.peer?.lastSeenAt?.toString()),
+            online = !state.isGroup &&
+                TimeFormat.isOnline(state.conversation?.peer?.lastSeenAt?.toString()),
             peerTyping = state.peerTyping,
+            isGroup = state.isGroup,
             onBack = onBack,
             onOpenProfile = {
-                state.conversation?.peer?.id?.let(onOpenProfile)
+                if (state.isGroup) {
+                    onOpenGroupInfo()
+                } else {
+                    state.conversation?.peer?.id?.let(onOpenProfile)
+                }
             },
             onMore = { showConversationSheet = true },
             peerNote = state.peerNote,
@@ -155,7 +162,8 @@ fun ChatScreen(
                                 MessageBubble(
                                     message = message,
                                     myId = state.myId,
-                                    showSenderName = false,
+                                    // Groups caption the author; direct chats never do.
+                                    showSenderName = state.isGroup,
                                     peerName = state.conversation?.displayName.orEmpty(),
                                     peerReadAt = state.peerReadAt,
                                     onLongPress = { actionMessage = message },
@@ -467,6 +475,7 @@ private fun ChatTopBar(
     onOpenProfile: () -> Unit,
     onMore: () -> Unit,
     peerNote: com.minichat.app.domain.model.Note? = null,
+    isGroup: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -505,7 +514,7 @@ private fun ChatTopBar(
                     avatarUrl = avatarUrl,
                     size = 40.dp,
                     online = online,
-                    showOnlineIndicator = true,
+                    showOnlineIndicator = !isGroup,
                 )
                 Spacer(Modifier.width(11.dp))
                 Column(modifier = Modifier.weight(1f)) {

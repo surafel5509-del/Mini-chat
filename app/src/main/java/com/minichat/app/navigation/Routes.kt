@@ -11,6 +11,8 @@ object Routes {
     const val RESET_PASSWORD = "reset_password?email={email}"
     const val HOME = "home"
     const val CHAT = "chat/{conversationId}"
+    const val CREATE_GROUP = "group/new"
+    const val GROUP_INFO = "group/{conversationId}/info"
     const val DISCOVER = "discover"
     const val MY_PROFILE = "profile/me"
     const val USER_PROFILE = "profile/{userId}"
@@ -23,6 +25,9 @@ object Routes {
     const val ABOUT = "settings/about"
 
     fun chat(conversationId: String): String = "chat/$conversationId"
+
+    fun groupInfo(conversationId: String): String = "group/$conversationId/info"
+
 
     fun userProfile(userId: String): String = "profile/$userId"
 

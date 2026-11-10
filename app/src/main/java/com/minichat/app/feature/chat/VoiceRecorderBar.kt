@@ -230,13 +230,22 @@ fun MicButton(
             .clip(CircleShape)
             .background(
                 when {
-                    recording -> MiniChatTheme.extra.danger
+                    recording -> Brush.linearGradient(
+                        listOf(
+                            MiniChatTheme.extra.danger,
+                            MiniChatTheme.extra.danger.copy(alpha = 0.82f),
+                        ),
+                    )
+
                     enabled -> Brush.linearGradient(
                         listOf(MiniChatColors.YellowPrimary, MiniChatColors.AmberSecondary),
                     )
 
-                    else -> androidx.compose.ui.graphics.SolidColor(
-                        MiniChatTheme.extra.surfaceMuted,
+                    else -> Brush.linearGradient(
+                        listOf(
+                            MiniChatTheme.extra.surfaceMuted,
+                            MiniChatTheme.extra.surfaceMuted,
+                        ),
                     )
                 },
             ),

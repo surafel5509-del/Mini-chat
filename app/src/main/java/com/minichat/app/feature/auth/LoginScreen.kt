@@ -30,6 +30,7 @@ import com.minichat.app.design.components.MiniChatTextField
 import com.minichat.app.design.components.PrimaryButton
 import com.minichat.app.design.components.TextButtonSmall
 import com.minichat.app.design.theme.MiniChatColors
+import com.minichat.app.design.theme.MiniChatTheme
 
 @Composable
 fun LoginScreen(

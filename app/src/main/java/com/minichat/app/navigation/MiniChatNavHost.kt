@@ -181,6 +181,7 @@ fun MiniChatNavHost(
                 onOpenProfile = { navController.navigate(Routes.MY_PROFILE) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onNewChat = { navController.navigate(Routes.DISCOVER) },
+                onNewGroup = { navController.navigate(Routes.CREATE_GROUP) },
             )
         }
 
@@ -191,6 +192,40 @@ fun MiniChatNavHost(
             ChatScreen(
                 onBack = { navController.popBackStack() },
                 onOpenProfile = { userId -> navController.navigate(Routes.userProfile(userId)) },
+                // The back stack entry knows its own conversationId, so the info
+                // screen does not need to be threaded through a second time.
+                onOpenGroupInfo = {
+                    val id = navController.currentBackStackEntry
+                        ?.arguments?.getString("conversationId")
+                    if (id != null) navController.navigate(Routes.groupInfo(id))
+                },
+            )
+        }
+
+        composable(Routes.CREATE_GROUP) {
+            CreateGroupScreen(
+                onBack = { navController.popBackStack() },
+                onCreated = { id ->
+                    navController.navigate(Routes.chat(id)) {
+                        popUpTo(Routes.HOME)
+                    }
+                },
+            )
+        }
+
+        composable(
+            route = Routes.GROUP_INFO,
+            arguments = listOf(navArgument("conversationId") { type = NavType.StringType }),
+        ) {
+            GroupInfoScreen(
+                onBack = { navController.popBackStack() },
+                onLeft = {
+                    // The conversation is gone from this account's list, so return
+                    // to the inbox rather than a chat that can no longer load.
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.HOME) { inclusive = true }
+                    }
+                },
             )
         }
 

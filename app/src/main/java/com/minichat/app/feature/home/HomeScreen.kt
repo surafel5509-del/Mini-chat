@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DoneAll
+import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material.icons.rounded.PushPin
@@ -82,9 +83,14 @@ fun HomeScreen(
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
     onNewChat: () -> Unit,
+    onNewGroup: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // The "+" opens a chooser: a direct chat or a new group. Both are one tap
+    // from the inbox without needing a menu buried in a settings screen.
+    var showCreateMenu by remember { mutableStateOf(false) }
     var searchVisible by remember { mutableStateOf(false) }
     var actionSheetFor by remember { mutableStateOf<ConversationSummary?>(null) }
     var showNoteComposer by remember { mutableStateOf(false) }
@@ -179,7 +185,7 @@ fun HomeScreen(
         }
 
         NewChatFab(
-            onClick = onNewChat,
+            onClick = { showCreateMenu = true },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
@@ -194,6 +200,41 @@ fun HomeScreen(
                     .padding(horizontal = 20.dp, vertical = 90.dp),
             ) {
                 com.minichat.app.design.components.InlineError(message = error)
+            }
+        }
+    }
+
+    if (showCreateMenu) {
+        ModalBottomSheet(
+            onDismissRequest = { showCreateMenu = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+                Text(
+                    text = "Start something",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 10.dp),
+                )
+                CreateMenuRow(
+                    title = "New chat",
+                    subtitle = "Message one person",
+                    icon = Icons.Rounded.ChatBubbleOutline,
+                    onClick = {
+                        showCreateMenu = false
+                        onNewChat()
+                    },
+                )
+                CreateMenuRow(
+                    title = "New group",
+                    subtitle = "Bring a few people together",
+                    icon = Icons.Rounded.Groups,
+                    onClick = {
+                        showCreateMenu = false
+                        onNewGroup()
+                    },
+                )
+                Spacer(Modifier.height(24.dp))
             }
         }
     }
@@ -365,8 +406,10 @@ private fun ConversationRow(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
-    val online = TimeFormat.isOnline(conversation.peer?.lastSeenAt?.toString(), thresholdSeconds = 90) ||
-        isPeerRecentlyOnline(conversation)
+    // Groups never show a presence dot: twelve people are not "online" as one.
+    val online = !conversation.isGroup &&
+        (TimeFormat.isOnline(conversation.peer?.lastSeenAt?.toString(), thresholdSeconds = 90) ||
+            isPeerRecentlyOnline(conversation))
 
     Row(
         modifier = Modifier
@@ -378,10 +421,10 @@ private fun ConversationRow(
         MiniChatAvatar(
             displayName = conversation.displayName,
             username = conversation.peer?.username.orEmpty(),
-            avatarUrl = conversation.peer?.avatarUrl,
+            avatarUrl = conversation.avatarUrl,
             size = 54.dp,
             online = online,
-            showOnlineIndicator = true,
+            showOnlineIndicator = !conversation.isGroup,
         )
         Spacer(Modifier.width(14.dp))
 
@@ -397,6 +440,18 @@ private fun ConversationRow(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false),
                 )
+                if (conversation.isGroup) {
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text = if (conversation.memberCount == 1) {
+                            "1 member"
+                        } else {
+                            "${conversation.memberCount} members"
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MiniChatTheme.extra.textSecondary,
+                    )
+                }
                 if (conversation.isPinned) {
                     Spacer(Modifier.width(6.dp))
                     Icon(
@@ -430,7 +485,7 @@ private fun ConversationRow(
                 }
             } else {
                 Text(
-                    text = previewText(conversation.lastMessage),
+                    text = groupPreview(conversation),
                     style = MaterialTheme.typography.bodySmall,
                     color = if (conversation.unreadCount > 0) {
                         MaterialTheme.colorScheme.onBackground
@@ -523,4 +578,81 @@ private fun NewChatFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
             color = MiniChatColors.OnYellow,
         )
     }
+}
+
+/** A row in the "+" chooser sheet. */
+@Composable
+private fun CreateMenuRow(
+    title: String,
+    subtitle: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(MiniChatColors.YellowPrimary.copy(alpha = 0.18f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MiniChatColors.AmberSecondary,
+                modifier = Modifier.size(21.dp),
+            )
+        }
+        Spacer(Modifier.width(14.dp))
+        Column {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                ),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.extra.textSecondary,
+            )
+        }
+    }
+}
+
+/**
+ * Inbox preview line.
+ *
+ * Groups lead with the sender so "Sam: see you at 7" reads correctly, and media
+ * messages get a label instead of an empty string.
+ */
+private fun groupPreview(conversation: ConversationSummary): String {
+    val message = conversation.lastMessage ?: return "No messages yet"
+    val body = when {
+        message.isDeleted -> "Message deleted"
+        message.messageType == com.minichat.app.domain.model.MessageType.Voice ->
+            "\uD83C\uDF99 Voice message · ${formatVoiceLength(message.durationMs)}"
+
+        message.text.isBlank() -> "Attachment"
+        else -> message.text
+    }
+
+    if (!conversation.isGroup || message.isMine) {
+        return if (conversation.isGroup && message.isMine) "You: $body" else body
+    }
+    val sender = message.senderName?.takeIf { it.isNotBlank() } ?: return body
+    return "${sender.substringBefore(' ')}: $body"
+}
+
+private fun formatVoiceLength(ms: Int?): String {
+    val seconds = ((ms ?: 0) / 1000).coerceAtLeast(0)
+    return "%d:%02d".format(seconds / 60, seconds % 60)
 }

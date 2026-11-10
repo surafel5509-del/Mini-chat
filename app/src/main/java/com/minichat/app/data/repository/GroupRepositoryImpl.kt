@@ -7,6 +7,7 @@ import com.minichat.app.data.dto.ConversationMemberDto
 import com.minichat.app.data.dto.ProfileDto
 import com.minichat.app.domain.model.ConversationMember
 import com.minichat.app.domain.model.GroupRole
+import com.minichat.app.domain.repository.GroupInfo
 import com.minichat.app.domain.repository.GroupRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
@@ -52,7 +53,7 @@ class GroupRepositoryImpl @Inject constructor(
             function = "create_group",
             parameters = buildJsonObject {
                 put("p_title", JsonPrimitive(clean))
-                put("p_description", JsonPrimitive(description?.trim()?.takeIf { it.isNotEmpty() }))
+                put("p_description", description?.trim()?.takeIf { it.isNotEmpty() })
                 put("p_member_ids", JsonArray(memberIds.distinct().map { JsonPrimitive(it) }))
             },
         ).data
@@ -94,6 +95,34 @@ class GroupRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun groupOverview(conversationId: String): AppResult<GroupInfo> = safeCall {
+        val row = client.from("conversation_overview")
+            .select(
+                columns = Columns.list(
+                    "conversation_id",
+                    "conversation_title",
+                    "conversation_description",
+                    "conversation_avatar_url",
+                    "my_role",
+                    "member_count",
+                ),
+            ) {
+                filter { eq("conversation_id", conversationId) }
+                limit(1)
+            }
+            .decodeSingleOrNull<GroupInfoDto>()
+            ?: error("This group no longer exists.")
+
+        GroupInfo(
+            conversationId = row.conversationId,
+            title = row.title,
+            description = row.description,
+            avatarUrl = row.avatarUrl,
+            myRole = GroupRole.from(row.myRole),
+            memberCount = row.memberCount.coerceAtLeast(1).toInt(),
+        )
+    }
+
     override suspend fun addMembers(conversationId: String, userIds: List<String>): AppResult<Int> = safeCall {
         val raw = client.postgrest.rpc(
             function = "add_group_members",
@@ -122,7 +151,7 @@ class GroupRepositoryImpl @Inject constructor(
             parameters = buildJsonObject {
                 put("p_conversation_id", JsonPrimitive(conversationId))
                 put("p_user_id", JsonPrimitive(userId))
-                put("p_role", JsonPrimitive(if (role == GroupRole.Admin) "admin" else "member"))
+                put("p_role", if (role == GroupRole.Admin) "admin" else "member")
             },
         )
     }
@@ -136,8 +165,9 @@ class GroupRepositoryImpl @Inject constructor(
             function = "update_group",
             parameters = buildJsonObject {
                 put("p_conversation_id", JsonPrimitive(conversationId))
-                put("p_title", title?.let { JsonPrimitive(it.trim()) })
-                put("p_description", description?.let { JsonPrimitive(it.trim()) })
+                // Nulls are meaningful here: "leave this field alone".
+                put("p_title", title?.trim())
+                put("p_description", description?.trim())
             },
         )
     }
@@ -212,4 +242,15 @@ internal data class MemberRowDto(
     @kotlinx.serialization.SerialName("user_id") val userId: String,
     @kotlinx.serialization.SerialName("last_read_at") val lastReadAt: String? = null,
     val role: String? = null,
+)
+
+/** The subset of `conversation_overview` the group info screen reads. */
+@kotlinx.serialization.Serializable
+internal data class GroupInfoDto(
+    @kotlinx.serialization.SerialName("conversation_id") val conversationId: String,
+    @kotlinx.serialization.SerialName("conversation_title") val title: String? = null,
+    @kotlinx.serialization.SerialName("conversation_description") val description: String? = null,
+    @kotlinx.serialization.SerialName("conversation_avatar_url") val avatarUrl: String? = null,
+    @kotlinx.serialization.SerialName("my_role") val myRole: String? = null,
+    @kotlinx.serialization.SerialName("member_count") val memberCount: Long = 1,
 )

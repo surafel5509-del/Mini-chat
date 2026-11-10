@@ -74,11 +74,18 @@ class ChatViewModel @Inject constructor(
         /** The note currently being fetched, so its bubble can spin. */
         val loadingVoiceId: String? = null,
     ) {
+        val isGroup: Boolean get() = conversation?.isGroup == true
+
         val isBlocked: Boolean get() = isBlockedByPeer
         val canSend: Boolean get() = composerText.isNotBlank() && !isBlockedByPeer
         val subtitle: String get() = when {
-            peerTyping -> "typing…"
-            conversation?.peer == null -> ""
+            peerTyping -> if (isGroup) "someone is typing…" else "typing…"
+            conversation == null -> ""
+            isGroup -> when (val count = conversation.memberCount) {
+                1 -> "1 member"
+                else -> "$count members"
+            }
+            conversation.peer == null -> ""
             else -> com.minichat.app.core.util.TimeFormat.lastSeen(
                 conversation.peer.lastSeenAt?.toString(),
                 com.minichat.app.core.util.TimeFormat.isOnline(conversation.peer.lastSeenAt?.toString()),

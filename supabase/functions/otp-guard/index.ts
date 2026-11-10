@@ -10,9 +10,10 @@
 //      one, so the client never needs a signed-in session to finish signup.
 //   3. The service-role key never leaves the server.
 //
-// Flow
-//   POST /otp-guard/resend  { email }        -> gate, signInWithOtp, email sent
-//   POST /otp-guard/verify  { email, code }  -> gate, verifyOtp, attempt recorded
+// Flow  (POST to /functions/v1/otp-guard — the action travels in the body, since
+// extra path segments after the function slug are not reliably forwarded)
+//   { action: "resend", email }         -> gate, signInWithOtp, email sent
+//   { action: "verify", email, code }   -> gate, verifyOtp, attempt recorded
 //
 // Both routes answer with `{ ok: true }` / `{ ok: false, message }` and use 200
 // for handled failures so the client can show the real reason (the SDK surfaces
@@ -41,15 +42,14 @@ Deno.serve(async (req: Request) => {
     return json({ ok: false, message: "Use POST." }, 405);
   }
 
-  let route = "";
-  let body: { email?: string; code?: string } = {};
+  let body: { action?: string; email?: string; code?: string } = {};
   try {
-    const url = new URL(req.url);
-    route = url.pathname.split("/").filter(Boolean).pop() ?? "";
     body = await req.json();
   } catch {
     return json({ ok: false, message: "Malformed request." }, 400);
   }
+
+  const route = (body.action ?? "").toLowerCase();
 
   const email = (body.email ?? "").trim().toLowerCase();
   if (!isEmail(email)) {
