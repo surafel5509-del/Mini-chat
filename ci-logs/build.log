@@ -73,16 +73,16 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:checkDebugAarMetadata
 > Task :app:kspDebugKotlin
 > Task :app:mergeExtDexDebug
-> Task :app:mergeLibDexDebug
 > Task :app:mapDebugSourceSetPaths
+> Task :app:mergeLibDexDebug
 > Task :app:compileDebugNavigationResources
 > Task :app:createDebugCompatibleScreenManifests
 > Task :app:extractDeepLinksDebug
+> Task :app:mergeDebugResources
 > Task :app:processDebugMainManifest
 > Task :app:processDebugManifest
-> Task :app:processDebugManifestForPackage
 > Task :app:mergeDebugJniLibFolders
-> Task :app:mergeDebugResources
+> Task :app:processDebugManifestForPackage
 > Task :app:mergeDebugNativeLibs
 
 > Task :app:stripDebugDebugSymbols
@@ -92,13 +92,24 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:validateSigningDebug
 > Task :app:writeDebugAppMetadata
 > Task :app:writeDebugSigningConfigVersions
-
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
 > Task :app:compileDebugKotlin
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/NoteRepositoryImpl.kt:84:31 Argument type mismatch: actual type is 'String', but 'JsonElement' was expected.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/NoteRepositoryImpl.kt:85:34 Argument type mismatch: actual type is 'Int', but 'JsonElement' was expected.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:353:25 Unresolved reference 'confirmBlock'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:365:25 Unresolved reference 'confirmClear'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:375:5 Unresolved reference 'confirmBlock'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:375:19 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:375:19 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:375:25 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:377:35 Unresolved reference 'displayName'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:383:17 Unresolved reference 'confirmBlock'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:385:27 Unresolved reference 'confirmBlock'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:389:9 Unresolved reference 'confirmClear'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:399:17 Unresolved reference 'confirmClear'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:401:27 Unresolved reference 'confirmClear'.
 
 > Task :app:compileDebugKotlin FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794336159040.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794336434015.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
@@ -107,10 +118,10 @@ FAILURE: Build failed with an exception.
 * What went wrong:
 Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.jetbrains.kotlin.android').
 > A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
-   > Kotlin compiler: ARGUMENT_TYPE_MISMATCH
+   > Kotlin compiler: UNRESOLVED_REFERENCE
        Kotlin compiler error
-         Argument type mismatch: actual type is 'String', but 'JsonElement' was expected.
-         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/NoteRepositoryImpl.kt:84
+         Unresolved reference 'confirmBlock'.
+         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:353
 
 * Try:
 > Run with --info or --debug option to get more log output.
@@ -266,7 +277,7 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
 	... 25 more
-Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Argument type mismatch: actual type is 'String', but 'JsonElement' was expected.
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Unresolved reference 'confirmBlock'.
 	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
 	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
 	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
@@ -303,5 +314,5 @@ Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Argument
 	... 2 more
 
 
-BUILD FAILED in 2m 46s
-32 actionable tasks: 32 executed
+BUILD FAILED in 3m 35s
+33 actionable tasks: 33 executed
