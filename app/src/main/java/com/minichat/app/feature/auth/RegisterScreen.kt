@@ -58,22 +58,18 @@ fun RegisterScreen(
         }
     }
 
-    // A 6-digit code, not a link.
-    val otpEmail = state.otpEmail
-    if (otpEmail != null) {
-        OtpCodeScreen(
-            email = otpEmail,
-            code = state.otpCode,
-            isLoading = state.isLoading,
-            error = state.otpError,
-            resendIn = state.otpResendIn,
-            shakeSignal = state.otpShake,
-            onCodeChange = viewModel::onOtpChange,
-            onVerify = viewModel::verifyOtp,
-            onResend = viewModel::resendOtp,
+    // Email link confirmation.
+    val verificationEmail = state.verificationEmail
+    if (verificationEmail != null) {
+        VerifyEmailPendingScreen(
+            email = verificationEmail,
+            isResending = state.isLoading,
+            resendIn = state.resendIn,
+            error = state.verificationError,
+            onResend = viewModel::resendVerification,
             onBack = {
-                viewModel.dismissOtp()
-                onBack()
+                viewModel.dismissVerification()
+                onSignIn()
             },
         )
         return

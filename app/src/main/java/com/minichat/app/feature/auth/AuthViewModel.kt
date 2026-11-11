@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.core.util.Validators
 import com.minichat.app.domain.repository.AuthRepository
-import com.minichat.app.domain.repository.OtpPurpose
 import com.minichat.app.domain.repository.SignUpOutcome
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -35,22 +34,15 @@ class AuthViewModel @Inject constructor(
         val resetLinkSent: Boolean = false,
         val passwordUpdated: Boolean = false,
 
-        // ---- 6-digit code verification ----
-        /** Address awaiting a code; non-null means the code screen is showing. */
-        val otpEmail: String? = null,
-        /** Why the code was requested, so Verify does the right thing after. */
-        val otpPurpose: OtpPurpose = OtpPurpose.Signup,
-        /** The digits the user has typed so far (always 0..6 chars). */
-        val otpCode: String = "",
-        val otpError: String? = null,
-        /** Seconds until "Resend code" is allowed again. */
-        val otpResendIn: Int = 0,
-        /** The six boxes shake when a code is rejected. */
-        val otpShake: Int = 0,
+        // ---- email link verification ----
+        /** Address awaiting a confirmation link; non-null shows the inbox screen. */
+        val verificationEmail: String? = null,
+        val verificationError: String? = null,
+        /** Seconds until "Resend link" is allowed again. */
+        val resendIn: Int = 0,
     ) {
-        /** The code screen is active. */
-        val isVerifying: Boolean get() = otpEmail != null
-        val otpComplete: Boolean get() = otpCode.length == OTP_LENGTH
+        /** The "check your inbox" screen is active. */
+        val isVerifying: Boolean get() = verificationEmail != null
     }
 
     sealed interface Event {
@@ -122,10 +114,9 @@ class AuthViewModel @Inject constructor(
                 is AppResult.Success -> when (result.data) {
                     // Projects with "confirm email" off sign straight in.
                     SignUpOutcome.SignedIn -> _events.send(Event.NavigateHome)
-                    SignUpOutcome.VerificationRequired -> openOtpScreen(
-                        email = state.email,
-                        purpose = OtpPurpose.Signup,
-                    )
+                    // Supabase has already mailed the confirmation link during
+                    // signUp; just explain what to do next.
+                    SignUpOutcome.VerificationRequired -> showVerificationPending(state.email)
                 }
 
                 is AppResult.Failure -> handleFailure(result.message)
@@ -134,104 +125,72 @@ class AuthViewModel @Inject constructor(
     }
 
     // ------------------------------------------------------------------
-    // 6-digit email verification
+    // Email link verification
     // ------------------------------------------------------------------
 
     /**
-     * Moves to the code screen and asks for a code.
+     * Shows the inbox screen for [email] and starts the resend cooldown.
      *
-     * Signup already triggered Supabase's confirmation email during `signUp`, so
-     * we only request another one when the user is coming from "forgot password"
-     * or explicitly taps resend — otherwise the user would get two emails.
+     * No extra email is sent here: `signUp` already asked Supabase to send the
+     * confirmation link, and requesting a second one immediately would just
+     * duplicate it (and hit GoTrue's own mail throttle).
      */
-    private suspend fun openOtpScreen(email: String, purpose: OtpPurpose, sendNow: Boolean = false) {
+    private fun showVerificationPending(email: String) {
+        resendJob?.cancel()
         _uiState.update {
             it.copy(
-                otpEmail = email,
-                otpPurpose = purpose,
-                otpCode = "",
-                otpError = null,
-                otpResendIn = OTP_RESEND_SECONDS,
+                verificationEmail = email,
+                verificationError = null,
+                resendIn = RESEND_COOLDOWN_SECONDS,
             )
         }
         startResendCountdown()
-
-        if (sendNow) {
-            when (val result = authRepository.requestOtp(email)) {
-                is AppResult.Success -> _events.send(
-                    Event.Message(result.data.message.ifBlank { "Code sent to $email" }),
-                )
-
-                is AppResult.Failure -> _uiState.update { it.copy(otpError = result.message) }
-            }
-        }
     }
 
     private fun startResendCountdown() {
         resendJob?.cancel()
         resendJob = viewModelScope.launch {
-            var remaining = OTP_RESEND_SECONDS
+            var remaining = RESEND_COOLDOWN_SECONDS
             while (remaining > 0) {
-                _uiState.update { it.copy(otpResendIn = remaining) }
+                _uiState.update { it.copy(resendIn = remaining) }
                 kotlinx.coroutines.delay(1_000)
                 remaining--
             }
-            _uiState.update { it.copy(otpResendIn = 0) }
+            _uiState.update { it.copy(resendIn = 0) }
         }
     }
 
-    /** Typing in any of the six boxes. */
-    fun onOtpChange(value: String) {
-        val digits = value.filter { it.isDigit() }.take(OTP_LENGTH)
-        _uiState.update { it.copy(otpCode = digits, otpError = null, otpShake = 0) }
-        // Auto-submit the moment the sixth digit lands — no button hunt.
-        if (digits.length == OTP_LENGTH) verifyOtp()
-    }
-
-    /** Backspace from the last filled box. */
-    fun onOtpBackspace() {
-        val current = _uiState.value.otpCode
-        if (current.isEmpty()) return
-        _uiState.update { it.copy(otpCode = current.dropLast(1), otpError = null) }
-    }
-
-    fun verifyOtp() {
-        val state = _uiState.value
-        val email = state.otpEmail ?: return
-        if (state.otpCode.length != OTP_LENGTH) {
-            _uiState.update { it.copy(otpError = "Enter all six digits.") }
-            return
-        }
+    /** Mails another confirmation link for the address on the pending screen. */
+    fun resendVerification() {
+        val email = _uiState.value.verificationEmail ?: return
+        if (_uiState.value.resendIn > 0) return
 
         launchSafely {
-            when (val result = authRepository.verifyOtp(email, state.otpCode, state.otpPurpose)) {
-                is AppResult.Success -> when (state.otpPurpose) {
-                    OtpPurpose.Signup -> {
-                        _uiState.update { it.copy(otpEmail = null, otpCode = "") }
-                        _events.send(Event.Message("Email confirmed. Welcome to Mini Chat!"))
-                        _events.send(Event.NavigateHome)
-                    }
-
-                    OtpPurpose.Recovery -> {
-                        // Session is live now, so the reset screen can set a password.
-                        _uiState.update { it.copy(otpEmail = null, otpCode = "", resetLinkSent = true) }
-                    }
+            when (val result = authRepository.resendVerificationEmail(email)) {
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(verificationError = null) }
+                    startResendCountdown()
+                    _events.send(Event.Message("Confirmation link sent to $email"))
                 }
 
                 is AppResult.Failure -> _uiState.update {
-                    it.copy(
-                        otpError = result.message,
-                        otpShake = it.otpShake + 1,
-                        otpCode = "",
-                    )
+                    it.copy(verificationError = result.message)
                 }
             }
+        }
+    }
+
+    /** Leaves the inbox screen and returns to sign-in. */
+    fun dismissVerification() {
+        resendJob?.cancel()
+        _uiState.update {
+            it.copy(verificationEmail = null, verificationError = null, resendIn = 0)
         }
     }
 
     /**
      * From the sign-in screen: the address exists but was never confirmed, so
-     * move straight to the code screen and ask Supabase for a fresh code.
+     * offer to mail the link again.
      */
     fun startEmailVerification() {
         val email = _uiState.value.email
@@ -241,31 +200,14 @@ class AuthViewModel @Inject constructor(
             return
         }
         launchSafely {
-            openOtpScreen(email = email, purpose = OtpPurpose.Signup, sendNow = true)
-        }
-    }
-
-    fun resendOtp() {
-        val email = _uiState.value.otpEmail ?: return
-        if (_uiState.value.otpResendIn > 0) return
-        launchSafely {
-            when (val result = authRepository.requestOtp(email)) {
+            when (val result = authRepository.resendVerificationEmail(email)) {
                 is AppResult.Success -> {
-                    _uiState.update { it.copy(otpError = null, otpCode = "") }
-                    startResendCountdown()
-                    _events.send(Event.Message("New code sent to $email"))
+                    showVerificationPending(email)
+                    _events.send(Event.Message("Confirmation link sent to $email"))
                 }
 
-                is AppResult.Failure -> _uiState.update { it.copy(otpError = result.message) }
+                is AppResult.Failure -> handleFailure(result.message)
             }
-        }
-    }
-
-    /** Leaves the code screen without confirming. */
-    fun dismissOtp() {
-        resendJob?.cancel()
-        _uiState.update {
-            it.copy(otpEmail = null, otpCode = "", otpError = null, otpResendIn = 0)
         }
     }
 
@@ -280,7 +222,10 @@ class AuthViewModel @Inject constructor(
             return
         }
         launchSafely {
-            openOtpScreen(email = state.email, purpose = OtpPurpose.Recovery, sendNow = true)
+            when (val result = authRepository.sendPasswordReset(state.email)) {
+                is AppResult.Success -> _uiState.update { it.copy(resetLinkSent = true) }
+                is AppResult.Failure -> handleFailure(result.message)
+            }
         }
     }
 
@@ -323,8 +268,7 @@ class AuthViewModel @Inject constructor(
     }
 
     companion object {
-        const val OTP_LENGTH = 6
-        /** Codes are short-lived; resend stays locked for this long. */
-        const val OTP_RESEND_SECONDS = 30
+        /** Resend stays locked for this long so GoTrue's mail throttle is respected. */
+        const val RESEND_COOLDOWN_SECONDS = 30
     }
 }

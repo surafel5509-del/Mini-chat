@@ -122,12 +122,12 @@ fun LoginScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Need a new code? ",
+                    text = "Not confirmed yet? ",
                     style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
                     color = MiniChatTheme.extra.textSecondary,
                 )
                 TextButtonSmall(
-                    text = "Email me one",
+                    text = "Email me a link",
                     onClick = viewModel::startEmailVerification,
                     color = MiniChatColors.AmberSecondary,
                 )

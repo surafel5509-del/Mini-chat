@@ -36,13 +36,18 @@ data class ProfileDto(
 /** Row of the `conversation_overview` view. */
 @Serializable
 data class ConversationOverviewDto(
-    @SerialName("conversation_id") val conversationId: String,
-    @SerialName("conversation_type") val conversationType: String = "direct",
+    // Every column of `conversation_overview` is nullable in Postgres because the
+    // view is built from LEFT JOINs. Declaring any of them non-null here is a
+    // trap: kotlinx.serialization throws on an explicit JSON null even when the
+    // property has a default, and one group with no messages would then break the
+    // whole inbox. Keep these nullable and normalise in `toDomain`.
+    @SerialName("conversation_id") val conversationId: String? = null,
+    @SerialName("conversation_type") val conversationType: String? = null,
     @SerialName("conversation_title") val conversationTitle: String? = null,
     @SerialName("conversation_avatar_url") val conversationAvatarUrl: String? = null,
     @SerialName("conversation_description") val conversationDescription: String? = null,
     @SerialName("my_role") val myRole: String? = null,
-    @SerialName("member_count") val memberCount: Long = 1,
+    @SerialName("member_count") val memberCount: Long? = null,
     @SerialName("last_message_type") val lastMessageType: String? = null,
     @SerialName("last_message_duration_ms") val lastMessageDurationMs: Int? = null,
     @SerialName("last_message_sender_name") val lastMessageSenderName: String? = null,
@@ -55,15 +60,21 @@ data class ConversationOverviewDto(
     @SerialName("last_message_content") val lastMessageContent: String? = null,
     @SerialName("last_message_sender_id") val lastMessageSenderId: String? = null,
     @SerialName("last_message_at") val lastMessageAt: String? = null,
-    @SerialName("last_message_is_deleted") val lastMessageIsDeleted: Boolean = false,
-    @SerialName("unread_count") val unreadCount: Long = 0,
-    @SerialName("is_muted") val isMuted: Boolean = false,
-    @SerialName("is_pinned") val isPinned: Boolean = false,
+    @SerialName("last_message_is_deleted") val lastMessageIsDeleted: Boolean? = null,
+    @SerialName("unread_count") val unreadCount: Long? = null,
+    @SerialName("is_muted") val isMuted: Boolean? = null,
+    @SerialName("is_pinned") val isPinned: Boolean? = null,
     @SerialName("last_read_at") val lastReadAt: String? = null,
     @SerialName("my_id") val myId: String? = null,
     @SerialName("conversation_updated_at") val conversationUpdatedAt: String? = null,
 ) {
-    fun toDomain(currentUserId: String): ConversationSummary {
+    /**
+     * Maps a view row. Returns null when the row cannot identify a conversation,
+     * which is the one thing the UI absolutely needs.
+     */
+    fun toDomainOrNull(currentUserId: String): ConversationSummary? {
+        val id = conversationId?.takeIf { it.isNotBlank() } ?: return null
+
         val peer = if (peerId != null) {
             Profile(
                 id = peerId,
@@ -82,7 +93,7 @@ data class ConversationOverviewDto(
                 text = lastMessageContent.orEmpty(),
                 senderId = lastMessageSenderId,
                 sentAt = TimeFormat.parse(lastMessageAt),
-                isDeleted = lastMessageIsDeleted,
+                isDeleted = lastMessageIsDeleted == true,
                 isMine = lastMessageSenderId == currentUserId,
                 messageType = com.minichat.app.domain.model.MessageType.from(lastMessageType),
                 durationMs = lastMessageDurationMs,
@@ -91,19 +102,19 @@ data class ConversationOverviewDto(
         }
 
         return ConversationSummary(
-            id = conversationId,
+            id = id,
             peer = peer,
             lastMessage = preview,
             lastActivityAt = TimeFormat.parse(lastMessageAt)
                 ?: TimeFormat.parse(conversationUpdatedAt),
-            unreadCount = unreadCount.coerceAtLeast(0).toInt(),
-            isPinned = isPinned,
-            isMuted = isMuted,
+            unreadCount = (unreadCount ?: 0L).coerceAtLeast(0).toInt(),
+            isPinned = isPinned == true,
+            isMuted = isMuted == true,
             isGroup = conversationType == "group",
             title = conversationTitle,
             groupAvatarUrl = conversationAvatarUrl,
             description = conversationDescription,
-            memberCount = memberCount.coerceAtLeast(1).toInt(),
+            memberCount = (memberCount ?: 1L).coerceAtLeast(1).toInt(),
             myRole = com.minichat.app.domain.model.GroupRole.from(myRole),
             lastMessageSenderName = lastMessageSenderName,
         )

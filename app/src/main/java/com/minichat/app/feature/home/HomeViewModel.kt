@@ -34,6 +34,8 @@ class HomeViewModel @Inject constructor(
 
     data class UiState(
         val isLoading: Boolean = true,
+        /** True while a pull-to-refresh is in flight. */
+        val isRefreshing: Boolean = false,
         val conversations: List<ConversationSummary> = emptyList(),
         val query: String = "",
         val profile: Profile? = null,
@@ -87,15 +89,53 @@ class HomeViewModel @Inject constructor(
             when (val result = chatRepository.loadConversations()) {
                 is AppResult.Success -> {
                     _uiState.update {
-                        it.copy(isLoading = false, conversations = result.data, error = null)
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            conversations = result.data,
+                            error = null,
+                        )
                     }
                     syncTypingSubscriptions(result.data)
                 }
 
                 is AppResult.Failure -> _uiState.update {
-                    it.copy(isLoading = false, error = result.message)
+                    it.copy(isLoading = false, isRefreshing = false, error = result.message)
                 }
             }
+        }
+    }
+
+    /**
+     * Pull-to-refresh.
+     *
+     * Unlike [refresh] this deliberately bypasses the in-flight guard: the user
+     * made a gesture and the spinner must resolve to something.
+     */
+    fun onPullToRefresh() {
+        _uiState.update { it.copy(isRefreshing = true, error = null) }
+        refreshJob?.cancel()
+        viewModelScope.launch {
+            val conversations = chatRepository.loadConversations()
+            when (conversations) {
+                is AppResult.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            conversations = conversations.data,
+                            error = null,
+                        )
+                    }
+                    syncTypingSubscriptions(conversations.data)
+                }
+
+                is AppResult.Failure -> _uiState.update {
+                    it.copy(isLoading = false, isRefreshing = false, error = conversations.message)
+                }
+            }
+            // Notes are cheap and belong in the same gesture.
+            loadNotes()
         }
     }
 

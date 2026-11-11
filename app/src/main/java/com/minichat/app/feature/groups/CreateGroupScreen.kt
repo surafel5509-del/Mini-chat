@@ -109,9 +109,9 @@ fun CreateGroupScreen(
             },
         )
 
-        if (state.error != null) {
+        state.error?.let { error ->
             Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
-                InlineError(message = state.error!!)
+                InlineError(message = error)
             }
         }
 

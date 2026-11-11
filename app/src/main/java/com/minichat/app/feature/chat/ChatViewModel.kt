@@ -54,6 +54,8 @@ class ChatViewModel @Inject constructor(
         val peerReadAt: Instant? = null,
         val error: String? = null,
         val isLoadingOlder: Boolean = false,
+        /** True while a pull-to-refresh is syncing the thread. */
+        val isRefreshing: Boolean = false,
         val hasMoreHistory: Boolean = true,
         val infoMessage: Message? = null,
         val isBlockedByPeer: Boolean = false,
@@ -137,6 +139,45 @@ class ChatViewModel @Inject constructor(
             refreshNotes()
 
             chatRepository.messageEvents(conversationId).collect { event -> applyMessageEvent(event) }
+        }
+    }
+
+    /**
+     * Pull-to-refresh: re-reads the conversation and the newest page of messages.
+     *
+     * This exists because realtime can miss an event while the socket is
+     * reconnecting; a deliberate gesture should always leave the screen truthful
+     * rather than hoping the subscription stayed up.
+     */
+    fun syncNow() {
+        if (_uiState.value.isRefreshing) return
+        _uiState.update { it.copy(isRefreshing = true, error = null) }
+
+        viewModelScope.launch {
+            val conversation = chatRepository.loadConversation(conversationId)
+            if (conversation is AppResult.Success) {
+                _uiState.update { it.copy(conversation = conversation.data) }
+            }
+
+            val page = chatRepository.loadMessages(conversationId, before = null)
+            when (page) {
+                is AppResult.Success -> _uiState.update { state ->
+                    // Keep anything still sending locally, then merge the server
+                    // page on top so a refresh never eats an optimistic bubble.
+                    val pending = state.messages.filter { it.id.startsWith("local-") }
+                    val merged = (page.data + pending)
+                        .distinctBy { it.id }
+                        .sortedBy { it.createdAt ?: Instant.EPOCH }
+                    state.copy(messages = merged, isRefreshing = false, hasMoreHistory = true)
+                }
+
+                is AppResult.Failure -> _uiState.update {
+                    it.copy(isRefreshing = false, error = page.message)
+                }
+            }
+
+            refreshPeerReadState()
+            markRead()
         }
     }
 

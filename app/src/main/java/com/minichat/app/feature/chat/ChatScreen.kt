@@ -164,7 +164,11 @@ fun ChatScreen(
             peerNote = state.peerNote,
         )
 
-        Box(modifier = Modifier.weight(1f)) {
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = viewModel::syncNow,
+            modifier = Modifier.weight(1f),
+        ) {
             when {
                 state.isLoading && state.messages.isEmpty() -> MiniChatLoader()
 

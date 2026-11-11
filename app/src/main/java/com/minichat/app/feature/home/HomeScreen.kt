@@ -131,7 +131,11 @@ fun HomeScreen(
                 }
             }
 
-            Box(modifier = Modifier.weight(1f)) {
+            androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+                isRefreshing = state.isRefreshing,
+                onRefresh = viewModel::onPullToRefresh,
+                modifier = Modifier.weight(1f),
+            ) {
                 when {
                     state.isLoading && state.conversations.isEmpty() -> {
                         Column {

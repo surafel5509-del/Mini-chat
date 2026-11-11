@@ -195,7 +195,11 @@ class GroupRepositoryImpl @Inject constructor(
 
         val ext = extension.lowercase().removePrefix(".")
             .takeIf { it in setOf("jpg", "jpeg", "png", "webp") } ?: "jpg"
-        val path = "$conversationId/group_${System.currentTimeMillis()}.$ext"
+        // The `avatars` bucket policy requires the first path segment to be the
+        // caller's uid, so a group photo lives under the admin who uploaded it.
+        // Using `$conversationId/` here silently failed with a storage 403.
+        val uploader = me() ?: error("You must be signed in.")
+        val path = "$uploader/group_${conversationId.take(8)}_${System.currentTimeMillis()}.$ext"
 
         val bucket = client.storage.from("avatars")
         bucket.upload(path, bytes) { upsert = true }

@@ -63,7 +63,7 @@ class ChatRepositoryImpl @Inject constructor(
                 order("conversation_updated_at", Order.DESCENDING)
             }
             .decodeList<ConversationOverviewDto>()
-            .map { it.toDomain(userId) }
+            .mapNotNull { it.toDomainOrNull(userId) }
             .sortedWith(
                 compareByDescending<ConversationSummary> { it.isPinned }
                     .thenByDescending { it.sortKey },
@@ -78,7 +78,7 @@ class ChatRepositoryImpl @Inject constructor(
             }
             .decodeList<ConversationOverviewDto>()
             .firstOrNull()
-            ?.toDomain(userId)
+            ?.toDomainOrNull(userId)
     }
 
     override suspend fun loadMessages(

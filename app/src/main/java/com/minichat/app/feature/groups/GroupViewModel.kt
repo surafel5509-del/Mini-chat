@@ -148,6 +148,8 @@ class GroupViewModel @Inject constructor(
 
     fun createGroup() {
         val state = _uiState.value
+        // Ignore repeat taps: each one would create a separate group.
+        if (state.isSaving) return
         if (!state.canCreate) {
             _uiState.update { it.copy(error = "Add a name and at least one member.") }
             return
