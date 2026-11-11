@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Never back up auth material. -->
+    <exclude domain="sharedpref" path="minichat_secure_session.xml" />
+    <exclude domain="file" path="datastore/" />
+</full-backup-content>

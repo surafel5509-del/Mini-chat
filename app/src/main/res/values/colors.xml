@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="minichat_yellow">#FFD43B</color>
+    <color name="minichat_amber">#F4B942</color>
+    <color name="minichat_soft_yellow">#FFF2B3</color>
+    <color name="minichat_light_background">#F8F9FC</color>
+    <color name="minichat_dark_background">#101114</color>
+    <color name="minichat_ink">#1A1608</color>
+    <color name="minichat_notification_accent">#FFD43B</color>
+    <color name="ic_launcher_background">#FFD43B</color>
+</resources>
