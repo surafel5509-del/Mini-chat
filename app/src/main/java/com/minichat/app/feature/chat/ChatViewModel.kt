@@ -410,6 +410,11 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    /** Surfaces a microphone/permission problem without starting a recording. */
+    fun reportRecordingProblem(message: String) {
+        _uiState.update { it.copy(isRecording = false, recordingMs = 0, recordingLevel = 0f, error = message) }
+    }
+
     /** Discards an in-progress recording. */
     fun cancelRecording() {
         recordingTickerJob?.cancel()

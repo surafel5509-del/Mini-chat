@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.minichat.app.design.components.Avatar
+import com.minichat.app.design.components.MiniChatAvatar
 import com.minichat.app.design.components.InlineError
 import com.minichat.app.design.components.MiniChatTextField
 import com.minichat.app.design.components.PrimaryButton
@@ -197,9 +197,10 @@ private fun LazyRowOfSelected(profiles: List<Profile>, onRemove: (String) -> Uni
                     .clickable { onRemove(profile.id) },
             ) {
                 Box {
-                    Avatar(
-                        name = profile.displayName,
-                        imageUrl = profile.avatarUrl,
+                    MiniChatAvatar(
+                        displayName = profile.displayName,
+                        username = profile.username,
+                        avatarUrl = profile.avatarUrl,
                         size = 48.dp,
                     )
                     // A small x badge reads as "tap to remove".
@@ -291,7 +292,12 @@ private fun PickablePersonRow(profile: Profile, selected: Boolean, onClick: () -
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Avatar(name = profile.displayName, imageUrl = profile.avatarUrl, size = 46.dp)
+        MiniChatAvatar(
+            displayName = profile.displayName,
+            username = profile.username,
+            avatarUrl = profile.avatarUrl,
+            size = 46.dp,
+        )
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -462,7 +468,12 @@ private fun GroupDetails(
                 .filter { it.id in state.selected }
                 .take(6)
                 .forEach {
-                    Avatar(name = it.displayName, imageUrl = it.avatarUrl, size = 36.dp)
+                    MiniChatAvatar(
+                        displayName = it.displayName,
+                        username = it.username,
+                        avatarUrl = it.avatarUrl,
+                        size = 36.dp,
+                    )
                 }
             if (state.selected.size > 6) {
                 Box(

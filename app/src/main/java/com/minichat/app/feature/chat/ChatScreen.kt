@@ -3,6 +3,11 @@ package com.minichat.app.feature.chat
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -89,6 +94,34 @@ fun ChatScreen(
     var confirmClear by remember { mutableStateOf(false) }
     val forwardTargets by viewModel.forwardTargets.collectAsStateWithLifecycle()
     val playback by viewModel.playback.collectAsStateWithLifecycle()
+
+    // Android has required a runtime grant for the microphone since Marshmallow.
+    // Without this check the recorder would fail to start and the user would only
+    // see a generic error.
+    val micPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            viewModel.startRecording()
+        } else {
+            viewModel.reportRecordingProblem(
+                "Mini Chat needs microphone access to record a voice message.",
+            )
+        }
+    }
+
+    val requestRecording = {
+        val granted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.RECORD_AUDIO,
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (granted) {
+            viewModel.startRecording()
+        } else {
+            micPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
 
     DisposableEffect(viewModel) {
         viewModel.onScreenStarted()
@@ -225,7 +258,7 @@ fun ChatScreen(
                 onCancelContext = viewModel::cancelReplyOrEdit,
                 onOpenEmoji = { showEmojiSheet = true },
                 enabled = !state.isBlocked,
-                onStartRecording = viewModel::startRecording,
+                onStartRecording = requestRecording,
             )
         }
     }

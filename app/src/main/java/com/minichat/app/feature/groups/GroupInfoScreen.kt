@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.minichat.app.design.components.Avatar
+import com.minichat.app.design.components.MiniChatAvatar
 import com.minichat.app.design.components.ConfirmDialog
 import com.minichat.app.design.components.InlineError
 import com.minichat.app.design.theme.MiniChatColors
@@ -135,9 +135,10 @@ fun GroupInfoScreen(
                         .padding(horizontal = 20.dp, vertical = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Avatar(
-                        name = state.title.ifBlank { "Group" },
-                        imageUrl = state.avatarUrl,
+                    MiniChatAvatar(
+                        displayName = state.title.ifBlank { "Group" },
+                        username = "",
+                        avatarUrl = state.avatarUrl,
                         size = 96.dp,
                     )
                     Spacer(Modifier.height(12.dp))
@@ -375,9 +376,10 @@ private fun MemberRow(
             .padding(horizontal = 20.dp, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Avatar(
-            name = member.profile.displayName,
-            imageUrl = member.profile.avatarUrl,
+        MiniChatAvatar(
+            displayName = member.profile.displayName,
+            username = member.profile.username,
+            avatarUrl = member.profile.avatarUrl,
             size = 44.dp,
         )
         Spacer(Modifier.width(12.dp))
