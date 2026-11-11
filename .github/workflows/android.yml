@@ -1,0 +1,224 @@
+name: Android CI
+
+on:
+  push:
+    branches: ['arena/4107d07b-mini-chat', 'main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install Android SDK platform
+        continue-on-error: true
+        run: |
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls "$ANDROID_SDK_ROOT/platforms" || true
+          SDKMANAGER=$(command -v sdkmanager || echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager")
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" --list 2>/dev/null | grep -E "platforms;android-3[0-9]" | head -20 || true
+          "$SDKMANAGER" "platforms;android-37" "build-tools;37.0.0" 2>&1 | tail -6 || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0" 2>&1 | tail -3 || true
+          ls "$ANDROID_SDK_ROOT/platforms" || true
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.9.0'
+
+      - name: Generate Gradle wrapper
+        continue-on-error: true
+        run: |
+          set -x
+          which gradle || true
+          gradle --version || true
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            gradle wrapper --gradle-version 9.9.0 --distribution-type bin --no-daemon 2>&1 | tail -20
+          fi
+          ls -la gradlew gradle/wrapper 2>&1 || true
+          chmod +x gradlew 2>/dev/null || true
+          touch build.log
+
+      - name: Assemble debug APK
+        run: |
+          if [ -x ./gradlew ]; then GRADLE_CMD=./gradlew; else GRADLE_CMD=gradle; fi
+          echo "using $GRADLE_CMD" > build.log
+          set +e
+          $GRADLE_CMD :app:assembleDebug :app:testDebugUnitTest --stacktrace --no-daemon --console=plain >> build.log 2>&1
+          STATUS=$?
+          set -e
+          echo "gradle_exit=$STATUS" > build-status.txt
+          # Print the *errors*, not just the last lines: a Kotlin failure is
+          # followed by hundreds of lines of warnings, so a plain tail hides it.
+          echo '--- compile errors ---'
+          grep -n "^e: \|^e: file\|FAILURE:\|What went wrong" build.log | head -60 || true
+          echo '--- tail ---'
+          tail -n 120 build.log
+          exit $STATUS
+
+      # A minified release build is a nice-to-have; the debug APK is what people
+      # install. Never let R8 trouble hide the artifact users actually need.
+      - name: Assemble release APK and AAB
+        continue-on-error: true
+        run: |
+          if [ -x ./gradlew ]; then GRADLE_CMD=./gradlew; else GRADLE_CMD=gradle; fi
+          set +e
+          $GRADLE_CMD :app:assembleRelease :app:bundleRelease --stacktrace --no-daemon --console=plain > release.log 2>&1
+          STATUS=$?
+          set -e
+
+          # An empty log means Gradle never produced output (a missing wrapper or
+          # a crash before logging). Record that explicitly instead of silently
+          # reporting a bare exit code with nothing to read.
+          if [ ! -s release.log ]; then
+            {
+              echo "Gradle produced no output (exit $STATUS)."
+              echo "Checking the toolchain:"
+              ls -la gradlew gradle/wrapper 2>&1 || true
+              which java || true
+              java -version 2>&1 | head -3 || true
+            } > release.log
+          fi
+          echo "release_gradle_exit=$STATUS" >> build-status.txt
+          echo '--- release errors ---'
+          grep -n "^e: \|^e: file\|FAILURE:\|What went wrong" release.log | head -40 || true
+          tail -n 80 release.log
+          exit $STATUS
+
+      - name: Collect outputs
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p ci-logs/outputs
+          cp app/build/outputs/apk/debug/*.apk ci-logs/outputs/ 2>/dev/null || true
+          cp app/build/outputs/apk/release/*.apk ci-logs/outputs/ 2>/dev/null || true
+          cp app/build/outputs/bundle/release/*.aab ci-logs/outputs/ 2>/dev/null || true
+          ls -lh ci-logs/outputs >> build-status.txt 2>/dev/null || true
+          cat build-status.txt
+
+      - name: Upload build artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: minichat-apk
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Publish GitHub release
+        if: always()
+        continue-on-error: true
+        run: |
+          if ! grep -q 'gradle_exit=0' build-status.txt; then
+            echo "build did not succeed; skipping release"
+            exit 0
+          fi
+          SHORT=$(echo "$GITHUB_SHA" | cut -c1-7)
+          TAG="build-$SHORT"
+          {
+            echo "Automatic build of \`$GITHUB_SHA\` by GitHub Actions."
+            echo ""
+            echo "Download **app-debug.apk** below (signed with the debug key, applicationId \`com.minichat.app.debug\`) and install it with:"
+            echo ""
+            echo '```bash'
+            echo "adb install -r app-debug.apk"
+            echo '```'
+            echo ""
+            echo "\`app-release.aab\` is the App Bundle for Play Console."
+          } > /tmp/release-notes.md
+          # Ship whatever actually exists. The debug APK is the deliverable users
+          # install; a missing AAB (release build failure) must not block it.
+          ASSETS=()
+          [ -f app/build/outputs/apk/debug/app-debug.apk ] &&
+            ASSETS+=(app/build/outputs/apk/debug/app-debug.apk)
+          [ -f app/build/outputs/bundle/release/app-release.aab ] &&
+            ASSETS+=(app/build/outputs/bundle/release/app-release.aab)
+          [ -f app/build/outputs/apk/release/app-release-unsigned.apk ] &&
+            ASSETS+=(app/build/outputs/apk/release/app-release-unsigned.apk)
+
+          if [ ${#ASSETS[@]} -eq 0 ]; then
+            echo "nothing to publish"
+            exit 0
+          fi
+          echo "publishing: ${ASSETS[*]}"
+
+          gh release delete "$TAG" --repo "$REPO" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" \
+            --repo "$REPO" \
+            --target "$GITHUB_SHA" \
+            --title "MINI CHAT debug build $SHORT" \
+            --notes-file /tmp/release-notes.md \
+            "${ASSETS[@]}" \
+            || echo "release step failed"
+
+      - name: Publish log to issue
+        if: always()
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+
+          log = ""
+          for path in ("build.log", "release.log"):
+              if os.path.exists(path):
+                  log += "\n===== %s =====\n" % path + open(path, encoding="utf-8", errors="replace").read()
+
+          signals = re.compile(r"^e: |FAILURE:|What went wrong|Could not resolve|Could not find|Unresolved reference"
+                               r"|BUILD SUCCESSFUL|BUILD FAILED|error:|Caused by:|\* What went wrong|A problem occurred"
+                               r"|> Task :app:.*(FAILED)?|APK|aab|Caused by|requires|Dependency '|minCompileSdk|compile against|Android APIs")
+          interesting = [line for line in log.splitlines() if signals.search(line)]
+          failed = "gradle_exit=0" not in (open("build-status.txt").read() if os.path.exists("build-status.txt") else "")
+          selected = (interesting[-60:] + ["...", "RAW TAIL:"] + log.splitlines()[-160:]) if failed else (interesting[-200:] or log.splitlines()[-120:])
+
+          status = ""
+          if os.path.exists("build-status.txt"):
+              status = open("build-status.txt", encoding="utf-8", errors="replace").read()
+
+          body = "sha `%s`\n\nstatus:\n```\n%s\n```\ncompile:\n```\n%s\n```" % (
+              os.environ.get("GITHUB_SHA", "?")[:8],
+              status[-1500:],
+              "\n".join(selected)[-55000:],
+          )
+          open("/tmp/comment.md", "w", encoding="utf-8").write(body)
+          PY
+          gh issue comment 1 --repo "$REPO" --body-file /tmp/comment.md || echo "comment failed"
+
+      - name: Push logs to branch
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p ci-logs
+          cp build.log ci-logs/build.log 2>/dev/null || true
+          cp build-status.txt ci-logs/build-status.txt 2>/dev/null || true
+          printf 'ci-logs/outputs/\nci-logs/*.log\n' > /dev/null
+          git config user.name "mini-chat-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add -f ci-logs/build.log ci-logs/build-status.txt gradle/wrapper gradlew gradlew.bat 2>/dev/null || true
+          git commit -m "ci: build log [skip ci]" || echo "nothing to commit"
+          git pull --rebase --autostash -q origin "${GITHUB_REF_NAME}" || true
+          git push origin "HEAD:${GITHUB_REF_NAME}" || echo "push failed"
