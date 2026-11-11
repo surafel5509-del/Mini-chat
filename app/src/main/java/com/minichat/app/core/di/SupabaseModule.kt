@@ -44,6 +44,14 @@ object SupabaseModule {
         defaultSerializer = KotlinXSerializer(json)
 
         install(Auth) {
+            // The confirmation and recovery emails come back as
+            // minichat://auth-callback. supabase-kt builds that redirect from
+            // scheme+host, and every auth call inherits it — signUp,
+            // resendEmail and resetPasswordForEmail all point here without each
+            // call site repeating the string.
+            scheme = "minichat"
+            host = "auth-callback"
+
             alwaysAutoRefresh = true
             autoLoadFromStorage = true
             autoSaveToStorage = true

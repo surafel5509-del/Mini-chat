@@ -78,17 +78,17 @@ class AuthRepositoryImpl @Inject constructor(
         password: String,
         displayName: String,
     ): AppResult<SignUpOutcome> = safeCall {
+        // redirectUrl defaults to AuthConfig.deepLink, which is set to
+        // minichat://auth-callback in SupabaseModule. Without it GoTrue falls back
+        // to the project's Site URL — a web page — so the app is never resumed:
+        // the user taps "confirm", sees a generic page, and comes back still
+        // unconfirmed.
         val user = client.auth.signUpWith(Email) {
             this.email = email.trim()
             this.password = password
             this.data = buildJsonObject {
                 put("display_name", displayName.trim())
             }
-            // Without this the confirmation link falls back to the project's Site
-            // URL — a web page — and the app is never resumed, so a new user taps
-            // the link, sees a generic page, and is still unconfirmed when they
-            // return. Pointing it at our scheme hands the session straight back.
-            this.redirectUrl = "minichat://auth-callback"
         }
 
         val hasSession = client.auth.currentSessionOrNull() != null
