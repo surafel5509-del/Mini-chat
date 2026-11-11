@@ -1,0 +1,21 @@
+# Android / Gradle
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+*.keystore
+*.jks
+release/
+ci-logs/
+VERSIONS_TRIGGER
+google-services.json
+
+# Kotlin
+.kotlin/
