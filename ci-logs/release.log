@@ -1,0 +1,513 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.9.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: The option setting 'android.builtInKotlin=false' is deprecated.
+The current default is 'true'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+Add android.sync.suppressAgpWarnings=UNSUPPORTED_PROJECT_OPTION_USE to the gradle.properties file to suppress this warning.
+WARNING: The option setting 'android.newDsl=false' is deprecated.
+The current default is 'true'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+Add android.sync.suppressAgpWarnings=UNSUPPORTED_PROJECT_OPTION_USE to the gradle.properties file to suppress this warning.
+WARNING: API 'applicationVariants' is obsolete and has been replaced with 'AndroidComponentsExtension'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+The legacy variant API is disabled by default in AGP 9.0, but can be re-enabled by adding 
+    android.newDsl=false
+to this project's gradle.properties file.
+For more information, see http://developer.android.com/build/r/new-dsl.
+
+To determine what is calling applicationVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+Add android.sync.suppressAgpWarnings=DEPRECATED_DSL to the gradle.properties file to suppress this warning.
+WARNING: API 'testVariants' is obsolete and has been replaced with 'AndroidComponentsExtension'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+The legacy variant API is disabled by default in AGP 9.0, but can be re-enabled by adding 
+    android.newDsl=false
+to this project's gradle.properties file.
+For more information, see http://developer.android.com/build/r/new-dsl.
+
+To determine what is calling testVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+Add android.sync.suppressAgpWarnings=DEPRECATED_DSL to the gradle.properties file to suppress this warning.
+WARNING: API 'unitTestVariants' is obsolete and has been replaced with 'AndroidComponentsExtension'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+The legacy variant API is disabled by default in AGP 9.0, but can be re-enabled by adding 
+    android.newDsl=false
+to this project's gradle.properties file.
+For more information, see http://developer.android.com/build/r/new-dsl.
+
+To determine what is calling unitTestVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+Add android.sync.suppressAgpWarnings=DEPRECATED_DSL to the gradle.properties file to suppress this warning.
+w: ⚠️ Deprecated 'org.jetbrains.kotlin.android' plugin usage
+The 'org.jetbrains.kotlin.android' plugin in project ':app' is no longer required for Kotlin support since AGP 9.0.
+Solution: Remove both `android.builtInKotlin=true` and `android.newDsl=false` from `gradle.properties`, then migrate to built-in Kotlin.
+See https://kotl.in/gradle/agp-built-in-kotlin for more details.
+
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs
+> Task :app:checkReleaseDuplicateClasses
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libdatastore_shared_counter.so. Run with --info option to learn more.
+
+> Task :app:mergeReleaseArtProfile
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:buildKotlinToolingMetadata
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateReleaseBuildConfig
+> Task :app:generateReleaseResources FROM-CACHE
+> Task :app:packageReleaseResources
+> Task :app:processReleaseNavigationResources
+> Task :app:parseReleaseLocalResources FROM-CACHE
+> Task :app:generateReleaseRFile FROM-CACHE
+> Task :app:javaPreCompileRelease FROM-CACHE
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:compileReleaseNavigationResources FROM-CACHE
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseResources
+> Task :app:mergeReleaseStartupProfile
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:processReleaseManifestForPackage
+> Task :app:compressReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:collectReleaseDependencies
+> Task :app:processReleaseResources
+> Task :app:sdkReleaseDependencyData
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:configureReleaseDependencies
+> Task :app:parseReleaseIntegrityConfig
+> Task :app:kspReleaseKotlin
+
+> Task :app:compileReleaseKotlin
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:58:25 'class MasterKey : Any' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:58:35 'constructor(p0: Context): MasterKey.Builder' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:59:27 'class MasterKey : Any' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:59:37 'enum class KeyScheme : Enum<MasterKey.KeyScheme!>' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:61:9 'class EncryptedSharedPreferences : Any, SharedPreferences' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:65:13 'class EncryptedSharedPreferences : Any, SharedPreferences' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:65:40 'enum class PrefKeyEncryptionScheme : Enum<EncryptedSharedPreferences.PrefKeyEncryptionScheme!>' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:66:13 'class EncryptedSharedPreferences : Any, SharedPreferences' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:66:40 'enum class PrefValueEncryptionScheme : Enum<EncryptedSharedPreferences.PrefValueEncryptionScheme!>' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:192:9 Expression is unused.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:379:72 Unnecessary non-null assertion (!!) on a non-null receiver of type 'String'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:380:66 Unnecessary non-null assertion (!!) on a non-null receiver of type 'String'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/NoteComponents.kt:194:37 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Note'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/NoteComponents.kt:206:40 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Note'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/NoteComponents.kt:324:36 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Note'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/LoginScreen.kt:41:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/PasswordRecoveryScreens.kt:32:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/PasswordRecoveryScreens.kt:92:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/RegisterScreen.kt:50:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:82:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/Composer.kt:220:47 'val Icons.Rounded.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Send.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:190:48 'val Icons.Rounded.Reply: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Reply.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:192:48 'val Icons.Rounded.Forward: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Forward.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:136:61 'val Icons.Rounded.Reply: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Reply.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/VoiceRecorderBar.kt:149:49 'val Icons.Rounded.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Send.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverScreen.kt:60:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/groups/CreateGroupScreen.kt:74:33 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/groups/GroupInfoScreen.kt:68:33 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/groups/GroupInfoScreen.kt:214:46 'val Icons.Rounded.ExitToApp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.ExitToApp.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/home/HomeScreen.kt:88:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:77:35 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:210:34 'val Icons.Rounded.Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Logout.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:259:35 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:343:42 'val Icons.Rounded.Message: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Message.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:405:35 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:83:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:168:34 'val Icons.Rounded.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.VolumeUp.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:193:34 'val Icons.Rounded.Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Logout.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:221:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:326:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:341:38 'val Icons.Rounded.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.VolumeUp.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:377:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:417:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/notifications/NotificationChannels.kt:35:39 'static field USAGE_NOTIFICATION_COMMUNICATION_INSTANT: Int' is deprecated. Deprecated in Java.
+
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:hiltCollectClassesRelease
+> Task :app:hiltAggregateDepsRelease FROM-CACHE
+> Task :app:hiltJavaCompileRelease
+> Task :app:compressReleaseJavaRes
+> Task :app:mergeReleaseJavaResource
+> Task :app:transformReleaseClassesWithAsm
+> Task :app:mergeReleaseGeneratedProguardFiles
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:produceReleaseComposeMapping
+> Task :app:reportReleaseComposeMappingErrors
+
+> Task :app:minifyReleaseWithR8 FAILED
+ERROR: Missing classes detected while running R8. Please add the missing classes or apply additional keep rules that are generated in /home/runner/work/Mini-chat/Mini-chat/app/build/outputs/mapping/release/missing_rules.txt.
+ERROR: R8: Missing class com.google.errorprone.annotations.CanIgnoreReturnValue (referenced from: com.google.crypto.tink.KeysetManager com.google.crypto.tink.KeysetManager.add(com.google.crypto.tink.KeyTemplate) and 52 other contexts)
+Missing class com.google.errorprone.annotations.CheckReturnValue (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 1 other context)
+Missing class com.google.errorprone.annotations.Immutable (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 40 other contexts)
+Missing class com.google.errorprone.annotations.RestrictedApi (referenced from: com.google.crypto.tink.aead.AesEaxKey$Builder com.google.crypto.tink.aead.AesEaxKey.builder() and 6 other contexts)
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_4-1794374840400.json
+
+[Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:minifyReleaseWithR8' (registered by plugin 'com.android.internal.application').
+> A failure occurred while executing com.android.build.gradle.internal.tasks.R8Task$R8Runnable
+   > Compilation failed to complete
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:minifyReleaseWithR8' (registered by plugin 'com.android.internal.application').
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeSkippingWithNoActions(DefaultTaskNodeExecutor.java:289)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeSkippingOnlyIf(DefaultTaskNodeExecutor.java:272)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeCatchingFailures(DefaultTaskNodeExecutor.java:228)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeWithFallbackOperationId(DefaultTaskNodeExecutor.java:197)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeWithLifecycle(DefaultTaskNodeExecutor.java:171)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.access$000(DefaultTaskNodeExecutor.java:67)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor$1.run(DefaultTaskNodeExecutor.java:136)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.execute(DefaultTaskNodeExecutor.java:133)
+	at org.gradle.execution.plan.LocalTaskNode.execute(LocalTaskNode.java:229)
+	at org.gradle.execution.DefaultBuildWorkExecutor.lambda$executePlan$0(DefaultBuildWorkExecutor.java:153)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.lambda$execute$0(DefaultPlanExecutor.java:476)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:475)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:392)
+	at org.gradle.execution.plan.DefaultPlanExecutor.process(DefaultPlanExecutor.java:118)
+	at org.gradle.execution.DefaultBuildWorkExecutor.executePlan(DefaultBuildWorkExecutor.java:143)
+	at org.gradle.execution.DefaultBuildWorkExecutor.displayOrExecutePlan(DefaultBuildWorkExecutor.java:128)
+	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:79)
+	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:75)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.execution.DefaultBuildWorkExecutor.execute(DefaultBuildWorkExecutor.java:75)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$executeTasks$0(DefaultBuildLifecycleController.java:322)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:324)
+	at org.gradle.internal.model.StateTransitionController.lambda$tryTransition$0(StateTransitionController.java:235)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:45)
+	at org.gradle.internal.model.StateTransitionController.tryTransition(StateTransitionController.java:235)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.executeTasks(DefaultBuildLifecycleController.java:313)
+	at org.gradle.internal.build.DefaultBuildWorkGraphController$DefaultBuildWorkGraph.runWork(DefaultBuildWorkGraphController.java:207)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+	at org.gradle.composite.internal.DefaultBuildController.doRun(DefaultBuildController.java:182)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.lambda$run$0(DefaultBuildController.java:199)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.run(DefaultBuildController.java:199)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing com.android.build.gradle.internal.tasks.R8Task$R8Runnable
+	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:273)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:132)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withoutLocksBlocking$0(DefaultWorkerLeaseService.java:401)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocksBlocking(DefaultWorkerLeaseService.java:396)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.blocking(DefaultWorkerLeaseService.java:256)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.blocking(DefaultWorkerLeaseService.java:238)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$1(DefaultAsyncWorkTracker.java:128)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.resources.MultiLockRegistry.whileDisallowingLockChanges(MultiLockRegistry.java:83)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.whileDisallowingProjectLockChanges(DefaultWorkerLeaseService.java:261)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:127)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:93)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForAll(DefaultAsyncWorkTracker.java:79)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForCompletion(DefaultAsyncWorkTracker.java:67)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:276)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:253)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:236)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:219)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:185)
+	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:167)
+	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:47)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:137)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:134)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:134)
+	at org.gradle.internal.execution.steps.ExecuteStep$Mutable.execute(ExecuteStep.java:80)
+	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)
+	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:51)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:29)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:67)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:39)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:42)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:24)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:69)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:46)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:39)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:28)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:189)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeAndStoreInCache(BuildCacheStep.java:145)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$3(BuildCacheStep.java:104)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$1(BuildCacheStep.java:104)
+	at org.gradle.internal.Try$Success.map(Try.java:170)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithCache(BuildCacheStep.java:88)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$0(BuildCacheStep.java:75)
+	at org.gradle.internal.Either$Left.fold(Either.java:116)
+	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:74)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:49)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:35)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:70)
+	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:32)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:69)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:37)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:63)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:34)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:78)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:64)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:104)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.execute(ValidateStep.java:64)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.executeMutable(CaptureMutableStateBeforeExecutionStep.java:86)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:65)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:45)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeWithNonEmptySources(SkipEmptyMutableWorkStep.java:210)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:85)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:53)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:77)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:43)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$executeMutable$0(AssignMutableWorkspaceStep.java:34)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:314)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:30)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:21)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:56)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
+	... 55 more
+Caused by: com.android.tools.r8.CompilationFailedException: Compilation failed to complete
+	at Version.fakeStackEntry(Version_9.5.29.java:0)
+	at com.android.tools.r8.v0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1)
+	at com.android.tools.r8.internal.zq0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:81)
+	at com.android.tools.r8.internal.zq0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:32)
+	at com.android.tools.r8.R8.run(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:8)
+	at com.android.builder.dexing.R8Tool.runR8(r8Tool.kt:426)
+	at com.android.build.gradle.internal.tasks.BaseR8TaskKt.invokeRunR8(BaseR8Task.kt:506)
+	at com.android.build.gradle.internal.tasks.R8Task$Companion.shrink(R8Task.kt:439)
+	at com.android.build.gradle.internal.tasks.R8Task$R8Runnable.execute(R8Task.kt:533)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:103)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$1(DefaultWorkerExecutor.java:169)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$600(DefaultConditionalExecutionQueue.java:112)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)
+	... 2 more
+Caused by: com.android.tools.r8.internal.c: Missing class com.google.errorprone.annotations.CanIgnoreReturnValue (referenced from: com.google.crypto.tink.KeysetManager com.google.crypto.tink.KeysetManager.add(com.google.crypto.tink.KeyTemplate) and 52 other contexts)
+Missing class com.google.errorprone.annotations.CheckReturnValue (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 1 other context)
+Missing class com.google.errorprone.annotations.Immutable (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 40 other contexts)
+Missing class com.google.errorprone.annotations.RestrictedApi (referenced from: com.google.crypto.tink.aead.AesEaxKey$Builder com.google.crypto.tink.aead.AesEaxKey.builder() and 6 other contexts)
+	at com.android.tools.r8.internal.ya3.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:21)
+	at com.android.tools.r8.internal.ya3.error(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1)
+	at com.android.tools.r8.shaking.m0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:6966)
+	at com.android.tools.r8.shaking.m0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1702)
+	at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1357)
+	at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:225)
+	at com.android.tools.r8.R8.c(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:21)
+	at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:66)
+	at com.android.tools.r8.internal.zq0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:29)
+	... 37 more
+	Suppressed: java.lang.RuntimeException: com.android.tools.r8.internal.c: Missing class com.google.errorprone.annotations.CanIgnoreReturnValue (referenced from: com.google.crypto.tink.KeysetManager com.google.crypto.tink.KeysetManager.add(com.google.crypto.tink.KeyTemplate) and 52 other contexts)
+Missing class com.google.errorprone.annotations.CheckReturnValue (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 1 other context)
+Missing class com.google.errorprone.annotations.Immutable (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 40 other contexts)
+Missing class com.google.errorprone.annotations.RestrictedApi (referenced from: com.google.crypto.tink.aead.AesEaxKey$Builder com.google.crypto.tink.aead.AesEaxKey.builder() and 6 other contexts)
+		at com.android.tools.r8.internal.ya3.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:27)
+		at com.android.tools.r8.shaking.m0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:6968)
+		at com.android.tools.r8.shaking.m0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1702)
+		at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1357)
+		at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:225)
+		at com.android.tools.r8.R8.c(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:21)
+		at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:66)
+		at com.android.tools.r8.internal.zq0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:29)
+		at com.android.tools.r8.R8.run(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:8)
+		at com.android.builder.dexing.R8Tool.runR8(r8Tool.kt:426)
+		at com.android.build.gradle.internal.tasks.BaseR8TaskKt.invokeRunR8(BaseR8Task.kt:506)
+		at com.android.build.gradle.internal.tasks.R8Task$Companion.shrink(R8Task.kt:439)
+		at com.android.build.gradle.internal.tasks.R8Task$R8Runnable.execute(R8Task.kt:533)
+		at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
+		at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:103)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
+		at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+		at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+		at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
+		at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$1(DefaultWorkerExecutor.java:169)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$600(DefaultConditionalExecutionQueue.java:112)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)
+		at org.gradle.internal.Factories$1.create(Factories.java:30)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
+		at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+		at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
+		at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+		at java.base/java.lang.Thread.run(Thread.java:1583)
+	Caused by: java.lang.Throwable: [CIRCULAR REFERENCE: com.android.tools.r8.internal.c: Missing class com.google.errorprone.annotations.CanIgnoreReturnValue (referenced from: com.google.crypto.tink.KeysetManager com.google.crypto.tink.KeysetManager.add(com.google.crypto.tink.KeyTemplate) and 52 other contexts)
+Missing class com.google.errorprone.annotations.CheckReturnValue (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 1 other context)
+Missing class com.google.errorprone.annotations.Immutable (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 40 other contexts)
+Missing class com.google.errorprone.annotations.RestrictedApi (referenced from: com.google.crypto.tink.aead.AesEaxKey$Builder com.google.crypto.tink.aead.AesEaxKey.builder() and 6 other contexts)]
+		at com.android.tools.r8.internal.ya3.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:21)
+		at com.android.tools.r8.internal.ya3.error(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1)
+		at com.android.tools.r8.shaking.m0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:6966)
+		at com.android.tools.r8.shaking.m0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1702)
+		at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:1357)
+		at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:225)
+		at com.android.tools.r8.R8.c(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:21)
+		at com.android.tools.r8.R8.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:66)
+		at com.android.tools.r8.internal.zq0.a(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:29)
+		at com.android.tools.r8.R8.run(R8_9.5.29_448fc88b2e1e1454a58e153c34e186eefdbb08ea62a6ecd8cac2398449934d89:8)
+		at com.android.builder.dexing.R8Tool.runR8(r8Tool.kt:426)
+		at com.android.build.gradle.internal.tasks.BaseR8TaskKt.invokeRunR8(BaseR8Task.kt:506)
+		at com.android.build.gradle.internal.tasks.R8Task$Companion.shrink(R8Task.kt:439)
+		at com.android.build.gradle.internal.tasks.R8Task$R8Runnable.execute(R8Task.kt:533)
+		at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
+		at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:103)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
+		at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+		at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+		at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+		at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+		at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
+		at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$1(DefaultWorkerExecutor.java:169)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$600(DefaultConditionalExecutionQueue.java:112)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)
+		at org.gradle.internal.Factories$1.create(Factories.java:30)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
+		at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+		at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)
+		at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)
+		at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
+		at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+
+
+BUILD FAILED in 1m 14s
+48 actionable tasks: 42 executed, 6 from cache
