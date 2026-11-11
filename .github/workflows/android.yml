@@ -87,14 +87,18 @@ jobs:
           $GRADLE_CMD :app:assembleRelease :app:bundleRelease --stacktrace --no-daemon --console=plain > release.log 2>&1
           STATUS=$?
           set -e
+
+          # An empty log means Gradle never produced output (a missing wrapper or
+          # a crash before logging). Record that explicitly instead of silently
+          # reporting a bare exit code with nothing to read.
           if [ ! -s release.log ]; then
-            # An empty log means the wrapper never got going; run once more
-            # without redirection so the failure is actually visible.
-            echo "release.log was empty - retrying with live output"
-            set +e
-            $GRADLE_CMD :app:assembleRelease --stacktrace --no-daemon --console=plain 2>&1 | tee release.log
-            STATUS=$?
-            set -e
+            {
+              echo "Gradle produced no output (exit $STATUS)."
+              echo "Checking the toolchain:"
+              ls -la gradlew gradle/wrapper 2>&1 || true
+              which java || true
+              java -version 2>&1 | head -3 || true
+            } > release.log
           fi
           echo "release_gradle_exit=$STATUS" >> build-status.txt
           echo '--- release errors ---'
