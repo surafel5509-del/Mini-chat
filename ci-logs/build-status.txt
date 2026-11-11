@@ -1,0 +1,4 @@
+gradle_exit=0
+release_gradle_exit=1
+total 26M
+-rw-r--r-- 1 runner runner 26M Nov 11 05:02 app-debug.apk
