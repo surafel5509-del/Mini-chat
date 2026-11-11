@@ -1,19 +1,42 @@
 package com.minichat.app.design.theme
 
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Typography
+import com.minichat.app.R
 
 /**
  * MINI CHAT type scale.
  *
  * Tight, confident display sizes for headers; generous line-height for anything that has to be
  * read quickly on a phone (last message previews, bubbles, bios).
+ *
+ * Manrope — a geometric grotesque with slightly open apertures and a warm, low
+ * contrast. Bundled as a variable font (164 KB) so every weight from Regular to
+ * ExtraBold is one file instead of four; `FontVariation` selects the weight axis.
+ *
+ * Using the system font is the single biggest reason a chat app reads as
+ * unfinished: every other app on the device uses the same face, so nothing feels
+ * designed. This is the identity.
  */
-private val Default = FontFamily.Default
+private fun manrope(weight: Int) = Font(
+    resId = R.font.manrope,
+    weight = FontWeight(weight),
+    variationSettings = FontVariation.Settings(FontVariation.weight(weight)),
+)
+
+private val Default = FontFamily(
+    manrope(400),
+    manrope(500),
+    manrope(600),
+    manrope(700),
+    manrope(800),
+)
 
 private val Tight = LineHeightStyle(
     alignment = LineHeightStyle.Alignment.Center,

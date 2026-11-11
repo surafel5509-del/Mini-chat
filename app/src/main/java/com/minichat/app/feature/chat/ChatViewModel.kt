@@ -56,6 +56,8 @@ class ChatViewModel @Inject constructor(
         val isLoadingOlder: Boolean = false,
         /** True while a pull-to-refresh is syncing the thread. */
         val isRefreshing: Boolean = false,
+        /** Non-null while the in-conversation search bar is open. */
+        val searchQuery: String? = null,
         val hasMoreHistory: Boolean = true,
         val infoMessage: Message? = null,
         val isBlockedByPeer: Boolean = false,
@@ -149,6 +151,28 @@ class ChatViewModel @Inject constructor(
      * reconnecting; a deliberate gesture should always leave the screen truthful
      * rather than hoping the subscription stayed up.
      */
+    /** Messages that match [searchQuery], in chronological order. */
+    val searchResults: List<Message>
+        get() {
+            val q = _uiState.value.searchQuery?.trim().orEmpty()
+            if (q.isEmpty()) return emptyList()
+            return _uiState.value.messages.filter { message ->
+                !message.isDeleted && message.content.contains(q, ignoreCase = true)
+            }
+        }
+
+    fun openSearch() {
+        _uiState.update { it.copy(searchQuery = "") }
+    }
+
+    fun closeSearch() {
+        _uiState.update { it.copy(searchQuery = null) }
+    }
+
+    fun onSearchChange(value: String) {
+        _uiState.update { it.copy(searchQuery = value) }
+    }
+
     fun syncNow() {
         if (_uiState.value.isRefreshing) return
         _uiState.update { it.copy(isRefreshing = true, error = null) }

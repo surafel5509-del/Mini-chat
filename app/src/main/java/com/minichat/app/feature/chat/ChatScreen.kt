@@ -1,13 +1,12 @@
 package com.minichat.app.feature.chat
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.widget.Toast
-import android.Manifest
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,6 +15,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,15 +31,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Block
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -55,10 +59,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minichat.app.core.util.TimeFormat
@@ -73,6 +82,7 @@ import com.minichat.app.design.components.SettingsRow
 import com.minichat.app.design.theme.MiniChatColors
 import com.minichat.app.design.theme.MiniChatTheme
 import com.minichat.app.domain.model.Message
+
 
 @Composable
 fun ChatScreen(
@@ -161,8 +171,21 @@ fun ChatScreen(
                 }
             },
             onMore = { showConversationSheet = true },
+            onSearch = viewModel::openSearch,
             peerNote = state.peerNote,
         )
+
+        // Searching replaces the thread rather than overlaying it: the results
+        // are what you are looking at, and dismissing brings the conversation
+        // straight back.
+        state.searchQuery?.let { query ->
+            ChatSearchBar(
+                query = query,
+                resultCount = viewModel.searchResults.size,
+                onQueryChange = viewModel::onSearchChange,
+                onClose = viewModel::closeSearch,
+            )
+        }
 
         androidx.compose.material3.pulltorefresh.PullToRefreshBox(
             isRefreshing = state.isRefreshing,
@@ -170,6 +193,11 @@ fun ChatScreen(
             modifier = Modifier.weight(1f),
         ) {
             when {
+                state.searchQuery != null -> ChatSearchResults(
+                    query = state.searchQuery.orEmpty(),
+                    results = viewModel.searchResults,
+                )
+
                 state.isLoading && state.messages.isEmpty() -> MiniChatLoader()
 
                 state.messages.isEmpty() -> EmptyState(
@@ -511,6 +539,7 @@ private fun ChatTopBar(
     onBack: () -> Unit,
     onOpenProfile: () -> Unit,
     onMore: () -> Unit,
+    onSearch: () -> Unit = {},
     peerNote: com.minichat.app.domain.model.Note? = null,
     isGroup: Boolean = false,
 ) {
@@ -605,6 +634,13 @@ private fun ChatTopBar(
             }
 
             MiniChatIconButton(
+                icon = Icons.Rounded.Search,
+                contentDescription = "Search in conversation",
+                onClick = onSearch,
+                containerColor = MaterialTheme.colorScheme.surface,
+            )
+            Spacer(Modifier.width(4.dp))
+            MiniChatIconButton(
                 icon = Icons.Rounded.MoreVert,
                 contentDescription = "More",
                 onClick = onMore,
@@ -617,5 +653,149 @@ private fun ChatTopBar(
                 .height(1.dp)
                 .background(MiniChatTheme.extra.divider.copy(alpha = 0.6f)),
         )
+    }
+}
+
+/**
+ * The search field that takes the top bar's place while a conversation is being
+ * searched. It reports the match count next to the field so a zero-result query
+ * does not look like a failure to load.
+ */
+@Composable
+private fun ChatSearchBar(
+    query: String,
+    resultCount: Int,
+    onQueryChange: (String) -> Unit,
+    onClose: () -> Unit,
+) {
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 14.dp, end = 8.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .height(44.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Spacer(Modifier.width(12.dp))
+            Icon(
+                imageVector = Icons.Rounded.Search,
+                contentDescription = null,
+                tint = MiniChatTheme.extra.textSecondary,
+                modifier = Modifier.size(18.dp),
+            )
+            Spacer(Modifier.width(9.dp))
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
+                singleLine = true,
+                cursorBrush = SolidColor(MiniChatColors.YellowPrimary),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface,
+                ),
+                decorationBox = { inner ->
+                    if (query.isEmpty()) {
+                        Text(
+                            text = "Search messages",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MiniChatTheme.extra.textSecondary,
+                        )
+                    }
+                    inner()
+                },
+            )
+            if (query.isNotEmpty()) {
+                Text(
+                    text = resultCount.toString(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MiniChatTheme.extra.textSecondary,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                )
+            }
+            Spacer(Modifier.width(4.dp))
+        }
+        Spacer(Modifier.width(4.dp))
+        MiniChatIconButton(
+            icon = Icons.Rounded.Close,
+            contentDescription = "Close search",
+            onClick = onClose,
+            containerColor = MaterialTheme.colorScheme.surface,
+        )
+    }
+}
+
+/** Chronological matches, each showing who sent it and when. */
+@Composable
+private fun ChatSearchResults(
+    query: String,
+    results: List<com.minichat.app.domain.model.Message>,
+) {
+    if (query.isBlank()) {
+        EmptyState(
+            icon = Icons.Rounded.Search,
+            title = "Search this conversation",
+            message = "Type to find a message. Swipe back down or close to return.",
+            modifier = Modifier.fillMaxSize(),
+        )
+        return
+    }
+
+    if (results.isEmpty()) {
+        EmptyState(
+            icon = Icons.Rounded.SearchOff,
+            title = "No matches",
+            message = "Nothing here contains \"$query\". Older messages load as you scroll.",
+            modifier = Modifier.fillMaxSize(),
+        )
+        return
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(results, key = { it.id }) { message ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(horizontal = 14.dp, vertical = 11.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = if (message.isMine) "You" else message.senderName.ifBlank { "Member" },
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        text = TimeFormat.messageTime(message.createdAt?.toString()),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MiniChatTheme.extra.textSecondary,
+                    )
+                }
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    text = message.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MiniChatTheme.extra.textSecondary,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }
