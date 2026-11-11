@@ -62,8 +62,8 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:packageDebugResources
 > Task :app:processDebugNavigationResources
 > Task :app:parseDebugLocalResources
-> Task :app:javaPreCompileDebug
 > Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:javaPreCompileDebug
 > Task :app:generateDebugRFile
 > Task :app:mergeDebugAssets
 > Task :app:compressDebugAssets
@@ -73,8 +73,8 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:checkDebugAarMetadata
 > Task :app:kspDebugKotlin
 > Task :app:mergeExtDexDebug
-> Task :app:mapDebugSourceSetPaths
 > Task :app:mergeLibDexDebug
+> Task :app:mapDebugSourceSetPaths
 > Task :app:compileDebugNavigationResources
 > Task :app:createDebugCompatibleScreenManifests
 > Task :app:extractDeepLinksDebug
@@ -115,7 +115,7 @@ w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/a
 w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/PasswordRecoveryScreens.kt:92:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
 w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/RegisterScreen.kt:50:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
 w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/VerifyEmailScreen.kt:185:45 'val Icons.Rounded.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Send.
-w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:82:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:92:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
 w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/Composer.kt:220:47 'val Icons.Rounded.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Send.
 w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:190:48 'val Icons.Rounded.Reply: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Reply.
 w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:192:48 'val Icons.Rounded.Forward: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Forward.
@@ -165,10 +165,10 @@ w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/a
 > Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
 > Task :app:transformDebugUnitTestClassesWithAsm
 > Task :app:testDebugUnitTest
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794401901320.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794416964580.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
-BUILD SUCCESSFUL in 4m 26s
+BUILD SUCCESSFUL in 3m 35s
 52 actionable tasks: 52 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.0/userguide/configuration_cache_enabling.html
