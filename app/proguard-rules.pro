@@ -34,6 +34,14 @@
 -dontwarn androidx.exifinterface.**
 -keep class androidx.exifinterface.** { *; }
 
+# Tink (pulled in by androidx.security.crypto for the encrypted session store)
+# references Error Prone annotations that are compile-only, so R8 cannot find
+# them. They are never needed at runtime; silence the check rather than shipping
+# a stub.
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn com.google.crypto.tink.**
+-keep class com.google.crypto.tink.** { *; }
+
 # OkHttp / Okio (transitive from Ktor, used directly for the otp-guard call)
 -dontwarn okhttp3.**
 -dontwarn okio.**
