@@ -1,2 +1,6 @@
-gradle_exit=1
-total 0
+gradle_exit=0
+release_gradle_exit=0
+total 41M
+-rw-r--r-- 1 runner runner  26M Nov 11 17:31 app-debug.apk
+-rw-r--r-- 1 runner runner 4.4M Nov 11 17:31 app-release-unsigned.apk
+-rw-r--r-- 1 runner runner 9.9M Nov 11 17:31 app-release.aab
