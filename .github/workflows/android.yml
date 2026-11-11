@@ -69,7 +69,12 @@ jobs:
           STATUS=$?
           set -e
           echo "gradle_exit=$STATUS" > build-status.txt
-          tail -n 160 build.log
+          # Print the *errors*, not just the last lines: a Kotlin failure is
+          # followed by hundreds of lines of warnings, so a plain tail hides it.
+          echo '--- compile errors ---'
+          grep -n "^e: \|^e: file\|FAILURE:\|What went wrong" build.log | head -60 || true
+          echo '--- tail ---'
+          tail -n 120 build.log
           exit $STATUS
 
       - name: Assemble release APK and AAB
@@ -80,6 +85,8 @@ jobs:
           STATUS=$?
           set -e
           echo "release_gradle_exit=$STATUS" >> build-status.txt
+          echo '--- release errors ---'
+          grep -n "^e: \|^e: file\|FAILURE:\|What went wrong" release.log | head -40 || true
           tail -n 80 release.log
           exit $STATUS
 

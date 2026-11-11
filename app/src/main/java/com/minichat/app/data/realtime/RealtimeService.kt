@@ -68,7 +68,7 @@ class RealtimeService @Inject constructor(
      * service needs the unfiltered stream because it has to hear about messages
      * the user is not currently looking at.
      */
-    override fun allMessageEvents(): Flow<MessageEvent> = messageEvents
+    fun allMessageEvents(): Flow<MessageEvent> = messageEvents
 
     private val _conversationSignals = MutableSharedFlow<ConversationSignal>(extraBufferCapacity = 128)
     val conversationSignals: SharedFlow<ConversationSignal> = _conversationSignals.asSharedFlow()

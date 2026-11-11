@@ -276,7 +276,7 @@ private fun SearchRow(value: String, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-private fun PickablePersonRow(profile: Profile, selected: Boolean, onClick: () -> Unit) {
+fun PickablePersonRow(profile: Profile, selected: Boolean, onClick: () -> Unit) {
     val highlight by animateFloatAsState(
         targetValue = if (selected) 1f else 0f,
         label = "pick",

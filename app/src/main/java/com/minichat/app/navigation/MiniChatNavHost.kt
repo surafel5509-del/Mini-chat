@@ -24,6 +24,8 @@ import com.minichat.app.feature.auth.RegisterScreen
 import com.minichat.app.feature.auth.ResetPasswordScreen
 import com.minichat.app.feature.chat.ChatScreen
 import com.minichat.app.feature.contacts.DiscoverScreen
+import com.minichat.app.feature.groups.CreateGroupScreen
+import com.minichat.app.feature.groups.GroupInfoScreen
 import com.minichat.app.feature.home.HomeScreen
 import com.minichat.app.feature.profile.EditProfileScreen
 import com.minichat.app.feature.profile.ProfileScreen
