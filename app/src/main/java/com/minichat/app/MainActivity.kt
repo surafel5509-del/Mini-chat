@@ -111,9 +111,17 @@ class MainActivity : ComponentActivity() {
                 }.toMap()
                 val accessToken = params["access_token"] ?: return
                 val refreshToken = params["refresh_token"] ?: return
+
+                // The same deep link serves two emails. Supabase tags it with
+                // type=recovery for a password reset and type=signup for address
+                // confirmation (it also sends type=email_change and type=invite).
+                // Only a recovery link should drop the user on the "choose a new
+                // password" screen — a brand-new user would otherwise be asked to
+                // reset a password they had just created, and never reach the app.
+                val isRecovery = params["type"] == "recovery"
                 lifecycleScope.launch {
                     authRepository.completeRecoveryLink(accessToken, refreshToken)
-                        .onSuccess { recoveryLinkPending = true }
+                        .onSuccess { recoveryLinkPending = isRecovery }
                 }
             }
         }

@@ -84,6 +84,11 @@ class AuthRepositoryImpl @Inject constructor(
             this.data = buildJsonObject {
                 put("display_name", displayName.trim())
             }
+            // Without this the confirmation link falls back to the project's Site
+            // URL — a web page — and the app is never resumed, so a new user taps
+            // the link, sees a generic page, and is still unconfirmed when they
+            // return. Pointing it at our scheme hands the session straight back.
+            this.redirectUrl = "minichat://auth-callback"
         }
 
         val hasSession = client.auth.currentSessionOrNull() != null
