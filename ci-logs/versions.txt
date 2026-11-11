@@ -1,0 +1,825 @@
+########## gradle wrapper + android demo build
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.8.2-bin.zip
+networkTimeout=10000
+retries=0
+retryBackOffMs=500
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+group = "io.github.jan.supabase"
+version = "1.0-SNAPSHOT"
+
+plugins {
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlinx.plugin.serialization) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.compose) apply false
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+}
+
+// Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+}
+
+rootProject.name = "android-login"
+
+include(":android", ":desktop", ":web", ":common")
+object Versions {
+
+    const val KOIN = "3.3.3"
+    const val SUPABASE = "0.8.4"
+    const val LIFECYCLE = "2.6.0"
+    const val KTOR = "2.2.4"
+
+}/tmp/sk/demos/android-login/build.gradle.kts
+/tmp/sk/demos/android-login/buildSrc/build.gradle.kts
+/tmp/sk/demos/android-login/android/build.gradle.kts
+/tmp/sk/demos/android-login/common/build.gradle.kts
+--- android module build file
+plugins {
+    id("org.jetbrains.compose")
+    id("com.android.application")
+    kotlin("android")
+    kotlin("plugin.serialization")
+}
+
+group "io.github.jan.supabase"
+version "1.0-SNAPSHOT"
+
+repositories {
+    maven { url = uri("https://jitpack.io") }
+    mavenLocal()
+}
+
+dependencies {
+    api(project(":common"))
+    implementation(libs.androidx.activity.compose)
+}
+
+android {
+    compileSdk = 35
+    defaultConfig {
+        applicationId = "io.github.jan.supabase.android"
+        minSdk = 26
+        versionCode = 1
+        versionName = "1.0-SNAPSHOT"
+    }
+    namespace = "io.github.jan.supabase.android"
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+        }
+    }
+}
+########## AuthConfig
+package io.github.jan.supabase.auth
+
+import io.github.jan.supabase.auth.server.HttpCallbackHtml
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+
+/**
+ * The configuration for [Auth]
+ */
+actual class AuthConfig : AuthConfigDefaults() {
+
+    /**
+     * The current http callback configuration for the web server, when logging in with OAuth or SSO.
+     */
+    var httpCallbackConfig: HttpCallbackConfig = HttpCallbackConfig()
+        internal set
+
+    /**
+     * Configures the http callback for the web server, when logging in with OAuth or SSO.
+     */
+    fun httpCallbackConfig(block: HttpCallbackConfig.() -> Unit) {
+        httpCallbackConfig = HttpCallbackConfig().apply(block)
+    }
+
+}
+
+/**
+ * Http callback configuration for the web server, when logging in with OAuth.
+ *
+ * @property httpPort The port the web server is running on, when logging in with OAuth. Defaults to 0 (random port).
+ * @property timeout The timeout for the web server, when logging in with OAuth. Defaults to 1 minute.
+ * @property htmlTitle The title of the html page, when logging in with OAuth. Defaults to "Supabase Auth".
+ * @property redirectHtml The html content of the redirect page, when logging in with OAuth. Defaults to a page with a title, text and icon.
+ */
+data class HttpCallbackConfig(
+    var httpPort: Int = 0,
+    var timeout: Duration = 1.minutes,
+    var htmlTitle: String = "Supabase Auth",
+    var redirectHtml: String = HttpCallbackHtml.redirectPage("https://supabase.com/brand-assets/supabase-logo-icon.png", "Supabase Auth", "Logged in. You may continue in your app")
+)########## PostgrestQueryBuilder
+@file:Suppress("UndocumentedPublicProperty")
+package io.github.jan.supabase.postgrest.query
+
+import io.github.jan.supabase.auth.PostgrestFilterDSL
+import io.github.jan.supabase.encodeToJsonElement
+import io.github.jan.supabase.exceptions.HttpRequestException
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
+import io.github.jan.supabase.postgrest.executor.RestRequestExecutor
+import io.github.jan.supabase.postgrest.query.request.DeleteRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.InsertRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.SelectRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.UpdateRequestBuilder
+import io.github.jan.supabase.postgrest.query.request.UpsertRequestBuilder
+import io.github.jan.supabase.postgrest.result.PostgrestResult
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+
+/**
+ * The main class to build a postgrest request
+ */
+class PostgrestQueryBuilder(
+    val postgrest: Postgrest,
+    val table: String,
+    val schema: String = postgrest.config.defaultSchema,
+) {
+
+    /**
+     * Executes vertical filtering with select on [table]
+     *
+     * @param columns The columns to retrieve, defaults to [Columns.ALL]. You can also use [Columns.list], [Columns.type] or [Columns.raw] to specify the columns
+     * @param request Additional configurations for the request including filters
+     * @return PostgrestResult which is either an error, an empty JsonArray or the data you requested as an JsonArray
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun select(
+        columns: Columns = Columns.ALL,
+        request: @PostgrestFilterDSL SelectRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = SelectRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            request()
+            select(columns)
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
+    }
+
+    /**
+     * Perform an UPSERT on the table or view. Depending on the column(s) passed
+     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+     * `[insert] if a row with the corresponding onConflict columns doesn't
+     * exist, or if it does exist, perform an alternative action depending on
+     * [UpsertRequestBuilder.ignoreDuplicates].
+     *
+     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param body The request body as an array of json object.
+     * @param request Additional configurations for the request including filters
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun upsert(
+        body: JsonArray,
+        request: UpsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = UpsertRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = body
+            request()
+            val columns = body.flatMap { it.jsonObject.keys }.distinct()
+            if(columns.isNotEmpty()) params["columns"] = listOf(columns.joinToString(",") { "\"$it\"" })
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
+    }
+
+    /**
+     * Perform an UPSERT on the table or view. Depending on the column(s) passed
+     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+     * `[insert] if a row with the corresponding onConflict columns doesn't
+     * exist, or if it does exist, perform an alternative action depending on
+     * [UpsertRequestBuilder.ignoreDuplicates].
+     *
+     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param values The values to insert, will automatically get serialized into json.
+     * @param request Additional configurations for the request including filters
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> upsert(
+        values: List<T>,
+        request: UpsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = upsert(
+        body = postgrest.serializer.encodeToJsonElement(values).jsonArray,
+        request = request
+    )
+
+    /**
+     * Perform an UPSERT on the table or view. Depending on the column(s) passed
+     * to [UpsertRequestBuilder.onConflict], [upsert] allows you to perform the equivalent of
+     * `[insert] if a row with the corresponding onConflict columns doesn't
+     * exist, or if it does exist, perform an alternative action depending on
+     * [UpsertRequestBuilder.ignoreDuplicates].
+     *
+     * By default, upserted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param value The value to insert, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> upsert(
+        value: T,
+        request: UpsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = upsert(listOf(value), request)
+
+    /**
+     * Executes an insert operation on the [table]
+     *
+     * @param body The request body as an array of json object.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun insert(
+        body: JsonArray,
+        request: InsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = InsertRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = body
+            request()
+            val columns = body.flatMap { it.jsonObject.keys }.distinct()
+            if(columns.isNotEmpty()) params["columns"] = listOf(columns.joinToString(",") { "\"$it\"" })
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
+    }
+
+    /**
+     * Executes an insert operation on the [table]
+     *
+     * @param values The values to insert, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> insert(
+        values: List<T>,
+        request: InsertRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = insert(
+        body = postgrest.serializer.encodeToJsonElement(values).jsonArray,
+        request = request
+    )
+
+    /**
+     * Executes an insert operation on the [table]
+     *
+     * @param value The value to insert, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> insert(
+        value: T,
+        request: InsertRequestBuilder.() -> Unit = {}
+    ) = insert(listOf(value), request)
+
+    /**
+     * Executes an update operation on the [table].
+     *
+     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param update Specifies the fields to update via a DSL
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun update(
+        crossinline update: PostgrestUpdate.() -> Unit = {},
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = UpdateRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = buildPostgrestUpdate(postgrest.config.propertyConversionMethod, postgrest.serializer, update)
+            request()
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest,path = table, request = requestBuilder)
+    }
+
+    /**
+     * Executes an update operation on the [table].
+     *
+     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param body The request body representing the value to update.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun update(
+        body: JsonElement,
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = UpdateRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply {
+            this.body = body
+            request()
+        }
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
+    }
+
+    /**
+     * Executes an update operation on the [table].
+     *
+     * By default, updated rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param value The value to update, will automatically get serialized into json.
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun <reified T : Any> update(
+        value: T,
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult = update(
+        body = postgrest.serializer.encodeToJsonElement(value),
+        request = request
+    )
+
+    /**
+     * Executes a delete operation on the [table].
+     *
+     * By default, deleted rows are not returned. To return it, call `[PostgrestRequestBuilder.select]`.
+     *
+     * @param request Additional filtering to apply to the query
+     * @throws PostgrestRestException if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend inline fun delete(
+        request: PostgrestRequestBuilder.() -> Unit = {}
+    ): PostgrestResult {
+        val requestBuilder = DeleteRequestBuilder(schema, postgrest.config.propertyConversionMethod).apply(request)
+        return RestRequestExecutor.execute(postgrest = postgrest, path = table, request = requestBuilder)
+    }
+
+    companion object {
+        const val HEADER_PREFER = "Prefer"
+    }
+
+}
+
+/**
+ * Used to obtain an estimated amount of rows in a table. See [Postgrest](https://postgrest.org/en/stable/api.html#exact-count) for information about the different count algorithms
+ */
+enum class Count(val identifier: String) {
+    EXACT("exact"),
+    PLANNED("planned"),
+    ESTIMATED("estimated")
+}
+
+/**
+ * Can be used to specify whether you want e.g. the inserted row to be returned on creation with all its new fields
+ */
+sealed class Returning(val identifier: String) {
+
+    /**
+     * Doesn't return any data
+     */
+    data object Minimal: Returning("minimal")
+
+    /**
+     * Returns data based on the [columns] specified
+     * @param columns The columns to return, defaults to [Columns.ALL]. You can also use [Columns.list], [Columns.type] or [Columns.raw] to specify the columns
+     */
+    data class Representation(val columns: Columns = Columns.ALL): Returning("representation")
+}########## PostgrestRequestBuilder
+@file:Suppress("UndocumentedPublicProperty", "ConstructorParameterNaming")
+package io.github.jan.supabase.postgrest.query
+
+import io.github.jan.supabase.annotations.SupabaseExperimental
+import io.github.jan.supabase.auth.PostgrestFilterDSL
+import io.github.jan.supabase.postgrest.PropertyConversionMethod
+import io.github.jan.supabase.postgrest.query.filter.PostgrestFilterBuilder
+import io.github.jan.supabase.postgrest.result.PostgrestResult
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
+import io.ktor.util.appendAll
+import kotlinx.serialization.json.JsonElement
+import kotlin.js.JsName
+
+/**
+ * A builder for Postgrest requests.
+ */
+@PostgrestFilterDSL
+abstract class PostgrestRequestBuilder(
+    defaultSchema: String,
+    @PublishedApi internal val propertyConversionMethod: PropertyConversionMethod
+) {
+
+    /**
+     * The [Count] algorithm to use to count rows in the table or view.
+     */
+    var count: Count? = null
+        private set
+
+    /**
+     * The [Returning] option to use.
+     */
+    var returning: Returning = Returning.Minimal
+        private set
+
+    /**
+     * The database schema
+     */
+    var schema: String = defaultSchema
+
+    /**
+     * The HTTP method to use.
+     */
+    internal var httpMethod: HttpMethod = HttpMethod.Get
+
+    private var shouldStripNulls: Boolean = false
+    private var dryRun: Boolean = false
+    internal var acceptHeader: AcceptHeader = AcceptHeader.Json
+    private var explainData: ExplainData? = null
+    @PublishedApi internal var body: JsonElement? = null
+
+    @SupabaseExperimental val params: MutableMap<String, List<String>> = mutableMapOf()
+    @SupabaseExperimental val headers: HeadersBuilder = HeadersBuilder()
+
+
+    /**
+     * Whether to retry this request on transient errors (network errors, HTTP 503/520).
+     * Only applies to idempotent requests (GET, HEAD) — non-idempotent requests are never retried.
+     * Set to `false` to disable retries for this specific request.
+     */
+    var retry: Boolean = true
+        private set
+
+    /**
+     * Disables automatic retries for this request.
+     */
+    fun noRetry() {
+        this.retry = false
+    }
+
+    /**
+     * Strip null values from the response data. Properties with `null` values
+     * will be omitted from the returned JSON objects.
+     *
+     * Requires PostgREST 11.2.0+.
+     *
+     */
+    fun stripNulls() {
+        require(acceptHeader != AcceptHeader.CSV) {
+            "stripNulls() cannot be used with csv()"
+        }
+        this.shouldStripNulls = true
+    }
+
+    /**
+     * Setting [count] allows to use [PostgrestResult.countOrNull] to get the total amount of items in the database.
+     * @param count algorithm to use to count rows in the table or view.
+     */
+    fun count(count: Count) {
+        this.count = count
+    }
+
+    /**
+     * Return `data` after the query has been executed.
+     * @param columns The columns to return
+     */
+    fun select(columns: Columns = Columns.ALL) {
+        this.returning = Returning.Representation(columns).also {
+            params["select"] = listOf(it.columns.value)
+        }
+    }
+
+    /**
+     * Return `data` as a single object instead of an array of objects.
+     *
+     * Query result must be one row (e.g. using `limit(1)`), otherwise this
+     * returns an error.
+     */
+    @JsName("singleValue")
+    fun single() {
+        acceptHeader = AcceptHeader.Single(false)
+    }
+
+    /**
+########## filters
+FilterOperation.kt
+FilterOperator.kt
+PostgrestFilterBuilder.kt
+TextSearchType.kt
+@file:Suppress("UndocumentedPublicProperty", "ConstructorParameterNaming")
+package io.github.jan.supabase.postgrest.query.filter
+
+import io.github.jan.supabase.auth.PostgrestFilterDSL
+import io.github.jan.supabase.postgrest.PropertyConversionMethod
+import kotlin.reflect.KProperty1
+
+/**
+ * A builder for Postgrest filters
+ */
+@PostgrestFilterDSL
+class PostgrestFilterBuilder(
+    @PublishedApi internal val propertyConversionMethod: PropertyConversionMethod,
+    @PublishedApi internal val _params: MutableMap<String, List<String>> = mutableMapOf(),
+    val isInLogicalExpression: Boolean = false
+) {
+
+    val params: Map<String, List<String>>
+        get() = _params.toMap()
+
+    /**
+     * Adds a negated filter to the query
+     */
+    fun filterNot(column: String, operator: FilterOperator, value: Any?) = filterNot(FilterOperation(column, operator, value))
+
+    /**
+     * Adds a negated filter to the query
+     */
+    fun filterNot(operation: FilterOperation) {
+        val columnValue = params[operation.column] ?: emptyList()
+        _params[operation.column] = columnValue + listOf("not.${operation.operator.identifier}.${operation.escapedValue(isInLogicalExpression)}")
+    }
+
+    /**
+     * Adds a filter to the query
+     */
+    fun filter(column: String, operator: FilterOperator, value: Any?) {
+        filter(FilterOperation(column, operator, value))
+    }
+
+    /**
+     * Adds a filter to the query
+     */
+    fun filter(operation: FilterOperation) {
+        val columnValue = params[operation.column] ?: emptyList()
+        _params[operation.column] = columnValue + listOf("${operation.operator.identifier}.${operation.escapedValue(isInLogicalExpression)}")
+    }
+
+    /**
+     * Finds all rows where the value of the [column] is equal to [value]
+     */
+    fun eq(column: String, value: Any) = filter(column, FilterOperator.EQ, value)
+
+    /**
+     * Finds all rows where the value of the [column] is not equal to [value]
+     */
+    fun neq(column: String, value: Any) = filter(column, FilterOperator.NEQ, value)
+
+    /**
+     * Finds all rows where the value of the [column] is greater than [value]
+     */
+    fun gt(column: String, value: Any) = filter(column, FilterOperator.GT, value)
+
+    /**
+     * Finds all rows where the value of the [column] is greater than or equal to [value]
+     */
+    fun gte(column: String, value: Any) = filter(column, FilterOperator.GTE, value)
+
+    /**
+     * Finds all rows where the value of the [column] is less than or equal to [value]
+     */
+    fun lte(column: String, value: Any) = filter(column, FilterOperator.LTE, value)
+
+    /**
+     * Finds all rows where the value of the [column] is less than [value]
+     */
+    fun lt(column: String, value: Any) = filter(column, FilterOperator.LT, value)
+
+    /**
+     * Finds all rows where the value of the [column] matches the specified [pattern]
+########## decode extensions
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:48:    inline fun <reified T> decodeList(): List<T> = decodeAs()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:53:    inline fun <reified T> decodeSingle(): T = decodeList<T>().first()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/result/PostgrestResult.kt:58:    inline fun <reified T> decodeSingleOrNull(): T? = decodeList<T>().firstOrNull()
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:37: * }.decodeSingle<Product>()
+########## Request functions (select/insert/update/delete/upsert)
+########## Storage api files
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/StorageListFilter.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/UploadSignedUrl.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketUrlBuilder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/DownloadOptionBuilder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/FileUploadResponse.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/UploadOptionBuilder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/PurgeCacheOptions.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableClient.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/MemoryResumableCache.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/StreamContent.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableUploadState.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/Fingerprint.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableCache.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableUpload.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/SignedUrl.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/NetworkStatus.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/StorageRestException.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/FlowExtension.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/ImageTransformation.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/FileObject.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/AnalyticBucket.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/StorageAnalyticsClient.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/IcebergClientConfiguration.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/SortOrder.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/StorageItem.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/vectors/index/VectorDataType.kt
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/vectors/index/VectorIndexApi.kt
+find: ‘standard output’: Broken pipe
+find: write error
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/resumable/ResumableUpload.kt:156:    private suspend fun uploadChunk(): Int {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:101:    suspend fun updateBucket(id: String, builder: BucketBuilder.() -> Unit = {})
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:129:    suspend fun deleteBucket(bucketId: String)
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:267:    override suspend fun deleteBucket(bucketId: String) {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/Storage.kt:287:    override suspend fun updateBucket(id: String, builder: BucketBuilder.() -> Unit) {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:53:    suspend fun upload(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:68:    suspend fun upload(path: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:82:    suspend fun uploadToSignedUrl(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:104:    suspend fun uploadToSignedUrl(path: String, token: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:117:    suspend fun update(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:132:    suspend fun update(path: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:141:    suspend fun delete(paths: Collection<String>)
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:150:    suspend fun delete(vararg paths: String) = delete(paths.toList())
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:193:    suspend fun createSignedUrl(path: String, expiresIn: Duration, builder: SignedUrlBuilder.() -> Unit = {}): String
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:205:    suspend fun createSignedUrls(expiresIn: Duration, paths: Collection<String>, builder: SignedUrlsBuilder.() -> Unit = {}): List<SignedUrl>
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:217:    suspend fun createSignedUrls(expiresIn: Duration, vararg paths: String, builder: SignedUrlsBuilder.() -> Unit = {}) = createSignedUrls(expiresIn, paths.toList(), builder)
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:250:    suspend fun downloadPublic(path: String, options: DownloadOptionBuilder.() -> Unit = {}): ByteArray
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:261:    suspend fun downloadPublic(path: String, channel: ByteWriteChannel, options: DownloadOptionBuilder.() -> Unit = {})
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApi.kt:333:    fun publicUrl(path: String, builder: PublicUrlBuilder.() -> Unit = {}): String
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/StorageAnalyticsClient.kt:58:    suspend fun deleteBucket(name: String): String
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/analytics/StorageAnalyticsClient.kt:84:    override suspend fun deleteBucket(name: String): String {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:75:    override suspend fun update(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:84:    override suspend fun uploadToSignedUrl(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:110:    override suspend fun upload(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:119:    override suspend fun delete(paths: Collection<String>) {
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:145:    override suspend fun createSignedUrl(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:167:    override suspend fun createSignedUrls(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:196:    override suspend fun downloadPublic(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:222:    override suspend fun downloadPublic(
+/tmp/sk/Storage/src/commonMain/kotlin/io/github/jan/supabase/storage/BucketApiImpl.kt:301:    internal suspend fun uploadOrUpdate(
+########## Storage BucketApi signature
+package io.github.jan.supabase.storage
+
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.resolveAccessToken
+import io.github.jan.supabase.exceptions.HttpRequestException
+import io.github.jan.supabase.exceptions.RestException
+import io.github.jan.supabase.storage.resumable.ResumableClient
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.ByteWriteChannel
+import kotlin.time.Duration
+
+/**
+ * The api for interacting with a bucket
+ */
+interface BucketApi {
+
+    /**
+     * The id of the bucket
+     */
+    val bucketId: String
+
+    /**
+     * The current [SupabaseClient]
+     */
+    val supabaseClient: SupabaseClient
+
+    /**
+     * The client for interacting with the resumable upload api
+     */
+    val resumable: ResumableClient
+
+    /**
+     * Set an HTTP header for the request.
+     * Creates a shallow copy of headers to avoid mutating shared state.
+     * @param name Header name
+     * @param value Header value
+     * @returns this - For method chaining
+     */
+    fun setHeader(name: String, value: String): BucketApi
+
+    /**
+     * Uploads a file in [bucketId] under [path]
+     * @param path The path to upload the file to
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key to the uploaded file
+     * @throws IllegalArgumentException if data to upload is empty
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun upload(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+        require(data.isNotEmpty()) { "The data to upload should not be empty" }
+        return upload(path, UploadData(ByteReadChannel(data), data.size.toLong()), options)
+    }
+
+    /**
+     * Uploads a file in [bucketId] under [path]
+     * @param path The path to upload the file to
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key to the uploaded file
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun upload(path: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+
+    /**
+     * Uploads a file in [bucketId] under [path] using a pre-signed url
+     * @param path The path to upload the file to
+     * @param token The pre-signed url token
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key of the uploaded file
+     * @throws IllegalArgumentException if data to upload is empty
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun uploadToSignedUrl(
+        path: String,
+        token: String,
+        data: ByteArray,
+        options: UploadOptionBuilder.() -> Unit = {}
+    ): FileUploadResponse {
+        require(data.isNotEmpty()) { "The data to upload should not be empty" }
+        return uploadToSignedUrl(path, token, UploadData(ByteReadChannel(data), data.size.toLong()), options)
+    }
+
+    /**
+     * Uploads a file in [bucketId] under [path] using a presigned url
+     * @param path The path to upload the file to
+     * @param token The presigned url token
+     * @param data The data to upload
+     * @param options Additional options for the upload
+     * @return the key of the uploaded file
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun uploadToSignedUrl(path: String, token: String, data: UploadData, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse
+
+    /**
+     * Updates a file in [bucketId] under [path]
+     * @param path The path to update the file to
+     * @param data The new data
+     * @param options Additional options for the upload
+     * @return the key to the updated file
+     * @throws IllegalArgumentException if data to upload is empty
+     * @throws StorageRestException containing an error code, if receiving an error response
+     * @throws HttpRequestTimeoutException if the request timed out
+     * @throws HttpRequestException on network related issues
+     */
+    suspend fun update(path: String, data: ByteArray, options: UploadOptionBuilder.() -> Unit = {}): FileUploadResponse {
+        require(data.isNotEmpty()) { "The data to upload should not be empty" }
+        return update(path, UploadData(ByteReadChannel(data), data.size.toLong()), options)
+    }
+########## Postgrest rpc
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:77:    suspend fun rpc(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/Postgrest.kt:92:    suspend fun rpc(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/PostgrestImpl.kt:61:    override suspend fun rpc(
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/PostgrestImpl.kt:67:    override suspend fun rpc(function: String, request: RpcRequestBuilder.() -> Unit): PostgrestResult = rpcRequest(function, null, request)
+/tmp/sk/Postgrest/src/commonMain/kotlin/io/github/jan/supabase/postgrest/PostgrestImpl.kt:69:    private suspend fun rpcRequest(function: String, body: JsonObject? = null, request: RpcRequestBuilder.() -> Unit): PostgrestResult {
