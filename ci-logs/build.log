@@ -95,222 +95,79 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:preDebugUnitTestBuild UP-TO-DATE
 > Task :app:javaPreCompileDebugUnitTest
 > Task :app:compileDebugKotlin
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/realtime/RealtimeService.kt:71:5 'allMessageEvents' overrides nothing.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:16:47 Conflicting import: imported name 'Columns' is ambiguous.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ProfileRepositoryImpl.kt:18:47 Conflicting import: imported name 'Columns' is ambiguous.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/OtpCodeScreen.kt:16:43 Unresolved reference 'matchParentSize'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/groups/GroupInfoScreen.kt:504:25 Cannot access 'fun PickablePersonRow(profile: Profile, selected: Boolean, onClick: () -> Unit): Unit': it is private in file.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/home/HomeScreen.kt:595:14 Unresolved reference 'clickable' on receiver of type 'Modifier'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/home/HomeScreen.kt:625:39 Unresolved reference 'extra'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:206:13 Unresolved reference 'CreateGroupScreen'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:208:31 Cannot infer type for value parameter 'id'. Specify it explicitly.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/navigation/MiniChatNavHost.kt:220:13 Unresolved reference 'GroupInfoScreen'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:58:25 'class MasterKey : Any' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:58:35 'constructor(p0: Context): MasterKey.Builder' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:59:27 'class MasterKey : Any' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:59:37 'enum class KeyScheme : Enum<MasterKey.KeyScheme!>' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:61:9 'class EncryptedSharedPreferences : Any, SharedPreferences' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:65:13 'class EncryptedSharedPreferences : Any, SharedPreferences' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:65:40 'enum class PrefKeyEncryptionScheme : Enum<EncryptedSharedPreferences.PrefKeyEncryptionScheme!>' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:66:13 'class EncryptedSharedPreferences : Any, SharedPreferences' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/core/crypto/EncryptedSessionManager.kt:66:40 'enum class PrefValueEncryptionScheme : Enum<EncryptedSharedPreferences.PrefValueEncryptionScheme!>' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:192:9 Expression is unused.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:379:72 Unnecessary non-null assertion (!!) on a non-null receiver of type 'String'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/repository/ChatRepositoryImpl.kt:380:66 Unnecessary non-null assertion (!!) on a non-null receiver of type 'String'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/NoteComponents.kt:194:37 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Note'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/NoteComponents.kt:206:40 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Note'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/design/components/NoteComponents.kt:324:36 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Note'.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/LoginScreen.kt:41:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/PasswordRecoveryScreens.kt:32:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/PasswordRecoveryScreens.kt:92:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/auth/RegisterScreen.kt:50:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/ChatScreen.kt:82:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/Composer.kt:220:47 'val Icons.Rounded.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Send.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:190:48 'val Icons.Rounded.Reply: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Reply.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/EmojiPicker.kt:192:48 'val Icons.Rounded.Forward: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Forward.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:136:61 'val Icons.Rounded.Reply: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Reply.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/VoiceRecorderBar.kt:149:49 'val Icons.Rounded.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Send.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/contacts/DiscoverScreen.kt:60:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/groups/CreateGroupScreen.kt:74:33 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/groups/GroupInfoScreen.kt:68:33 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/groups/GroupInfoScreen.kt:214:46 'val Icons.Rounded.ExitToApp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.ExitToApp.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/home/HomeScreen.kt:88:32 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:77:35 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:210:34 'val Icons.Rounded.Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Logout.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:259:35 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:343:42 'val Icons.Rounded.Message: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Message.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/profile/ProfileScreens.kt:405:35 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:83:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:168:34 'val Icons.Rounded.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.VolumeUp.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:193:34 'val Icons.Rounded.Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Logout.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:221:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:326:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:341:38 'val Icons.Rounded.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.VolumeUp.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:377:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/settings/SettingsScreens.kt:417:36 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/notifications/NotificationChannels.kt:35:39 'static field USAGE_NOTIFICATION_COMMUNICATION_INSTANT: Int' is deprecated. Deprecated in Java.
 
-> Task :app:compileDebugKotlin FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794372528953.json
+> Task :app:compileDebugJavaWithJavac
+> Task :app:compressDebugJavaRes
+> Task :app:hiltCollectClassesDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:hiltAggregateDepsDebug
+> Task :app:hiltJavaCompileDebug
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:transformDebugClassesWithAsm
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:dexBuilderDebug
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compressDebugUnitTestJavaRes
+> Task :app:extractDebugUnitTestJavaRes
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:hiltCollectClassesDebugUnitTest
+> Task :app:hiltAggregateDepsDebugUnitTest
+> Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
+> Task :app:transformDebugUnitTestClassesWithAsm
+> Task :app:testDebugUnitTest
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794373003818.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.jetbrains.kotlin.android').
-> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
-   > Kotlin compiler: NOTHING_TO_OVERRIDE
-       Kotlin compiler error
-         'allMessageEvents' overrides nothing.
-         Location: /home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/realtime/RealtimeService.kt:71
-
-* Try:
-> Run with --info or --debug option to get more log output.
-> Run with --scan to get full insights from a Build Scan (powered by Develocity).
-> Get more help at https://help.gradle.org.
-
-* Exception is:
-org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.jetbrains.kotlin.android').
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
-	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeSkippingWithNoActions(DefaultTaskNodeExecutor.java:289)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeSkippingOnlyIf(DefaultTaskNodeExecutor.java:272)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeCatchingFailures(DefaultTaskNodeExecutor.java:228)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeWithFallbackOperationId(DefaultTaskNodeExecutor.java:197)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeWithLifecycle(DefaultTaskNodeExecutor.java:171)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.access$000(DefaultTaskNodeExecutor.java:67)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor$1.run(DefaultTaskNodeExecutor.java:136)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.execute(DefaultTaskNodeExecutor.java:133)
-	at org.gradle.execution.plan.LocalTaskNode.execute(LocalTaskNode.java:229)
-	at org.gradle.execution.DefaultBuildWorkExecutor.lambda$executePlan$0(DefaultBuildWorkExecutor.java:153)
-	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.lambda$execute$0(DefaultPlanExecutor.java:476)
-	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
-	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:475)
-	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:392)
-	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
-	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
-Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
-	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:273)
-	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:132)
-	at org.gradle.internal.Factories$1.create(Factories.java:30)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withoutLocksBlocking$0(DefaultWorkerLeaseService.java:401)
-	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocksBlocking(DefaultWorkerLeaseService.java:396)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.blocking(DefaultWorkerLeaseService.java:256)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.blocking(DefaultWorkerLeaseService.java:238)
-	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$1(DefaultAsyncWorkTracker.java:128)
-	at org.gradle.internal.Factories$1.create(Factories.java:30)
-	at org.gradle.internal.resources.MultiLockRegistry.whileDisallowingLockChanges(MultiLockRegistry.java:83)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.whileDisallowingProjectLockChanges(DefaultWorkerLeaseService.java:261)
-	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:127)
-	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:93)
-	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForAll(DefaultAsyncWorkTracker.java:79)
-	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForCompletion(DefaultAsyncWorkTracker.java:67)
-	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:276)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
-	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:253)
-	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:236)
-	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:219)
-	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:185)
-	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:167)
-	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:47)
-	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:137)
-	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:134)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
-	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:134)
-	at org.gradle.internal.execution.steps.ExecuteStep$Mutable.execute(ExecuteStep.java:80)
-	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42)
-	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)
-	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
-	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:51)
-	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:29)
-	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:67)
-	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:39)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:42)
-	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:24)
-	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:69)
-	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:46)
-	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:39)
-	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:28)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:189)
-	at org.gradle.internal.execution.steps.BuildCacheStep.executeAndStoreInCache(BuildCacheStep.java:145)
-	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$3(BuildCacheStep.java:104)
-	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$1(BuildCacheStep.java:104)
-	at org.gradle.internal.Try$Success.map(Try.java:170)
-	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithCache(BuildCacheStep.java:88)
-	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$0(BuildCacheStep.java:75)
-	at org.gradle.internal.Either$Left.fold(Either.java:116)
-	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
-	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:74)
-	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:49)
-	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:46)
-	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:35)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
-	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
-	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
-	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
-	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
-	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
-	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:70)
-	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:32)
-	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:69)
-	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:37)
-	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:63)
-	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:34)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:78)
-	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:64)
-	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:104)
-	at org.gradle.internal.execution.steps.ValidateStep$Mutable.execute(ValidateStep.java:64)
-	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.executeMutable(CaptureMutableStateBeforeExecutionStep.java:86)
-	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:65)
-	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:45)
-	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeWithNonEmptySources(SkipEmptyMutableWorkStep.java:210)
-	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:90)
-	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:53)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
-	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:36)
-	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:23)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:77)
-	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:43)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$executeMutable$0(AssignMutableWorkspaceStep.java:34)
-	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:314)
-	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:30)
-	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:21)
-	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
-	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
-	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
-	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
-	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
-	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
-	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
-	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
-	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:56)
-	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
-	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
-	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
-	... 25 more
-Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: 'allMessageEvents' overrides nothing.
-	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
-	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
-	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
-	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
-	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
-	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
-	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:103)
-	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
-	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
-	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
-	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
-	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
-	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$1(DefaultWorkerExecutor.java:169)
-	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)
-	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$600(DefaultConditionalExecutionQueue.java:112)
-	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)
-	at org.gradle.internal.Factories$1.create(Factories.java:30)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
-	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
-	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)
-	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)
-	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)
-	... 2 more
-
-
-BUILD FAILED in 3m 47s
-33 actionable tasks: 33 executed
+BUILD SUCCESSFUL in 4m 32s
+52 actionable tasks: 52 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.0/userguide/configuration_cache_enabling.html
