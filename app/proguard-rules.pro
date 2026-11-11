@@ -24,9 +24,22 @@
 -dontwarn org.slf4j.**
 -dontwarn kotlinx.coroutines.debug.**
 
-# Firebase messaging (service instantiated by the framework)
--keep class com.google.firebase.** { *; }
+# Services and receivers are instantiated by the framework, not by us, so R8 must
+# not rename or strip them. RealtimeNotificationService is declared in the
+# manifest.
 -keep class com.minichat.app.notifications.** { *; }
+
+# MediaRecorder/ExifInterface are platform/AndroidX classes reached reflectively
+# from native code paths.
+-dontwarn androidx.exifinterface.**
+-keep class androidx.exifinterface.** { *; }
+
+# OkHttp / Okio (transitive from Ktor, used directly for the otp-guard call)
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
 
 # Hilt generated code
 -keep class dagger.hilt.** { *; }

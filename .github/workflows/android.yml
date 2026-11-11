@@ -77,13 +77,25 @@ jobs:
           tail -n 120 build.log
           exit $STATUS
 
+      # A minified release build is a nice-to-have; the debug APK is what people
+      # install. Never let R8 trouble hide the artifact users actually need.
       - name: Assemble release APK and AAB
+        continue-on-error: true
         run: |
           if [ -x ./gradlew ]; then GRADLE_CMD=./gradlew; else GRADLE_CMD=gradle; fi
           set +e
           $GRADLE_CMD :app:assembleRelease :app:bundleRelease --stacktrace --no-daemon --console=plain > release.log 2>&1
           STATUS=$?
           set -e
+          if [ ! -s release.log ]; then
+            # An empty log means the wrapper never got going; run once more
+            # without redirection so the failure is actually visible.
+            echo "release.log was empty - retrying with live output"
+            set +e
+            $GRADLE_CMD :app:assembleRelease --stacktrace --no-daemon --console=plain 2>&1 | tee release.log
+            STATUS=$?
+            set -e
+          fi
           echo "release_gradle_exit=$STATUS" >> build-status.txt
           echo '--- release errors ---'
           grep -n "^e: \|^e: file\|FAILURE:\|What went wrong" release.log | head -40 || true
@@ -135,14 +147,29 @@ jobs:
             echo ""
             echo "\`app-release.aab\` is the App Bundle for Play Console."
           } > /tmp/release-notes.md
+          # Ship whatever actually exists. The debug APK is the deliverable users
+          # install; a missing AAB (release build failure) must not block it.
+          ASSETS=()
+          [ -f app/build/outputs/apk/debug/app-debug.apk ] &&
+            ASSETS+=(app/build/outputs/apk/debug/app-debug.apk)
+          [ -f app/build/outputs/bundle/release/app-release.aab ] &&
+            ASSETS+=(app/build/outputs/bundle/release/app-release.aab)
+          [ -f app/build/outputs/apk/release/app-release-unsigned.apk ] &&
+            ASSETS+=(app/build/outputs/apk/release/app-release-unsigned.apk)
+
+          if [ ${#ASSETS[@]} -eq 0 ]; then
+            echo "nothing to publish"
+            exit 0
+          fi
+          echo "publishing: ${ASSETS[*]}"
+
           gh release delete "$TAG" --repo "$REPO" --yes --cleanup-tag >/dev/null 2>&1 || true
           gh release create "$TAG" \
             --repo "$REPO" \
             --target "$GITHUB_SHA" \
             --title "MINI CHAT debug build $SHORT" \
             --notes-file /tmp/release-notes.md \
-            app/build/outputs/apk/debug/app-debug.apk \
-            app/build/outputs/bundle/release/app-release.aab \
+            "${ASSETS[@]}" \
             || echo "release step failed"
 
       - name: Publish log to issue
