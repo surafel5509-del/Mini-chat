@@ -7,10 +7,12 @@ import com.minichat.app.data.dto.ConversationMemberDto
 import com.minichat.app.data.dto.ConversationOverviewDto
 import com.minichat.app.data.dto.MessageInsertDto
 import com.minichat.app.data.dto.MessageRowDto
+import com.minichat.app.data.dto.ReplyPreviewRowDto
 import com.minichat.app.data.dto.ReactionInsertDto
 import com.minichat.app.data.realtime.RealtimeService
 import com.minichat.app.domain.model.ConversationSummary
 import com.minichat.app.domain.model.Message
+import com.minichat.app.domain.model.ReplyPreview
 import com.minichat.app.domain.repository.ChatRepository
 import com.minichat.app.domain.repository.ConversationSignal
 import com.minichat.app.domain.repository.MessageEvent
@@ -23,8 +25,10 @@ import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -79,33 +83,54 @@ class ChatRepositoryImpl @Inject constructor(
         before: Instant?,
     ): AppResult<List<Message>> = safeCall {
         val userId = me().orEmpty()
-        val rows = try {
-            selectMessages(conversationId, limit, before, MESSAGE_SELECT)
-        } catch (cancellation: kotlinx.coroutines.CancellationException) {
-            throw cancellation
-        } catch (error: Throwable) {
-            // The self-referencing embed depends on PostgREST knowing about
-            // `messages_reply_to_id_fkey`; if that lookup fails the chat must still work.
-            selectMessages(conversationId, limit, before, MESSAGE_SELECT_PLAIN)
-        }
-        rows.map { it.toDomain(userId) }.sortedBy { it.createdAt ?: Instant.EPOCH }
+        val rows = client.from(TABLE_MESSAGES)
+            .select(columns = Columns.raw(MESSAGE_SELECT)) {
+                filter {
+                    eq("conversation_id", conversationId)
+                    before?.let { lt("created_at", TimeFormat.toIso(it)) }
+                }
+                order("created_at", Order.DESCENDING)
+                limit(limit.toLong())
+            }
+            .decodeList<MessageRowDto>()
+        val previews = replyPreviews(rows.mapNotNull { it.replyToId }.toSet(), userId)
+        rows.map { it.toDomain(userId, previews) }.sortedBy { it.createdAt ?: Instant.EPOCH }
     }
 
-    private suspend fun selectMessages(
-        conversationId: String,
-        limit: Int,
-        before: Instant?,
-        columns: String,
-    ): List<MessageRowDto> = client.from(TABLE_MESSAGES)
-        .select(columns = Columns.raw(columns)) {
-            filter {
-                eq("conversation_id", conversationId)
-                before?.let { lt("created_at", TimeFormat.toIso(it)) }
-            }
-            order("created_at", Order.DESCENDING)
-            limit(limit.toLong())
-        }
-        .decodeList<MessageRowDto>()
+    /**
+     * Reply previews are fetched with [REPLY_PREVIEWS_RPC] instead of an embedded self-join:
+     * PostgREST cannot disambiguate the self-referencing `messages` foreign key on this project,
+     * so the embed either fails (PGRST200) or comes back in the wrong direction.
+     */
+    private suspend fun replyPreviews(
+        ids: Set<String>,
+        currentUserId: String,
+    ): Map<String, ReplyPreview> {
+        if (ids.isEmpty()) return emptyMap()
+        val rows = runCatching {
+            client.postgrest.rpc(
+                function = REPLY_PREVIEWS_RPC,
+                parameters = buildJsonObject {
+                    putJsonArray("p_message_ids") { ids.forEach { id -> add(JsonPrimitive(id)) } }
+                },
+            ).decodeList<ReplyPreviewRowDto>()
+        }.getOrElse { emptyList() }
+
+        return rows.mapNotNull { row ->
+            val id = row.id ?: return@mapNotNull null
+            id to ReplyPreview(
+                messageId = id,
+                senderName = row.displayName?.takeIf { it.isNotBlank() }
+                    ?: row.username?.takeIf { it.isNotBlank() }
+                    ?: if (row.senderId == currentUserId) "You" else "Message",
+                snippet = if (row.isDeleted == true) {
+                    "Deleted message"
+                } else {
+                    row.content.orEmpty().take(120)
+                },
+            )
+        }.toMap()
+    }
 
     override suspend fun sendMessage(
         conversationId: String,
@@ -125,10 +150,11 @@ class ChatRepositoryImpl @Inject constructor(
                     replyToId = replyToId,
                 ),
             ) {
-                select(Columns.raw(MESSAGE_SELECT_PLAIN))
+                select(Columns.raw(MESSAGE_SELECT))
             }
             .decodeSingle<MessageRowDto>()
-        row.toDomain(userId)
+        val previews = replyToId?.let { replyPreviews(setOf(it), userId) }.orEmpty()
+        row.toDomain(userId, previews)
     }
 
     override suspend fun editMessage(messageId: String, content: String): AppResult<Unit> = safeCall {
@@ -252,14 +278,8 @@ class ChatRepositoryImpl @Inject constructor(
          */
         const val MESSAGE_SELECT =
             "id,conversation_id,sender_id,content,reply_to_id,is_edited,is_deleted,created_at,updated_at," +
-                "message_reactions(id,message_id,user_id,emoji)," +
-                // PostgREST resolves the single self-referencing FK without a hint; naming the
-                // constraint explicitly fails on this project's schema cache (PGRST200).
-                "reply_to:messages(id,sender_id,content,is_deleted,profiles(display_name,username))"
+                "message_reactions(id,message_id,user_id,emoji),profiles(id,display_name,username)"
 
-        /** Same shape without the self-join, used when the embed is unavailable. */
-        const val MESSAGE_SELECT_PLAIN =
-            "id,conversation_id,sender_id,content,reply_to_id,is_edited,is_deleted,created_at,updated_at," +
-                "message_reactions(id,message_id,user_id,emoji)"
+        const val REPLY_PREVIEWS_RPC = "get_reply_previews"
     }
 }

@@ -14,7 +14,8 @@ import kotlinx.serialization.Serializable
 /** Row of `public.profiles`. */
 @Serializable
 data class ProfileDto(
-    val id: String,
+    // Partial embeds (a name inside a message row, for example) omit the id.
+    val id: String = "",
     val username: String = "",
     @SerialName("display_name") val displayName: String = "",
     @SerialName("avatar_url") val avatarUrl: String? = null,
@@ -106,7 +107,10 @@ data class MessageDto(
     @SerialName("created_at") val createdAt: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
 ) {
-    fun toDomain(currentUserId: String): Message = Message(
+    fun toDomain(
+        currentUserId: String,
+        replyPreviews: Map<String, com.minichat.app.domain.model.ReplyPreview> = emptyMap(),
+    ): Message = Message(
         id = id,
         conversationId = conversationId,
         senderId = senderId,
@@ -208,7 +212,10 @@ data class MessageRowDto(
     @SerialName("reply_to") val replyTo: ReplyTargetDto? = null,
     val profiles: ProfileDto? = null,
 ) {
-    fun toDomain(currentUserId: String): Message = Message(
+    fun toDomain(
+        currentUserId: String,
+        replyPreviews: Map<String, com.minichat.app.domain.model.ReplyPreview> = emptyMap(),
+    ): Message = Message(
         id = id,
         conversationId = conversationId,
         senderId = senderId,
@@ -218,7 +225,7 @@ data class MessageRowDto(
         isEdited = isEdited,
         isDeleted = isDeleted,
         replyToId = replyToId,
-        replyPreview = replyTo?.let { target ->
+        replyPreview = replyToId?.let { replyPreviews[it] } ?: replyTo?.let { target ->
             com.minichat.app.domain.model.ReplyPreview(
                 messageId = target.id,
                 senderName = target.profiles?.displayName?.ifBlank { target.profiles.username }
@@ -232,6 +239,17 @@ data class MessageRowDto(
         isMine = senderId == currentUserId,
     )
 }
+
+/** Row of the `get_reply_previews` RPC: the quoted message of a reply, with its author. */
+@Serializable
+data class ReplyPreviewRowDto(
+    val id: String? = null,
+    @SerialName("sender_id") val senderId: String? = null,
+    val content: String? = null,
+    @SerialName("is_deleted") val isDeleted: Boolean? = null,
+    @SerialName("display_name") val displayName: String? = null,
+    val username: String? = null,
+)
 
 @Serializable
 data class ReplyTargetDto(
