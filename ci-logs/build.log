@@ -62,8 +62,8 @@ See https://kotl.in/gradle/agp-built-in-kotlin for more details.
 > Task :app:packageDebugResources
 > Task :app:processDebugNavigationResources
 > Task :app:parseDebugLocalResources
-> Task :app:javaPreCompileDebug
 > Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:javaPreCompileDebug
 > Task :app:generateDebugRFile
 > Task :app:mergeDebugAssets
 > Task :app:compressDebugAssets
@@ -160,10 +160,10 @@ w: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/a
 > Task :app:packageDebug
 > Task :app:createDebugApkListingFileRedirect
 > Task :app:assembleDebug
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794929012713.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794929542418.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
-BUILD SUCCESSFUL in 3m 38s
+BUILD SUCCESSFUL in 3m 32s
 42 actionable tasks: 42 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.0/userguide/configuration_cache_enabling.html
