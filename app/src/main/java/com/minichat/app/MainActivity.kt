@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
 
     private var deepLinkConversationId by mutableStateOf<String?>(null)
     private var deepLinkCallId by mutableStateOf<String?>(null)
+    private var deepLinkGroupCallId by mutableStateOf<String?>(null)
     private var recoveryLinkPending by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +85,8 @@ class MainActivity : ComponentActivity() {
                         onDeepLinkConsumed = { deepLinkConversationId = null },
                         deepLinkCallId = deepLinkCallId,
                         onDeepLinkCallConsumed = { deepLinkCallId = null },
+                        deepLinkGroupCallId = deepLinkGroupCallId,
+                        onDeepLinkGroupCallConsumed = { deepLinkGroupCallId = null },
                         passwordResetPending = recoveryLinkPending,
                         onPasswordResetOpened = { recoveryLinkPending = false },
                     )
@@ -107,6 +110,8 @@ class MainActivity : ComponentActivity() {
             "chat" -> deepLinkConversationId = data.pathSegments.firstOrNull()
 
             "call" -> deepLinkCallId = data.pathSegments.firstOrNull()
+
+            "group-call" -> deepLinkGroupCallId = data.pathSegments.firstOrNull()
 
             "auth-callback" -> {
                 // Supabase appends the session to the fragment: #access_token=…&refresh_token=…

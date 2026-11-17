@@ -22,6 +22,8 @@ object Routes {
     const val BLOCKED_USERS = "settings/blocked"
     const val ABOUT = "settings/about"
     const val CALL = "call/{callId}"
+    const val GROUP_CALL = "group-call/{callId}"
+    const val NEW_GROUP_CALL = "group-calls/new"
     const val CALLS = "calls"
 
     fun chat(conversationId: String): String = "chat/$conversationId"
@@ -29,6 +31,8 @@ object Routes {
     fun userProfile(userId: String): String = "profile/$userId"
 
     fun call(callId: String): String = "call/$callId"
+
+    fun groupCall(callId: String): String = "group-call/$callId"
 
     fun resetPassword(email: String): String = "reset_password?email=${Uri.encode(email)}"
 }

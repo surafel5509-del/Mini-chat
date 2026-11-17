@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.model.Call
 import com.minichat.app.domain.model.CallStatus
+import com.minichat.app.domain.model.GroupCall
+import com.minichat.app.domain.model.GroupCallParticipant
 import com.minichat.app.domain.repository.AuthRepository
 import com.minichat.app.domain.repository.AuthState
 import com.minichat.app.domain.repository.CallRepository
+import com.minichat.app.domain.repository.GroupCallRepository
 import com.minichat.app.domain.repository.ProfileRepository
 import com.minichat.app.notifications.NotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,6 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CallGuardViewModel @Inject constructor(
     private val callRepository: CallRepository,
+    private val groupCallRepository: GroupCallRepository,
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository,
     private val notificationHelper: NotificationHelper,
@@ -40,8 +44,14 @@ class CallGuardViewModel @Inject constructor(
     private val _incomingCall = MutableStateFlow<Call?>(null)
     val incomingCall: StateFlow<Call?> = _incomingCall.asStateFlow()
 
+    private val _incomingGroupCall = MutableStateFlow<GroupCall?>(null)
+    val incomingGroupCall: StateFlow<GroupCall?> = _incomingGroupCall.asStateFlow()
+
     /** Calls the user already dismissed locally, so they do not pop back up. */
     private val dismissed: MutableSet<String> = Collections.synchronizedSet(mutableSetOf())
+
+    /** Group calls this user already declined or joined from this device. */
+    private val dismissedGroups: MutableSet<String> = Collections.synchronizedSet(mutableSetOf())
 
     init {
         viewModelScope.launch {
@@ -50,6 +60,7 @@ class CallGuardViewModel @Inject constructor(
                     watch(state.userId)
                 } else {
                     _incomingCall.value = null
+                    _incomingGroupCall.value = null
                 }
             }
         }
@@ -62,6 +73,8 @@ class CallGuardViewModel @Inject constructor(
         coroutineScope {
             launch { observeIncoming(userId) }
             launch { observeDismissals(userId) }
+            launch { observeGroupIncoming(userId) }
+            launch { observeGroupDismissals(userId) }
         }
     }
 
@@ -85,6 +98,57 @@ class CallGuardViewModel @Inject constructor(
         }
     }
 
+    private suspend fun observeGroupIncoming(userId: String) {
+        groupCallRepository.incomingCalls(userId).collect { call ->
+            if (!call.status.isLive) return@collect
+            if (dismissedGroups.contains(call.id)) return@collect
+            if (_incomingGroupCall.value?.id == call.id) return@collect
+            // Only ring if I am still an invitee: joining (or declining) clears this.
+            val roster = groupCallRepository.participants(call.id)
+            val mine = (roster as? AppResult.Success)?.data?.firstOrNull { it.userId == userId }
+            if (mine == null) return@collect
+            if (mine.status != GroupCallParticipant.ParticipationStatus.Invited) return@collect
+
+            _incomingGroupCall.value = call
+            showGroupNotification(call, mine, userId)
+        }
+    }
+
+    private suspend fun observeGroupDismissals(userId: String) {
+        groupCallRepository.callUpdates(userId).collect { call ->
+            val current = _incomingGroupCall.value
+            if (current != null && current.id == call.id && !call.status.isLive) {
+                _incomingGroupCall.value = null
+                notificationHelper.cancelIncomingGroupCall(call.id)
+            }
+        }
+    }
+
+    private fun showGroupNotification(
+        call: GroupCall,
+        me: GroupCallParticipant,
+        userId: String,
+    ) {
+        viewModelScope.launch {
+            val hostId = call.hostId
+            val hostName = if (hostId == userId) {
+                "you"
+            } else {
+                when (val profile = profileRepository.profile(hostId)) {
+                    is AppResult.Success -> profile.data.displayName
+                    is AppResult.Failure -> ""
+                }
+            }
+            notificationHelper.notifyIncomingGroupCall(
+                callId = call.id,
+                title = call.title,
+                hostName = hostName,
+                isVideo = call.type.isVideo,
+                participantCount = 1,
+            )
+        }
+    }
+
     private fun showNotification(call: Call, userId: String) {
         viewModelScope.launch {
             val name = when (val profile = profileRepository.profile(call.peerId(userId))) {
@@ -102,6 +166,16 @@ class CallGuardViewModel @Inject constructor(
     fun consume() {
         _incomingCall.value?.let { dismissed.add(it.id) }
         _incomingCall.value = null
+    }
+
+    fun consumeGroupCall() {
+        _incomingGroupCall.value?.let { dismissedGroups.add(it.id) }
+        _incomingGroupCall.value = null
+    }
+
+    fun markGroupHandled(callId: String) {
+        dismissedGroups.add(callId)
+        _incomingGroupCall.value = null
     }
 
     /** Only used by the call screen once the user answered or declined. */

@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.model.CallHistoryItem
+import com.minichat.app.domain.model.GroupCallHistoryItem
 import com.minichat.app.domain.repository.CallRepository
+import com.minichat.app.domain.repository.GroupCallRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,11 +18,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CallHistoryViewModel @Inject constructor(
     private val callRepository: CallRepository,
+    private val groupCallRepository: GroupCallRepository,
 ) : ViewModel() {
 
     data class UiState(
         val isLoading: Boolean = true,
         val items: List<CallHistoryItem> = emptyList(),
+        val groupItems: List<GroupCallHistoryItem> = emptyList(),
         val error: String? = null,
         val redialling: String? = null,
     )
@@ -39,14 +43,20 @@ class CallHistoryViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = it.items.isEmpty()) }
-            when (val result = callRepository.history(limit = 60)) {
+            val direct = callRepository.history(limit = 60)
+            val group = groupCallRepository.history(limit = 40)
+
+            when (direct) {
                 is AppResult.Success -> _uiState.update {
-                    it.copy(isLoading = false, items = result.data, error = null)
+                    it.copy(isLoading = false, items = direct.data, error = null)
                 }
 
                 is AppResult.Failure -> _uiState.update {
-                    it.copy(isLoading = false, error = result.message)
+                    it.copy(isLoading = false, error = direct.message)
                 }
+            }
+            if (group is AppResult.Success) {
+                _uiState.update { it.copy(groupItems = group.data) }
             }
         }
     }

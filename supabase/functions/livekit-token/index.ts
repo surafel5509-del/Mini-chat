@@ -1,4 +1,4 @@
-// MINI CHAT — mints short lived LiveKit access tokens for one-to-one calls.
+// MINI CHAT — mints short lived LiveKit access tokens for one-to-one and group calls.
 //
 // Required project secrets (Supabase Studio -> Project Settings -> Edge Functions -> Secrets):
 //   LIVEKIT_URL         wss://<your-project>.livekit.cloud
@@ -15,6 +15,7 @@ const LIVEKIT_API_KEY = (Deno.env.get("LIVEKIT_API_KEY") ?? "").trim();
 const LIVEKIT_API_SECRET = (Deno.env.get("LIVEKIT_API_SECRET") ?? "").trim();
 
 const TOKEN_TTL_SECONDS = 60 * 60 * 2;
+const UUID_RE = /^[0-9a-fA-F-]{36}$/;
 
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -91,7 +92,7 @@ async function mintLiveKitToken(identity: string, name: string, room: string): P
   return `${signingInput}.${signature}`;
 }
 
-async function restGet(path: string): Promise<unknown[]> {
+async function restGet(path: string): Promise<Record<string, unknown>[]> {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     headers: {
       apikey: SERVICE_ROLE,
@@ -103,6 +104,60 @@ async function restGet(path: string): Promise<unknown[]> {
     throw new Error(`PostgREST ${response.status}: ${await response.text()}`);
   }
   return await response.json();
+}
+
+async function displayNameFor(userId: string): Promise<string> {
+  const rows = await restGet(`profiles?id=eq.${userId}&select=display_name,username`);
+  const profile = (rows[0] ?? {}) as Record<string, unknown>;
+  return String(profile.display_name ?? profile.username ?? "MINI CHAT user");
+}
+
+/** One-to-one call: caller may join while ringing, callee only once answered. */
+async function resolveDirectCall(callId: string, userId: string) {
+  const rows = await restGet(`calls?id=eq.${callId}&select=*`);
+  const call = rows[0];
+  if (!call) return { error: json({ error: "call_not_found" }, 404) };
+
+  const status = String(call.status);
+  const callerId = String(call.caller_id);
+  const calleeId = String(call.callee_id);
+
+  if (userId !== callerId && userId !== calleeId) {
+    return { error: json({ error: "forbidden" }, 403) };
+  }
+  if (!["ringing", "active"].includes(status)) {
+    return { error: json({ error: "call_finished", status }, 409) };
+  }
+  if (userId === calleeId && status !== "active") {
+    return { error: json({ error: "call_not_answered" }, 409) };
+  }
+
+  return { room: String(call.room_name), callType: String(call.call_type) };
+}
+
+/** Group call: only invited participants (or the host) may join a live room. */
+async function resolveGroupCall(callId: string, userId: string) {
+  const rows = await restGet(`group_calls?id=eq.${callId}&select=*`);
+  const call = rows[0];
+  if (!call) return { error: json({ error: "call_not_found" }, 404) };
+
+  const status = String(call.status);
+  if (!["ringing", "active"].includes(status)) {
+    return { error: json({ error: "call_finished", status }, 409) };
+  }
+
+  const membership = await restGet(
+    `group_call_participants?call_id=eq.${callId}&user_id=eq.${userId}&select=status`,
+  );
+  if (!membership.length) {
+    return { error: json({ error: "forbidden" }, 403) };
+  }
+  const memberStatus = String(membership[0].status);
+  if (!["invited", "joined"].includes(memberStatus)) {
+    return { error: json({ error: "forbidden", reason: "not_a_member" }, 403) };
+  }
+
+  return { room: String(call.room_name), callType: String(call.call_type) };
 }
 
 Deno.serve(async (request: Request): Promise<Response> => {
@@ -145,44 +200,31 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return json({ error: "unauthorized" }, 401);
   }
 
-  const callId = typeof body.call_id === "string" ? body.call_id : null;
-  if (!callId || !/^[0-9a-fA-F-]{36}$/.test(callId)) {
+  const isGroup = typeof body.group_call_id === "string";
+  const callId = isGroup ? (body.group_call_id as string) : (body.call_id as string | undefined);
+  if (!callId || !UUID_RE.test(callId)) {
     return json({ error: "invalid_call_id" }, 400);
   }
 
   try {
-    const calls = await restGet(`calls?id=eq.${callId}&select=*`);
-    const call = calls[0] as Record<string, unknown> | undefined;
-    if (!call) {
-      return json({ error: "call_not_found" }, 404);
+    const resolved = isGroup
+      ? await resolveGroupCall(callId, userId)
+      : await resolveDirectCall(callId, userId);
+
+    if ("error" in resolved && resolved.error) {
+      return resolved.error;
     }
 
-    const callerId = String(call.caller_id);
-    const calleeId = String(call.callee_id);
-    const status = String(call.status);
-
-    if (userId !== callerId && userId !== calleeId) {
-      return json({ error: "forbidden" }, 403);
-    }
-    if (!["ringing", "active"].includes(status)) {
-      return json({ error: "call_finished", status }, 409);
-    }
-    if (userId === calleeId && status !== "active") {
-      return json({ error: "call_not_answered" }, 409);
-    }
-
-    const profiles = await restGet(`profiles?id=eq.${userId}&select=display_name,username`);
-    const profile = (profiles[0] ?? {}) as Record<string, unknown>;
-    const displayName = String(profile.display_name ?? profile.username ?? "MINI CHAT user");
-
-    const token = await mintLiveKitToken(userId, displayName, String(call.room_name));
+    const room = resolved.room as string;
+    const token = await mintLiveKitToken(userId, await displayNameFor(userId), room);
 
     return json({
       url: LIVEKIT_URL,
-      token: token,
-      room: call.room_name,
+      token,
+      room,
       identity: userId,
-      call_type: call.call_type,
+      call_type: resolved.callType,
+      scope: isGroup ? "group" : "direct",
       expires_in: TOKEN_TTL_SECONDS,
     });
   } catch (error) {

@@ -26,6 +26,8 @@ import com.minichat.app.feature.auth.ResetPasswordScreen
 import com.minichat.app.feature.call.CallGuardViewModel
 import com.minichat.app.feature.call.CallHistoryScreen
 import com.minichat.app.feature.call.CallScreen
+import com.minichat.app.feature.call.group.GroupCallScreen
+import com.minichat.app.feature.call.group.GroupCallSetupScreen
 import com.minichat.app.feature.chat.ChatScreen
 import com.minichat.app.feature.contacts.DiscoverScreen
 import com.minichat.app.feature.home.HomeScreen
@@ -49,6 +51,8 @@ fun MiniChatNavHost(
     onDeepLinkConsumed: () -> Unit = {},
     deepLinkCallId: String? = null,
     onDeepLinkCallConsumed: () -> Unit = {},
+    deepLinkGroupCallId: String? = null,
+    onDeepLinkGroupCallConsumed: () -> Unit = {},
     passwordResetPending: Boolean = false,
     onPasswordResetOpened: () -> Unit = {},
     navController: NavHostController = rememberNavController(),
@@ -57,6 +61,7 @@ fun MiniChatNavHost(
     val scope = rememberCoroutineScope()
     val callGuard: CallGuardViewModel = hiltViewModel()
     val incomingCall by callGuard.incomingCall.collectAsStateWithLifecycle()
+    val incomingGroupCall by callGuard.incomingGroupCall.collectAsStateWithLifecycle()
 
     // Auth gate: the back stack never keeps a signed-out screen after sign in (or vice versa).
     LaunchedEffect(state.authState) {
@@ -112,6 +117,22 @@ fun MiniChatNavHost(
         if (navController.currentBackStackEntry?.destination?.route == Routes.CALL) return@LaunchedEffect
         callGuard.consume()
         navController.navigate(Routes.call(call.id)) { launchSingleTop = true }
+    }
+
+    LaunchedEffect(incomingGroupCall?.id, state.authState) {
+        val call = incomingGroupCall ?: return@LaunchedEffect
+        if (state.authState !is AuthState.SignedIn) return@LaunchedEffect
+        val route = navController.currentBackStackEntry?.destination?.route
+        if (route == Routes.GROUP_CALL || route == Routes.CALL) return@LaunchedEffect
+        callGuard.consumeGroupCall()
+        navController.navigate(Routes.groupCall(call.id)) { launchSingleTop = true }
+    }
+
+    LaunchedEffect(deepLinkGroupCallId, state.authState) {
+        if (deepLinkGroupCallId != null && state.authState is AuthState.SignedIn) {
+            navController.navigate(Routes.groupCall(deepLinkGroupCallId)) { launchSingleTop = true }
+            onDeepLinkGroupCallConsumed()
+        }
     }
 
     LaunchedEffect(deepLinkCallId, state.authState) {
@@ -244,6 +265,35 @@ fun MiniChatNavHost(
                     navController.navigate(Routes.chat(conversationId)) { launchSingleTop = true }
                 },
                 onOpenCall = { callId -> navController.navigate(Routes.call(callId)) },
+                onNewGroupCall = { navController.navigate(Routes.NEW_GROUP_CALL) },
+            )
+        }
+
+        composable(Routes.NEW_GROUP_CALL) {
+            GroupCallSetupScreen(
+                onBack = { navController.popBackStack() },
+                onCallStarted = { callId ->
+                    navController.navigate(Routes.groupCall(callId)) {
+                        popUpTo(Routes.CALLS) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+            )
+        }
+
+        composable(
+            route = Routes.GROUP_CALL,
+            arguments = listOf(navArgument("callId") { type = NavType.StringType }),
+            enterTransition = { fadeIn(tween(200)) },
+            popExitTransition = { fadeOut(tween(200)) },
+        ) {
+            GroupCallScreen(
+                onFinished = {
+                    callGuard.markGroupHandled(
+                        navController.currentBackStackEntry?.arguments?.getString("callId").orEmpty(),
+                    )
+                    navController.popBackStack()
+                },
             )
         }
 

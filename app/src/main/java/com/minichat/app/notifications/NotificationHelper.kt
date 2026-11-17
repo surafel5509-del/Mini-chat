@@ -163,6 +163,55 @@ class NotificationHelper @Inject constructor(
         runCatching { manager.cancel(callId.hashCode()) }
     }
 
+    /** Group call invite: same channel and full screen behaviour as a direct call. */
+    fun notifyIncomingGroupCall(
+        callId: String,
+        title: String,
+        hostName: String,
+        isVideo: Boolean,
+        participantCount: Int,
+    ) {
+        NotificationChannels.ensureCreated(context)
+
+        val contentIntent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = android.net.Uri.parse("minichat://group-call/$callId")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            callId.hashCode(),
+            contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+        val text = buildString {
+            append(if (isVideo) "Group video call" else "Group voice call")
+            if (hostName.isNotBlank()) append(" · $hostName")
+            if (participantCount > 1) append(" · $participantCount invited")
+        }
+
+        val builder = NotificationCompat.Builder(context, NotificationChannels.CALLS)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(title.ifBlank { "Group call" })
+            .setContentText(text)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
+            .setAutoCancel(true)
+            .setOngoing(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setFullScreenIntent(pendingIntent, true)
+            .setContentIntent(pendingIntent)
+            .setTimeoutAfter(CALL_RING_TIMEOUT_MS)
+
+        runCatching { manager.notify(callId.hashCode(), builder.build()) }
+    }
+
+    fun cancelIncomingGroupCall(callId: String) {
+        runCatching { manager.cancel(callId.hashCode()) }
+    }
+
     companion object {
 
         const val GROUP_MESSAGES = "minichat.messages"
