@@ -18,7 +18,10 @@ import io.livekit.android.room.track.LocalVideoTrack
 import io.livekit.android.room.track.Track
 import io.livekit.android.room.track.VideoTrack
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,6 +58,8 @@ class LiveKitRoomManager @Inject constructor(
 
     data class State(
         val connection: Connection = Connection.Disconnected,
+        /** LiveKit room the session is connected to; lets a screen re-attach without rejoining. */
+        val roomName: String? = null,
         val microphoneEnabled: Boolean = false,
         val cameraEnabled: Boolean = false,
         val speakerOn: Boolean = true,
@@ -75,18 +80,57 @@ class LiveKitRoomManager @Inject constructor(
     private var room: Room? = null
     private var eventJob: Job? = null
 
-    /** The room for the current call, created on demand. */
-    fun room(): Room = room ?: buildRoom().also { room = it }
+    /**
+     * Room events outlive the screen that started the call, so a call keeps running (and keeps
+     * updating its state) while the user is elsewhere in the app.
+     */
+    private val eventScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private fun buildRoom(): Room = LiveKit.create(
-        appContext = context,
-        options = RoomOptions(adaptiveStream = true, dynacast = true),
-    )
+    /**
+     * The room for the current call, created on demand. Returns null when WebRTC could not be
+     * initialised on this device — callers surface that as a normal failure instead of crashing.
+     */
+    fun roomOrNull(): Room? {
+        room?.let { return it }
+        return runCatching {
+            LiveKit.create(
+                appContext = context,
+                options = RoomOptions(adaptiveStream = true, dynacast = true),
+            )
+        }.onSuccess { room = it }
+            .onFailure { failure ->
+                Log.e(TAG, "LiveKit room could not be created", failure)
+                _state.update {
+                    it.copy(
+                        connection = Connection.Failed,
+                        error = "Voice and video aren't supported on this device.",
+                    )
+                }
+            }
+            .getOrNull()
+    }
 
-    suspend fun connect(url: String, token: String, scope: CoroutineScope) {
-        _state.update { it.copy(connection = Connection.Connecting, error = null) }
-        val activeRoom = room()
-        observeEvents(activeRoom, scope)
+    suspend fun connect(url: String, token: String, roomName: String? = null) {
+        val current = _state.value
+        if (current.connection == Connection.Connected &&
+            (roomName == null || current.roomName == null || current.roomName == roomName)
+        ) {
+            // Already inside this room (the screen was recreated): reuse the live session.
+            return
+        }
+
+        _state.update { it.copy(connection = Connection.Connecting, error = null, roomName = roomName) }
+        val activeRoom = roomOrNull()
+        if (activeRoom == null) {
+            _state.update {
+                it.copy(
+                    connection = Connection.Failed,
+                    error = "Voice and video aren't supported on this device.",
+                )
+            }
+            return
+        }
+        observeEvents(activeRoom)
         runCatching { activeRoom.connect(url, token) }
             .onSuccess {
                 _state.update { current ->
@@ -149,9 +193,9 @@ class LiveKitRoomManager @Inject constructor(
     // Events
     // ---------------------------------------------------------------------
 
-    private fun observeEvents(activeRoom: Room, scope: CoroutineScope) {
+    private fun observeEvents(activeRoom: Room) {
         eventJob?.cancel()
-        eventJob = scope.launch {
+        eventJob = eventScope.launch {
             activeRoom.events.collect { event ->
                 when (event) {
                     is RoomEvent.Connected, is RoomEvent.Reconnected ->
@@ -269,7 +313,7 @@ class LiveKitRoomManager @Inject constructor(
     }
 
     private fun refreshLocalVideo() {
-        val track = room()?.localParticipant
+        val track = roomOrNull()?.localParticipant
             ?.getTrackPublication(Track.Source.CAMERA)
             ?.track as? VideoTrack
         _state.update { it.copy(localVideoTrack = track) }
@@ -280,14 +324,14 @@ class LiveKitRoomManager @Inject constructor(
     // ---------------------------------------------------------------------
 
     suspend fun setMicrophoneEnabled(enabled: Boolean) {
-        val activeRoom = room()
+        val activeRoom = roomOrNull() ?: return
         runCatching { activeRoom.localParticipant.setMicrophoneEnabled(enabled) }
             .onSuccess { _state.update { it.copy(microphoneEnabled = enabled) } }
             .onFailure { Log.w(TAG, "Microphone toggle failed", it) }
     }
 
     suspend fun setCameraEnabled(enabled: Boolean) {
-        val activeRoom = room()
+        val activeRoom = roomOrNull() ?: return
         runCatching { activeRoom.localParticipant.setCameraEnabled(enabled) }
             .onSuccess {
                 _state.update { state -> state.copy(cameraEnabled = enabled) }
@@ -298,7 +342,7 @@ class LiveKitRoomManager @Inject constructor(
     }
 
     fun flipCamera() {
-        val videoTrack = room()?.localParticipant
+        val videoTrack = roomOrNull()?.localParticipant
             ?.getTrackPublication(Track.Source.CAMERA)
             ?.track as? LocalVideoTrack
             ?: return
@@ -313,7 +357,7 @@ class LiveKitRoomManager @Inject constructor(
 
     /** Routes audio to the loudspeaker (video calls, speaker-phone) or back to the earpiece. */
     fun setSpeakerOn(on: Boolean) {
-        val handler = room()?.audioSwitchHandler ?: return
+        val handler = roomOrNull()?.audioSwitchHandler ?: return
         val devices = handler.availableAudioDevices
         val target: AudioDevice? = if (on) {
             devices.firstOrNull { it is AudioDevice.Speakerphone }
@@ -328,7 +372,7 @@ class LiveKitRoomManager @Inject constructor(
     }
 
     fun currentSpeakerOn(): Boolean {
-        val handler = room()?.audioSwitchHandler as? AudioSwitchHandler
+        val handler = roomOrNull()?.audioSwitchHandler as? AudioSwitchHandler
         return handler?.selectedAudioDevice is AudioDevice.Speakerphone
     }
 
@@ -343,6 +387,7 @@ class LiveKitRoomManager @Inject constructor(
     fun release() {
         eventJob?.cancel()
         eventJob = null
+        eventScope.coroutineContext.cancelChildren()
         runCatching { room?.disconnect() }
         room = null
         _state.value = State()

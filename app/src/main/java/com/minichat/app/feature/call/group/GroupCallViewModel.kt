@@ -209,8 +209,8 @@ class GroupCallViewModel @Inject constructor(
         mediaJob = viewModelScope.launch {
             _uiState.update { it.copy(phase = Phase.Connecting, cameraEnabled = isVideo) }
             when (val result = groupCallRepository.credentials(call.id)) {
-                is AppResult.Success -> {
-                    roomManager.connect(result.data.url, result.data.token, viewModelScope)
+                is AppResult.Success -> runCatching {
+                    roomManager.connect(result.data.url, result.data.token, result.data.roomName)
                     CallForegroundService.start(
                         context = context,
                         callId = call.id,
@@ -226,6 +226,14 @@ class GroupCallViewModel @Inject constructor(
                         it.copy(phase = Phase.Active, micEnabled = true, speakerOn = true)
                     }
                     startTimer(call)
+                }.onFailure { failure ->
+                    Log.e(TAG, "Could not join the group room", failure)
+                    _uiState.update {
+                        it.copy(
+                            phase = Phase.Failed,
+                            error = "The call couldn't start on this device.",
+                        )
+                    }
                 }
 
                 is AppResult.Failure -> {

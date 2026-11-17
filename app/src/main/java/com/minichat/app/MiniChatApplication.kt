@@ -17,7 +17,8 @@ class MiniChatApplication : Application(), ImageLoaderFactory {
         NotificationChannels.ensureCreated(this)
 
         // WebRTC must be initialised once per process, before any LiveKit Room is created.
-        runCatching { LiveKit.init(this) }
+        val livekitReady = runCatching { LiveKit.init(this) }.getOrDefault(false)
+        if (!livekitReady) android.util.Log.w("MiniChat", "LiveKit/WebRTC unavailable on this device")
     }
 
     /**

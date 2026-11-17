@@ -56,7 +56,7 @@ class ChatRepositoryImpl @Inject constructor(
                 order("conversation_updated_at", Order.DESCENDING)
             }
             .decodeList<ConversationOverviewDto>()
-            .map { it.toDomain(userId) }
+            .mapNotNull { it.toDomainOrNull(userId) }
             .sortedWith(
                 compareByDescending<ConversationSummary> { it.isPinned }
                     .thenByDescending { it.sortKey },
@@ -70,8 +70,7 @@ class ChatRepositoryImpl @Inject constructor(
                 filter { eq("conversation_id", conversationId) }
             }
             .decodeList<ConversationOverviewDto>()
-            .firstOrNull()
-            ?.toDomain(userId)
+            .firstNotNullOfOrNull { it.toDomainOrNull(userId) }
     }
 
     override suspend fun loadMessages(
@@ -80,19 +79,33 @@ class ChatRepositoryImpl @Inject constructor(
         before: Instant?,
     ): AppResult<List<Message>> = safeCall {
         val userId = me().orEmpty()
-        client.from(TABLE_MESSAGES)
-            .select(columns = Columns.raw(MESSAGE_SELECT)) {
-                filter {
-                    eq("conversation_id", conversationId)
-                    before?.let { lt("created_at", TimeFormat.toIso(it)) }
-                }
-                order("created_at", Order.DESCENDING)
-                limit(limit.toLong())
-            }
-            .decodeList<MessageRowDto>()
-            .map { it.toDomain(userId) }
-            .sortedBy { it.createdAt ?: Instant.EPOCH }
+        val rows = try {
+            selectMessages(conversationId, limit, before, MESSAGE_SELECT)
+        } catch (cancellation: kotlinx.coroutines.CancellationException) {
+            throw cancellation
+        } catch (error: Throwable) {
+            // The self-referencing embed depends on PostgREST knowing about
+            // `messages_reply_to_id_fkey`; if that lookup fails the chat must still work.
+            selectMessages(conversationId, limit, before, MESSAGE_SELECT_PLAIN)
+        }
+        rows.map { it.toDomain(userId) }.sortedBy { it.createdAt ?: Instant.EPOCH }
     }
+
+    private suspend fun selectMessages(
+        conversationId: String,
+        limit: Int,
+        before: Instant?,
+        columns: String,
+    ): List<MessageRowDto> = client.from(TABLE_MESSAGES)
+        .select(columns = Columns.raw(columns)) {
+            filter {
+                eq("conversation_id", conversationId)
+                before?.let { lt("created_at", TimeFormat.toIso(it)) }
+            }
+            order("created_at", Order.DESCENDING)
+            limit(limit.toLong())
+        }
+        .decodeList<MessageRowDto>()
 
     override suspend fun sendMessage(
         conversationId: String,
@@ -112,7 +125,7 @@ class ChatRepositoryImpl @Inject constructor(
                     replyToId = replyToId,
                 ),
             ) {
-                select(Columns.raw(MESSAGE_SELECT))
+                select(Columns.raw(MESSAGE_SELECT_PLAIN))
             }
             .decodeSingle<MessageRowDto>()
         row.toDomain(userId)
@@ -240,6 +253,13 @@ class ChatRepositoryImpl @Inject constructor(
         const val MESSAGE_SELECT =
             "id,conversation_id,sender_id,content,reply_to_id,is_edited,is_deleted,created_at,updated_at," +
                 "message_reactions(id,message_id,user_id,emoji)," +
-                "reply_to:messages!messages_reply_to_id_fkey(id,sender_id,content,is_deleted,profiles(display_name,username))"
+                // PostgREST resolves the single self-referencing FK without a hint; naming the
+                // constraint explicitly fails on this project's schema cache (PGRST200).
+                "reply_to:messages(id,sender_id,content,is_deleted,profiles(display_name,username))"
+
+        /** Same shape without the self-join, used when the embed is unavailable. */
+        const val MESSAGE_SELECT_PLAIN =
+            "id,conversation_id,sender_id,content,reply_to_id,is_edited,is_deleted,created_at,updated_at," +
+                "message_reactions(id,message_id,user_id,emoji)"
     }
 }

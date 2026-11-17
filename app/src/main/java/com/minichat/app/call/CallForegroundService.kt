@@ -1,8 +1,10 @@
 package com.minichat.app.call
 
+import android.Manifest
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
@@ -35,10 +37,20 @@ class CallForegroundService : Service() {
         val notification = NotificationHelper.ongoingCallNotification(this, callId, title, subtitle)
 
         val isVideo = intent?.getBooleanExtra(EXTRA_VIDEO, false) == true
+        val canRecord = hasPermission(Manifest.permission.RECORD_AUDIO)
+        val canUseCamera = hasPermission(Manifest.permission.CAMERA)
+
+        if (!canRecord) {
+            // Without the microphone permission the service may not declare a microphone type,
+            // and a plain background service is useless for a call: bail out cleanly.
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Declaring the camera type without holding the camera permission throws on Android 14+,
-            // so only video calls claim it.
-            if (isVideo) {
+            // Declaring the camera type without holding the camera permission throws on
+            // Android 14+, so only claim it when it is actually granted.
+            if (isVideo && canUseCamera) {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE or
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
             } else {
@@ -48,12 +60,21 @@ class CallForegroundService : Service() {
             0
         }
 
-        runCatching {
+        val started = runCatching {
             ServiceCompat.startForeground(this, ONGOING_NOTIFICATION_ID, notification, type)
+        }.isSuccess
+
+        if (!started) {
+            // Leaving a service running without a foreground notification makes Android kill the
+            // process a few seconds later — stop ourselves instead.
+            stopSelf()
         }
 
         return START_NOT_STICKY
     }
+
+    private fun hasPermission(permission: String): Boolean =
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
     override fun onDestroy() {
         super.onDestroy()

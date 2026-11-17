@@ -36,5 +36,8 @@ object AppModule {
         explicitNulls = false
         encodeDefaults = true
         isLenient = true
+        // Postgres views return nullable columns; a null must degrade to the default value
+        // instead of failing the whole response.
+        coerceInputValues = true
     }
 }

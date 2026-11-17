@@ -36,7 +36,7 @@ data class ProfileDto(
 /** Row of the `conversation_overview` view. */
 @Serializable
 data class ConversationOverviewDto(
-    @SerialName("conversation_id") val conversationId: String,
+    @SerialName("conversation_id") val conversationId: String? = null,
     @SerialName("peer_id") val peerId: String? = null,
     @SerialName("peer_display_name") val peerDisplayName: String? = null,
     @SerialName("peer_username") val peerUsername: String? = null,
@@ -46,15 +46,17 @@ data class ConversationOverviewDto(
     @SerialName("last_message_content") val lastMessageContent: String? = null,
     @SerialName("last_message_sender_id") val lastMessageSenderId: String? = null,
     @SerialName("last_message_at") val lastMessageAt: String? = null,
-    @SerialName("last_message_is_deleted") val lastMessageIsDeleted: Boolean = false,
-    @SerialName("unread_count") val unreadCount: Long = 0,
-    @SerialName("is_muted") val isMuted: Boolean = false,
-    @SerialName("is_pinned") val isPinned: Boolean = false,
+    @SerialName("last_message_is_deleted") val lastMessageIsDeleted: Boolean? = null,
+    @SerialName("unread_count") val unreadCount: Long? = null,
+    @SerialName("is_muted") val isMuted: Boolean? = null,
+    @SerialName("is_pinned") val isPinned: Boolean? = null,
     @SerialName("last_read_at") val lastReadAt: String? = null,
     @SerialName("my_id") val myId: String? = null,
     @SerialName("conversation_updated_at") val conversationUpdatedAt: String? = null,
 ) {
-    fun toDomain(currentUserId: String): ConversationSummary {
+    /** Returns null for a row the view could not resolve (should not happen, but never crash). */
+    fun toDomainOrNull(currentUserId: String): ConversationSummary? {
+        val id = conversationId?.takeIf { it.isNotBlank() } ?: return null
         val peer = if (peerId != null) {
             Profile(
                 id = peerId,
@@ -73,20 +75,20 @@ data class ConversationOverviewDto(
                 text = lastMessageContent.orEmpty(),
                 senderId = lastMessageSenderId,
                 sentAt = TimeFormat.parse(lastMessageAt),
-                isDeleted = lastMessageIsDeleted,
+                isDeleted = lastMessageIsDeleted == true,
                 isMine = lastMessageSenderId == currentUserId,
             )
         }
 
         return ConversationSummary(
-            id = conversationId,
+            id = id,
             peer = peer,
             lastMessage = preview,
             lastActivityAt = TimeFormat.parse(lastMessageAt)
                 ?: TimeFormat.parse(conversationUpdatedAt),
-            unreadCount = unreadCount.coerceAtLeast(0).toInt(),
-            isPinned = isPinned,
-            isMuted = isMuted,
+            unreadCount = (unreadCount ?: 0L).coerceAtLeast(0).toInt(),
+            isPinned = isPinned == true,
+            isMuted = isMuted == true,
         )
     }
 }

@@ -238,9 +238,9 @@ class CallViewModel @Inject constructor(
             }
 
             when (val result = callRepository.credentials(call.id)) {
-                is AppResult.Success -> {
+                is AppResult.Success -> runCatching {
                     val credentials = result.data
-                    roomManager.connect(credentials.url, credentials.token, viewModelScope)
+                    roomManager.connect(credentials.url, credentials.token, credentials.roomName)
                     startForegroundService(call)
                     roomManager.setMicrophoneEnabled(true)
                     if (call.type.isVideo) {
@@ -253,6 +253,14 @@ class CallViewModel @Inject constructor(
                             speakerOn = call.type.isVideo,
                             cameraEnabled = call.type.isVideo,
                             micEnabled = true,
+                        )
+                    }
+                }.onFailure { failure ->
+                    Log.e(TAG, "Could not start the media session", failure)
+                    _uiState.update {
+                        it.copy(
+                            phase = Phase.Failed,
+                            error = "The call couldn't start on this device.",
                         )
                     }
                 }

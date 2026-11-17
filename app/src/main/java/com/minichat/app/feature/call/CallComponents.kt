@@ -1,5 +1,6 @@
 package com.minichat.app.feature.call
 
+import android.util.Log
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -57,47 +58,51 @@ fun VideoTrackView(
     mirror: Boolean = false,
     scalingType: RendererCommon.ScalingType = RendererCommon.ScalingType.SCALE_ASPECT_FILL,
 ) {
-    val eglBase = remember { EglBase.create() }
     var renderer by remember { mutableStateOf<TextureViewRenderer?>(null) }
+    var rendererEgl by remember { mutableStateOf<EglBase?>(null) }
 
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            TextureViewRenderer(context).apply {
-                init(eglBase.eglBaseContext, null)
-                setScalingType(scalingType)
-                setEnableHardwareScaler(true)
-                setMirror(mirror)
-                renderer = this
-            }
+            val view = TextureViewRenderer(context)
+            // A device without a usable EGL implementation must render a blank tile, never crash.
+            runCatching {
+                val egl = EglBase.create()
+                rendererEgl = egl
+                view.init(egl.eglBaseContext, null)
+                view.setScalingType(scalingType)
+                view.setEnableHardwareScaler(true)
+                view.setMirror(mirror)
+            }.onFailure { Log.w("VideoTrackView", "Video renderer unavailable", it) }
+            renderer = view
+            view
         },
         onRelease = { view ->
+            // Detach first, then release the view, then the GL context it was created from.
             runCatching { view.release() }
+            runCatching { rendererEgl?.release() }
+            rendererEgl = null
             renderer = null
         },
     )
 
-    LaunchedEffect(track, mirror) {
+    LaunchedEffect(track, mirror, renderer) {
         val target = renderer ?: return@LaunchedEffect
+        if (track == null) return@LaunchedEffect
         runCatching {
             target.setMirror(mirror)
             target.setScalingType(scalingType)
-            track?.addRenderer(target)
-        }
+            track.addRenderer(target)
+        }.onFailure { Log.w("VideoTrackView", "Could not attach the video track", it) }
     }
 
-    DisposableEffect(track) {
+    DisposableEffect(track, renderer) {
         val target = renderer
+        val attached = track
         onDispose {
-            if (track != null && target != null) {
-                runCatching { track.removeRenderer(target) }
+            if (attached != null && target != null) {
+                runCatching { attached.removeRenderer(target) }
             }
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            runCatching { eglBase.release() }
         }
     }
 }
