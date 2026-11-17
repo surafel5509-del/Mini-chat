@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.SerialName
@@ -83,6 +84,7 @@ class RealtimeService @Inject constructor(
 
         channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") { table = "messages" }
             .onEach { action -> decodeMessage(action.record)?.let { _messageEvents.emit(MessageEvent.Inserted(it)) } }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         channel.postgresChangeFlow<PostgresAction.Update>(schema = "public") { table = "messages" }
@@ -90,6 +92,7 @@ class RealtimeService @Inject constructor(
                 decodeMessage(action.record)?.let { _messageEvents.emit(MessageEvent.Updated(it)) }
                 _conversationSignals.emit(ConversationSignal.MessagesChanged)
             }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         channel.postgresChangeFlow<PostgresAction.Delete>(schema = "public") { table = "messages" }
@@ -99,14 +102,17 @@ class RealtimeService @Inject constructor(
                     _conversationSignals.emit(ConversationSignal.MessagesChanged)
                 }
             }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") { table = "message_reactions" }
             .onEach { action -> decodeReaction(action.record)?.let { _messageEvents.emit(MessageEvent.ReactionAdded(it)) } }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         channel.postgresChangeFlow<PostgresAction.Delete>(schema = "public") { table = "message_reactions" }
             .onEach { action -> decodeReaction(action.oldRecord)?.let { _messageEvents.emit(MessageEvent.ReactionRemoved(it)) } }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         channel.postgresChangeFlow<PostgresAction.Update>(schema = "public") { table = "conversation_members" }
@@ -125,10 +131,12 @@ class RealtimeService @Inject constructor(
                 }
                 _conversationSignals.emit(ConversationSignal.MembershipChanged)
             }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") { table = "conversation_members" }
             .onEach { _conversationSignals.emit(ConversationSignal.MembershipChanged) }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         runCatching { channel.subscribe(blockUntilSubscribed = false) }
@@ -177,6 +185,7 @@ class RealtimeService @Inject constructor(
                     }
                 }
             }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         runCatching { channel.subscribe(blockUntilSubscribed = true) }

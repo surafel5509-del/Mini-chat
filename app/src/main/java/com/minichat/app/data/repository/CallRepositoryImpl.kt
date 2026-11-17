@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
@@ -207,10 +208,12 @@ class CallRepositoryImpl @Inject constructor(
 
         channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") { table = "calls" }
             .onEach { action -> pump(action.record, userId) }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         channel.postgresChangeFlow<PostgresAction.Update>(schema = "public") { table = "calls" }
             .onEach { action -> pump(action.record, userId) }
+            .catch { failure -> Log.w(TAG, "Realtime stream failed", failure) }
             .launchIn(appScope)
 
         runCatching { channel.subscribe(blockUntilSubscribed = false) }

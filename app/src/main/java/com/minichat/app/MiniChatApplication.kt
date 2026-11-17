@@ -1,6 +1,7 @@
 package com.minichat.app
 
 import android.app.Application
+import android.util.Log
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
@@ -17,8 +18,9 @@ class MiniChatApplication : Application(), ImageLoaderFactory {
         NotificationChannels.ensureCreated(this)
 
         // WebRTC must be initialised once per process, before any LiveKit Room is created.
-        val livekitReady = runCatching { LiveKit.init(this) }.getOrDefault(false)
-        if (!livekitReady) android.util.Log.w("MiniChat", "LiveKit/WebRTC unavailable on this device")
+        // init throws (rather than reporting a flag) when the device cannot host WebRTC.
+        runCatching { LiveKit.init(this) }
+            .onFailure { Log.w("MiniChat", "LiveKit/WebRTC unavailable on this device", it) }
     }
 
     /**
