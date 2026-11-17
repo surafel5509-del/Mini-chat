@@ -45,6 +45,19 @@ Bucket `avatars` — public read, 5 MB limit, images only, writes restricted to 
 the uploader's user id (`avatars/<user-id>/avatar-<timestamp>.jpg`). The app writes exactly that
 path, so the storage policy is simply `(storage.foldername(name))[1] = auth.uid()::text`.
 
+## Calls
+
+`public.calls` holds the call registry and `20261107000002_calls.sql` creates it together with the
+signalling RPCs (`start_call`, `answer_call`, `decline_call`, `end_call`, `active_call`,
+`call_history`, `expire_stale_calls`). Rows are broadcast over Realtime (replica identity `full`), so
+both phones follow the same state machine without polling. Ringing calls turn into `missed` 45
+seconds after creation, enforced server side by `expire_stale_calls()`.
+
+Media is never stored: the `livekit-token` Edge Function (source in
+[`functions/livekit-token`](functions/livekit-token)) mints a per-call LiveKit token after verifying
+the authenticated user is the caller or callee and that the call is still live. Set the
+`LIVEKIT_URL`, `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET` secrets before deploying it.
+
 ## Push notifications
 
 `device_tokens` is written by the app (`PushTokenManager` → `register_device_token`). To deliver

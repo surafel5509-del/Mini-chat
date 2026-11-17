@@ -19,6 +19,7 @@ lives in `design/theme`.
 | **Contacts** | Search people by display name or `@username`, recent peers, start a conversation in one tap, block and report from the same screen. |
 | **Profile** | My profile, other people's profiles (last seen, bio, block/report/unblock), edit profile with avatar upload to the `avatars` storage bucket. |
 | **Settings** | Theme (light / dark / follow system), notification master switch + sound + vibration + previews, read receipts, typing indicators, blocked users, about, sign out. |
+| **Calls** | One-to-one **voice and video calls** over LiveKit: outgoing ringing, incoming full-screen notification with Accept/Decline, mute, speaker, camera on/off, front/back switch, live duration timer, reconnect handling, call log with redial, and every call (caller, callee, type, status, duration, timestamp) stored in Supabase. |
 | **Push** | `FirebaseMessagingService` renders grouped notifications that deep-link into the conversation; device tokens are registered per user in `device_tokens`. Disabled safely when no Firebase project is configured. |
 | **Security** | Session tokens in `EncryptedSharedPreferences`, no secrets in the APK besides the Supabase *publishable* key, Postgres row level security on every table. |
 
@@ -94,8 +95,37 @@ to deploy the push notification Edge Function.
 ### Tables
 
 `profiles`, `conversations`, `conversation_members`, `messages`, `message_reactions`, `user_blocks`,
-`user_reports`, `device_tokens` + the `conversation_overview` view and four RPCs
-(`get_or_create_direct_conversation`, `mark_conversation_read`, `heartbeat`, `register_device_token`).
+`user_reports`, `device_tokens`, `calls` + the `conversation_overview` view and the RPCs
+(`get_or_create_direct_conversation`, `mark_conversation_read`, `heartbeat`, `register_device_token`,
+`start_call`, `answer_call`, `decline_call`, `end_call`, `active_call`, `call_history`,
+`expire_stale_calls`).
+
+### Calling setup (LiveKit)
+
+Calls are signalled through Supabase and carried by [LiveKit](https://livekit.io). The Android app
+never holds a LiveKit secret: it asks the `livekit-token` Edge Function for a short-lived token, and
+that function re-checks that the caller is a party to the call before minting it.
+
+1. Create a free LiveKit Cloud project and copy the **WebSocket URL**, **API key** and **API secret**.
+2. Add them to the Supabase project as Edge Function secrets:
+
+   ```bash
+   supabase secrets set LIVEKIT_URL=wss://<project>.livekit.cloud \
+                        LIVEKIT_API_KEY=<key> \
+                        LIVEKIT_API_SECRET=<secret>
+   ```
+
+3. Deploy the function (already versioned in this repo):
+
+   ```bash
+   supabase functions deploy livekit-token
+   ```
+
+4. Nothing else to configure — the app probes `{"action":"health"}` on the function and, if the
+   secrets are missing, tells the user that calling is not configured instead of failing silently.
+
+Without the LiveKit secrets the rest of the app keeps working: call buttons show a clear error and
+no call rows are created.
 
 Storage bucket `avatars` (public read, 5 MB limit, owner-only writes).
 
