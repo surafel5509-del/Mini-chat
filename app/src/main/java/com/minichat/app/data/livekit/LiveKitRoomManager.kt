@@ -8,6 +8,7 @@ import io.livekit.android.LiveKit
 import io.livekit.android.RoomOptions
 import io.livekit.android.audio.AudioSwitchHandler
 import io.livekit.android.events.RoomEvent
+import io.livekit.android.events.collect
 import io.livekit.android.room.Room
 import io.livekit.android.room.participant.RemoteParticipant
 import io.livekit.android.room.track.CameraPosition
@@ -239,9 +240,10 @@ class LiveKitRoomManager @Inject constructor(
             .onFailure { Log.w(TAG, "Audio routing failed", it) }
     }
 
-    fun currentSpeakerOn(): Boolean =
-        (room()?.audioSwitchHandler as? AudioSwitchHandler)?.selectedAudioDevice
-            is AudioDevice.Speakerphone
+    fun currentSpeakerOn(): Boolean {
+        val handler = room()?.audioSwitchHandler as? AudioSwitchHandler
+        return handler?.selectedAudioDevice is AudioDevice.Speakerphone
+    }
 
     /** Leaves the room and releases the camera. The Room object itself is reused. */
     suspend fun disconnect() {
