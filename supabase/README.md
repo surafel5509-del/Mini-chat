@@ -53,6 +53,16 @@ signalling RPCs (`start_call`, `answer_call`, `decline_call`, `end_call`, `activ
 both phones follow the same state machine without polling. Ringing calls turn into `missed` 45
 seconds after creation, enforced server side by `expire_stale_calls()`.
 
+### Group calls
+
+`public.group_calls` + `public.group_call_participants` hold ad-hoc multi-party rooms: the host
+creates a room and invites people by id, each invitee joins or declines, and the roster (who is
+invited / joined / left / declined) lives in Postgres. `20261107000003_group_calls.sql` adds the
+tables, RLS (only the host and invited participants can see a room) and the RPCs `start_group_call`,
+`join_group_call`, `decline_group_call`, `leave_group_call`, `end_group_call`, `active_group_call`,
+`group_call_participants` and `group_call_history`. A room closes when the host ends it, when the host
+leaves, or when the last participant leaves.
+
 Media is never stored: the `livekit-token` Edge Function (source in
 [`functions/livekit-token`](functions/livekit-token)) mints a per-call LiveKit token after verifying
 the authenticated user is the caller or callee and that the call is still live. Set the
