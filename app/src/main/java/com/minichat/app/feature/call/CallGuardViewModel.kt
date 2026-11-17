@@ -2,17 +2,20 @@ package com.minichat.app.feature.call
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.model.Call
 import com.minichat.app.domain.model.CallStatus
-import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.repository.AuthRepository
+import com.minichat.app.domain.repository.AuthState
 import com.minichat.app.domain.repository.CallRepository
 import com.minichat.app.domain.repository.ProfileRepository
 import com.minichat.app.notifications.NotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Collections
@@ -23,7 +26,8 @@ import javax.inject.Inject
  * call screen from anywhere in the app.
  *
  * State lives on a single, app scoped view model because a ringing call must interrupt whatever
- * screen the user is on — it is not tied to the chat screen that started it.
+ * screen the user is on — it is not tied to the chat screen that started it. The watch restarts
+ * whenever the signed-in user changes (sign in, sign out, account switch).
  */
 @HiltViewModel
 class CallGuardViewModel @Inject constructor(
@@ -40,33 +44,43 @@ class CallGuardViewModel @Inject constructor(
     private val dismissed: MutableSet<String> = Collections.synchronizedSet(mutableSetOf())
 
     init {
-        viewModelScope.launch { callRepository.expireStaleCalls() }
-        observeIncoming()
-        observeDismissals()
-    }
-
-    private fun observeIncoming() {
-        val userId = authRepository.currentUserId() ?: return
         viewModelScope.launch {
-            callRepository.incomingCalls(userId).collect { call ->
-                if (call.status != CallStatus.Ringing) return@collect
-                if (dismissed.contains(call.id)) return@collect
-                if (_incomingCall.value?.id == call.id) return@collect
-                _incomingCall.value = call
-                showNotification(call, userId)
+            authRepository.authState.collectLatest { state ->
+                if (state is AuthState.SignedIn) {
+                    watch(state.userId)
+                } else {
+                    _incomingCall.value = null
+                }
             }
         }
     }
 
-    private fun observeDismissals() {
-        val userId = authRepository.currentUserId() ?: return
-        viewModelScope.launch {
-            callRepository.callUpdates(userId).collect { call ->
-                val current = _incomingCall.value
-                if (current != null && current.id == call.id && call.status != CallStatus.Ringing) {
-                    _incomingCall.value = null
-                    notificationHelper.cancelIncomingCall(call.id)
-                }
+    private suspend fun watch(userId: String) {
+        callRepository.expireStaleCalls()
+
+        // Scoped to this call: signing out (or switching account) cancels both collectors.
+        coroutineScope {
+            launch { observeIncoming(userId) }
+            launch { observeDismissals(userId) }
+        }
+    }
+
+    private suspend fun observeIncoming(userId: String) {
+        callRepository.incomingCalls(userId).collect { call ->
+            if (call.status != CallStatus.Ringing) return@collect
+            if (dismissed.contains(call.id)) return@collect
+            if (_incomingCall.value?.id == call.id) return@collect
+            _incomingCall.value = call
+            showNotification(call, userId)
+        }
+    }
+
+    private suspend fun observeDismissals(userId: String) {
+        callRepository.callUpdates(userId).collect { call ->
+            val current = _incomingCall.value
+            if (current != null && current.id == call.id && call.status != CallStatus.Ringing) {
+                _incomingCall.value = null
+                notificationHelper.cancelIncomingCall(call.id)
             }
         }
     }
