@@ -104,13 +104,14 @@ class CallGuardViewModel @Inject constructor(
             if (dismissedGroups.contains(call.id)) return@collect
             if (_incomingGroupCall.value?.id == call.id) return@collect
             // Only ring if I am still an invitee: joining (or declining) clears this.
-            val roster = groupCallRepository.participants(call.id)
-            val mine = (roster as? AppResult.Success)?.data?.firstOrNull { it.userId == userId }
-            if (mine == null) return@collect
+            val mine = when (val roster = groupCallRepository.participants(call.id)) {
+                is AppResult.Success -> roster.data.firstOrNull { it.userId == userId }
+                is AppResult.Failure -> null
+            } ?: return@collect
             if (mine.status != GroupCallParticipant.ParticipationStatus.Invited) return@collect
 
             _incomingGroupCall.value = call
-            showGroupNotification(call, mine, userId)
+            showGroupNotification(call, userId)
         }
     }
 
@@ -124,11 +125,7 @@ class CallGuardViewModel @Inject constructor(
         }
     }
 
-    private fun showGroupNotification(
-        call: GroupCall,
-        me: GroupCallParticipant,
-        userId: String,
-    ) {
+    private fun showGroupNotification(call: GroupCall, userId: String) {
         viewModelScope.launch {
             val hostId = call.hostId
             val hostName = if (hostId == userId) {

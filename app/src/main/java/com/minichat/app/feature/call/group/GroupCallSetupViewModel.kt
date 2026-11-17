@@ -61,10 +61,12 @@ class GroupCallSetupViewModel @Inject constructor(
         searchJob?.cancel()
         if (value.isBlank()) {
             viewModelScope.launch {
-                (profileRepository.recentPeers() as? AppResult.Success)?.let { recent ->
-                    _uiState.update { state ->
+                when (val recent = profileRepository.recentPeers()) {
+                    is AppResult.Success -> _uiState.update { state ->
                         if (state.query.isBlank()) state.copy(people = recent.data) else state
                     }
+
+                    is AppResult.Failure -> Unit
                 }
             }
             return
