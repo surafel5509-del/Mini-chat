@@ -111,7 +111,7 @@ class LiveKitRoomManager @Inject constructor(
     private fun snapshotPeers(activeRoom: Room): Map<String, RemotePeer> {
         val peers = mutableMapOf<String, RemotePeer>()
         activeRoom.remoteParticipants.values.forEach { participant ->
-            val identity = participant.identity.value
+            val identity = participant.identity?.value ?: return@forEach
             val videoTrack = participant.getTrackPublication(Track.Source.CAMERA)?.track as? VideoTrack
             val micPublication = participant.getTrackPublication(Track.Source.MICROPHONE)
             peers[identity] = RemotePeer(
@@ -186,7 +186,7 @@ class LiveKitRoomManager @Inject constructor(
 
                     is RoomEvent.ParticipantConnected -> {
                         val participant = event.participant as? RemoteParticipant ?: return@collect
-                        val identity = participant.identity.value
+                        val identity = participant.identity?.value ?: return@collect
                         _state.update { current ->
                             current.copy(
                                 peers = current.peers + (identity to RemotePeer(
@@ -202,7 +202,7 @@ class LiveKitRoomManager @Inject constructor(
 
                     is RoomEvent.TrackSubscribed -> {
                         val participant = event.participant as? RemoteParticipant ?: return@collect
-                        val identity = participant.identity.value
+                        val identity = participant.identity?.value ?: return@collect
                         val track = event.track
                         _state.update { current ->
                             val existing = current.peers[identity]
@@ -218,7 +218,7 @@ class LiveKitRoomManager @Inject constructor(
 
                     is RoomEvent.TrackUnsubscribed -> {
                         val participant = event.participant as? RemoteParticipant ?: return@collect
-                        val identity = participant.identity.value
+                        val identity = participant.identity?.value ?: return@collect
                         if (event.track is VideoTrack) {
                             updatePeer(identity) { it.copy(videoTrack = null, cameraEnabled = false) }
                         }
@@ -228,10 +228,10 @@ class LiveKitRoomManager @Inject constructor(
                         val participant = event.participant as? RemoteParticipant ?: return@collect
                         when (event.publication.source) {
                             Track.Source.MICROPHONE ->
-                                updatePeer(participant.identity.value) { it.copy(microphoneEnabled = false) }
+                                updatePeer(participant.identity?.value) { it.copy(microphoneEnabled = false) }
 
                             Track.Source.CAMERA ->
-                                updatePeer(participant.identity.value) {
+                                updatePeer(participant.identity?.value) {
                                     it.copy(videoTrack = null, cameraEnabled = false)
                                 }
 
@@ -243,11 +243,11 @@ class LiveKitRoomManager @Inject constructor(
                         val participant = event.participant as? RemoteParticipant ?: return@collect
                         when (event.publication.source) {
                             Track.Source.MICROPHONE ->
-                                updatePeer(participant.identity.value) { it.copy(microphoneEnabled = true) }
+                                updatePeer(participant.identity?.value) { it.copy(microphoneEnabled = true) }
 
                             Track.Source.CAMERA -> {
                                 val track = event.publication.track as? VideoTrack
-                                updatePeer(participant.identity.value) {
+                                updatePeer(participant.identity?.value) {
                                     it.copy(videoTrack = track ?: it.videoTrack, cameraEnabled = true)
                                 }
                             }
