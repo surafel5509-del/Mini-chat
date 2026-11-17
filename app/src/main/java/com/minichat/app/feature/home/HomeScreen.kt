@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DoneAll
@@ -78,6 +79,7 @@ fun HomeScreen(
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
     onNewChat: () -> Unit,
+    onOpenCalls: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -101,6 +103,7 @@ fun HomeScreen(
                 },
                 onOpenProfile = onOpenProfile,
                 onOpenSettings = onOpenSettings,
+                onOpenCalls = onOpenCalls,
             )
 
             AnimatedVisibility(
@@ -231,6 +234,7 @@ private fun HomeHeader(
     onToggleSearch: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenCalls: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -261,6 +265,13 @@ private fun HomeHeader(
                 icon = Icons.Rounded.Search,
                 contentDescription = "Search",
                 onClick = onToggleSearch,
+                containerColor = MaterialTheme.colorScheme.surface,
+            )
+            Spacer(Modifier.width(6.dp))
+            MiniChatIconButton(
+                icon = Icons.Rounded.Call,
+                contentDescription = "Calls",
+                onClick = onOpenCalls,
                 containerColor = MaterialTheme.colorScheme.surface,
             )
             Spacer(Modifier.width(6.dp))

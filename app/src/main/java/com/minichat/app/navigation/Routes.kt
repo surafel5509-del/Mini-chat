@@ -21,10 +21,14 @@ object Routes {
     const val PRIVACY = "settings/privacy"
     const val BLOCKED_USERS = "settings/blocked"
     const val ABOUT = "settings/about"
+    const val CALL = "call/{callId}"
+    const val CALLS = "calls"
 
     fun chat(conversationId: String): String = "chat/$conversationId"
 
     fun userProfile(userId: String): String = "profile/$userId"
+
+    fun call(callId: String): String = "call/$callId"
 
     fun resetPassword(email: String): String = "reset_password?email=${Uri.encode(email)}"
 }

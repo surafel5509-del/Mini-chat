@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,6 +23,9 @@ import com.minichat.app.feature.auth.ForgotPasswordScreen
 import com.minichat.app.feature.auth.LoginScreen
 import com.minichat.app.feature.auth.RegisterScreen
 import com.minichat.app.feature.auth.ResetPasswordScreen
+import com.minichat.app.feature.call.CallGuardViewModel
+import com.minichat.app.feature.call.CallHistoryScreen
+import com.minichat.app.feature.call.CallScreen
 import com.minichat.app.feature.chat.ChatScreen
 import com.minichat.app.feature.contacts.DiscoverScreen
 import com.minichat.app.feature.home.HomeScreen
@@ -43,12 +47,16 @@ fun MiniChatNavHost(
     rootViewModel: RootViewModel,
     deepLinkConversationId: String? = null,
     onDeepLinkConsumed: () -> Unit = {},
+    deepLinkCallId: String? = null,
+    onDeepLinkCallConsumed: () -> Unit = {},
     passwordResetPending: Boolean = false,
     onPasswordResetOpened: () -> Unit = {},
     navController: NavHostController = rememberNavController(),
 ) {
     val state by rootViewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val callGuard: CallGuardViewModel = hiltViewModel()
+    val incomingCall by callGuard.incomingCall.collectAsStateWithLifecycle()
 
     // Auth gate: the back stack never keeps a signed-out screen after sign in (or vice versa).
     LaunchedEffect(state.authState) {
@@ -94,6 +102,22 @@ fun MiniChatNavHost(
         if (passwordResetPending && state.authState is AuthState.SignedIn) {
             onPasswordResetOpened()
             navController.navigate(Routes.resetPassword("")) { launchSingleTop = true }
+        }
+    }
+
+    // A call ringing at this user interrupts whatever screen they are on.
+    LaunchedEffect(incomingCall?.id, state.authState) {
+        val call = incomingCall ?: return@LaunchedEffect
+        if (state.authState !is AuthState.SignedIn) return@LaunchedEffect
+        if (navController.currentBackStackEntry?.destination?.route == Routes.CALL) return@LaunchedEffect
+        callGuard.consume()
+        navController.navigate(Routes.call(call.id)) { launchSingleTop = true }
+    }
+
+    LaunchedEffect(deepLinkCallId, state.authState) {
+        if (deepLinkCallId != null && state.authState is AuthState.SignedIn) {
+            navController.navigate(Routes.call(deepLinkCallId)) { launchSingleTop = true }
+            onDeepLinkCallConsumed()
         }
     }
 
@@ -181,6 +205,7 @@ fun MiniChatNavHost(
                 onOpenProfile = { navController.navigate(Routes.MY_PROFILE) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onNewChat = { navController.navigate(Routes.DISCOVER) },
+                onOpenCalls = { navController.navigate(Routes.CALLS) },
             )
         }
 
@@ -191,6 +216,34 @@ fun MiniChatNavHost(
             ChatScreen(
                 onBack = { navController.popBackStack() },
                 onOpenProfile = { userId -> navController.navigate(Routes.userProfile(userId)) },
+                onOpenCall = { callId -> navController.navigate(Routes.call(callId)) },
+            )
+        }
+
+        composable(
+            route = Routes.CALL,
+            arguments = listOf(navArgument("callId") { type = NavType.StringType }),
+            enterTransition = { fadeIn(tween(200)) },
+            popExitTransition = { fadeOut(tween(200)) },
+        ) {
+            CallScreen(
+                onFinished = {
+                    callGuard.consume()
+                    navController.popBackStack()
+                },
+                onOpenChat = { conversationId ->
+                    navController.navigate(Routes.chat(conversationId)) { launchSingleTop = true }
+                },
+            )
+        }
+
+        composable(Routes.CALLS) {
+            CallHistoryScreen(
+                onBack = { navController.popBackStack() },
+                onOpenConversation = { conversationId ->
+                    navController.navigate(Routes.chat(conversationId)) { launchSingleTop = true }
+                },
+                onOpenCall = { callId -> navController.navigate(Routes.call(callId)) },
             )
         }
 

@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var authRepository: com.minichat.app.domain.repository.AuthRepository
 
     private var deepLinkConversationId by mutableStateOf<String?>(null)
+    private var deepLinkCallId by mutableStateOf<String?>(null)
     private var recoveryLinkPending by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +82,8 @@ class MainActivity : ComponentActivity() {
                         rootViewModel = rootViewModel,
                         deepLinkConversationId = deepLinkConversationId,
                         onDeepLinkConsumed = { deepLinkConversationId = null },
+                        deepLinkCallId = deepLinkCallId,
+                        onDeepLinkCallConsumed = { deepLinkCallId = null },
                         passwordResetPending = recoveryLinkPending,
                         onPasswordResetOpened = { recoveryLinkPending = false },
                     )
@@ -102,6 +105,8 @@ class MainActivity : ComponentActivity() {
         if (data.scheme != "minichat") return
         when (data.host) {
             "chat" -> deepLinkConversationId = data.pathSegments.firstOrNull()
+
+            "call" -> deepLinkCallId = data.pathSegments.firstOrNull()
 
             "auth-callback" -> {
                 // Supabase appends the session to the fragment: #access_token=…&refresh_token=…

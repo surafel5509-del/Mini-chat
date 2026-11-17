@@ -7,6 +7,7 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.minichat.app.notifications.NotificationChannels
 import dagger.hilt.android.HiltAndroidApp
+import io.livekit.android.LiveKit
 
 @HiltAndroidApp
 class MiniChatApplication : Application(), ImageLoaderFactory {
@@ -14,6 +15,9 @@ class MiniChatApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         NotificationChannels.ensureCreated(this)
+
+        // WebRTC must be initialised once per process, before any LiveKit Room is created.
+        runCatching { LiveKit.init(this) }
     }
 
     /**

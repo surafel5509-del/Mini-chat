@@ -28,11 +28,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Block
+import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -60,6 +62,7 @@ import com.minichat.app.design.components.EmptyState
 import com.minichat.app.design.components.InlineError
 import com.minichat.app.design.components.MessageInfoDialog
 import com.minichat.app.design.components.MiniChatAvatar
+import com.minichat.app.domain.model.CallType
 import com.minichat.app.design.components.MiniChatIconButton
 import com.minichat.app.design.components.MiniChatLoader
 import com.minichat.app.design.components.SettingsRow
@@ -71,6 +74,7 @@ import com.minichat.app.domain.model.Message
 fun ChatScreen(
     onBack: () -> Unit,
     onOpenProfile: (String) -> Unit,
+    onOpenCall: (String) -> Unit,
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -83,6 +87,14 @@ fun ChatScreen(
     var showConversationSheet by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf<Message?>(null) }
     val forwardTargets by viewModel.forwardTargets.collectAsStateWithLifecycle()
+    val outgoingCall by viewModel.outgoingCall.collectAsStateWithLifecycle()
+
+    LaunchedEffect(outgoingCall?.id) {
+        outgoingCall?.let {
+            viewModel.consumeOutgoingCall()
+            onOpenCall(it.id)
+        }
+    }
 
     DisposableEffect(viewModel) {
         viewModel.onScreenStarted()
@@ -116,6 +128,8 @@ fun ChatScreen(
                 state.conversation?.peer?.id?.let(onOpenProfile)
             },
             onMore = { showConversationSheet = true },
+            onVoiceCall = { viewModel.startCall(CallType.Voice) },
+            onVideoCall = { viewModel.startCall(CallType.Video) },
         )
 
         Box(modifier = Modifier.weight(1f)) {
@@ -380,6 +394,8 @@ private fun ChatTopBar(
     onBack: () -> Unit,
     onOpenProfile: () -> Unit,
     onMore: () -> Unit,
+    onVoiceCall: () -> Unit,
+    onVideoCall: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -451,6 +467,20 @@ private fun ChatTopBar(
                 }
             }
 
+            MiniChatIconButton(
+                icon = Icons.Rounded.Call,
+                contentDescription = "Voice call",
+                onClick = onVoiceCall,
+                containerColor = MaterialTheme.colorScheme.surface,
+            )
+            Spacer(Modifier.width(2.dp))
+            MiniChatIconButton(
+                icon = Icons.Rounded.Videocam,
+                contentDescription = "Video call",
+                onClick = onVideoCall,
+                containerColor = MaterialTheme.colorScheme.surface,
+            )
+            Spacer(Modifier.width(2.dp))
             MiniChatIconButton(
                 icon = Icons.Rounded.MoreVert,
                 contentDescription = "More",

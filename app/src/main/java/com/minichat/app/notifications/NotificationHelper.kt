@@ -121,13 +121,100 @@ class NotificationHelper @Inject constructor(
         runCatching { manager.notify(SESSION_NOTIFICATION_ID, builder.build()) }
     }
 
+
+    // ---------------------------------------------------------------------
+    // Calls
+    // ---------------------------------------------------------------------
+
+    /** A high priority incoming-call notification with a full screen intent. */
+    fun notifyIncomingCall(callId: String, callerName: String, isVideo: Boolean) {
+        NotificationChannels.ensureCreated(context)
+
+        val contentIntent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = android.net.Uri.parse("minichat://call/$callId")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            callId.hashCode(),
+            contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+        val builder = NotificationCompat.Builder(context, NotificationChannels.CALLS)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(callerName)
+            .setContentText(if (isVideo) "Incoming video call" else "Incoming voice call")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
+            .setAutoCancel(true)
+            .setOngoing(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setFullScreenIntent(pendingIntent, true)
+            .setContentIntent(pendingIntent)
+            .setTimeoutAfter(CALL_RING_TIMEOUT_MS)
+
+        runCatching { manager.notify(callId.hashCode(), builder.build()) }
+    }
+
+    fun cancelIncomingCall(callId: String) {
+        runCatching { manager.cancel(callId.hashCode()) }
+    }
+
+    companion object {
+
+        const val GROUP_MESSAGES = "minichat.messages"
+        const val GROUP_SUMMARY_ID = 1001
+        const val SESSION_NOTIFICATION_ID = 1002
+        const val CALL_RING_TIMEOUT_MS = 45_000L
+
+        /** Notification shown by [com.minichat.app.call.CallForegroundService] while connected. */
+        fun ongoingCallNotification(
+            context: Context,
+            callId: String,
+            title: String,
+            subtitle: String,
+        ): android.app.Notification {
+            NotificationChannels.ensureCreated(context)
+
+            val contentIntent = Intent(context, MainActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = android.net.Uri.parse("minichat://call/$callId")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                callId.hashCode(),
+                contentIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+
+            val hangUp = Intent(context, com.minichat.app.call.CallForegroundService::class.java)
+                .setAction(com.minichat.app.call.CallForegroundService.ACTION_STOP)
+            val hangUpPending = PendingIntent.getService(
+                context,
+                callId.hashCode() + 7,
+                hangUp,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+
+            return NotificationCompat.Builder(context, NotificationChannels.CALL_ONGOING)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setContentText(subtitle)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .setOngoing(true)
+                .setContentIntent(pendingIntent)
+                .addAction(0, "Hang up", hangUpPending)
+                .build()
+        }
+    }
+
     @Suppress("unused")
     private fun systemManager(): NotificationManager? =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 
-    private companion object {
-        const val GROUP_MESSAGES = "minichat.messages"
-        const val GROUP_SUMMARY_ID = 1001
-        const val SESSION_NOTIFICATION_ID = 1002
-    }
 }

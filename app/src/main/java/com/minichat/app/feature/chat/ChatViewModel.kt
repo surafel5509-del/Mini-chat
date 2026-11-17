@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.datastore.UserPreferences
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.core.util.Validators
+import com.minichat.app.domain.model.Call
+import com.minichat.app.domain.model.CallType
 import com.minichat.app.domain.model.ConversationSummary
 import com.minichat.app.domain.model.Message
 import com.minichat.app.domain.model.MessageStatus
+import com.minichat.app.domain.repository.CallRepository
 import com.minichat.app.domain.repository.ChatRepository
 import com.minichat.app.domain.repository.MessageEvent
 import com.minichat.app.domain.repository.ProfileRepository
@@ -35,6 +38,7 @@ class ChatViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val realtimeRepository: RealtimeRepository,
     private val userPreferences: UserPreferences,
+    private val callRepository: CallRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -73,6 +77,10 @@ class ChatViewModel @Inject constructor(
 
     private val _forwardTargets = MutableStateFlow<List<ConversationSummary>>(emptyList())
     val forwardTargets: StateFlow<List<ConversationSummary>> = _forwardTargets.asStateFlow()
+
+    /** Set when this screen successfully started a call so the UI can open the call screen. */
+    private val _outgoingCall = MutableStateFlow<Call?>(null)
+    val outgoingCall: StateFlow<Call?> = _outgoingCall.asStateFlow()
 
     private var typingJob: Job? = null
     private var typingSentAt: Long = 0L
@@ -362,6 +370,27 @@ class ChatViewModel @Inject constructor(
 
     fun hideInfo() {
         _uiState.update { it.copy(infoMessage = null) }
+    }
+
+    fun startCall(type: CallType) {
+        viewModelScope.launch {
+            when (val result = callRepository.startCall(conversationId, type)) {
+                is AppResult.Success -> _outgoingCall.value = result.data
+                is AppResult.Failure -> {
+                    // Someone may already be on a call in this conversation: jump into it instead.
+                    val active = callRepository.activeCall()
+                    if (active is AppResult.Success && active.data != null) {
+                        _outgoingCall.value = active.data
+                    } else {
+                        _uiState.update { it.copy(error = result.message) }
+                    }
+                }
+            }
+        }
+    }
+
+    fun consumeOutgoingCall() {
+        _outgoingCall.value = null
     }
 
     fun dismissError() {

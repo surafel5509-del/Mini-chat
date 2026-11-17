@@ -190,6 +190,10 @@ dependencies {
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.realtime)
     implementation(libs.supabase.storage)
+    implementation(libs.supabase.functions)
+
+    // LiveKit real-time media (voice + video)
+    implementation(libs.livekit.android)
     implementation(libs.ktor.client.okhttp)
 
     // Push
