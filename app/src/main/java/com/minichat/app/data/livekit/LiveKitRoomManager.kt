@@ -227,10 +227,12 @@ class LiveKitRoomManager @Inject constructor(
     // ---------------------------------------------------------------------
 
     /** Stable key for a participant, even on SDK builds where `identity` is nullable. */
-    private fun keyOf(participant: Participant): String =
-        participant.identity?.value?.takeIf { it.isNotBlank() }
-            ?: participant.sid.takeIf { it.isNotBlank() }
-            ?: "peer-${participant.hashCode()}"
+    private fun keyOf(participant: Participant): String {
+        val identity = participant.identity?.value
+        if (!identity.isNullOrBlank()) return identity
+        // Some SDK builds type `sid` as a value class, so only interpolate it.
+        return "sid-${participant.sid}"
+    }
 
     private fun snapshotPeers(activeRoom: Room): Map<String, RemotePeer> {
         val peers = mutableMapOf<String, RemotePeer>()
