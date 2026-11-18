@@ -30,9 +30,11 @@ import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.NotificationsOff
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material3.Icon
@@ -61,6 +63,8 @@ import com.minichat.app.design.components.ConfirmDialog
 import com.minichat.app.design.components.EmptyState
 import com.minichat.app.design.components.InlineError
 import com.minichat.app.design.components.MessageInfoDialog
+import com.minichat.app.domain.model.ConversationTheme
+import com.minichat.app.domain.model.SeenReceipt
 import com.minichat.app.design.components.MiniChatAvatar
 import com.minichat.app.domain.model.CallType
 import com.minichat.app.design.components.MiniChatIconButton
@@ -85,9 +89,14 @@ fun ChatScreen(
     var actionMessage by remember { mutableStateOf<Message?>(null) }
     var forwardMessage by remember { mutableStateOf<Message?>(null) }
     var showConversationSheet by remember { mutableStateOf(false) }
+    var showGroupInfo by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf<Message?>(null) }
     val forwardTargets by viewModel.forwardTargets.collectAsStateWithLifecycle()
     val outgoingCall by viewModel.outgoingCall.collectAsStateWithLifecycle()
+
+    LaunchedEffect(state.groupLeft) {
+        if (state.groupLeft) onBack()
+    }
 
     LaunchedEffect(outgoingCall?.id) {
         outgoingCall?.let {
@@ -119,20 +128,26 @@ fun ChatScreen(
         ChatTopBar(
             displayName = state.conversation?.displayName ?: "Conversation",
             subtitle = state.subtitle,
-            avatarUrl = state.conversation?.peer?.avatarUrl,
-            username = state.conversation?.peer?.username.orEmpty(),
-            online = TimeFormat.isOnline(state.conversation?.peer?.lastSeenAt?.toString()),
-            peerTyping = state.peerTyping,
+            avatarUrl = state.conversation?.avatar,
+            username = state.conversation?.subtitleHandle.orEmpty(),
+            online = !state.isGroup &&
+                TimeFormat.isOnline(state.conversation?.peer?.lastSeenAt?.toString()),
+            peerTyping = state.peerTyping || state.typingNames.isNotEmpty(),
+            isGroup = state.isGroup,
             onBack = onBack,
             onOpenProfile = {
-                state.conversation?.peer?.id?.let(onOpenProfile)
+                if (state.isGroup) {
+                    showGroupInfo = true
+                } else {
+                    state.conversation?.peer?.id?.let(onOpenProfile)
+                }
             },
             onMore = { showConversationSheet = true },
             onVoiceCall = { viewModel.startCall(CallType.Voice) },
             onVideoCall = { viewModel.startCall(CallType.Video) },
         )
 
-        Box(modifier = Modifier.weight(1f)) {
+        ChatWallpaper(wallpaperId = state.theme?.wallpaper, modifier = Modifier.weight(1f)) {
             when {
                 state.isLoading && state.messages.isEmpty() -> MiniChatLoader()
 
@@ -163,17 +178,29 @@ fun ChatScreen(
                                 MessageBubble(
                                     message = message,
                                     myId = state.myId,
-                                    showSenderName = false,
-                                    peerName = state.conversation?.displayName.orEmpty(),
+                                    showSenderName = state.isGroup,
+                                    peerName = message.senderName.ifBlank {
+                                        state.conversation?.displayName.orEmpty()
+                                    },
                                     peerReadAt = state.peerReadAt,
                                     onLongPress = { actionMessage = message },
                                     onRetry = { viewModel.retry(message) },
                                     onReactionTap = { emoji -> viewModel.toggleReaction(message, emoji) },
+                                    seenProfiles = state.seenBy(message),
+                                    onSeenClick = { viewModel.openSeenSheet(message) },
+                                    bubbleColorOverride = parseHexColor(state.theme?.bubbleColor),
                                 )
                             }
                         }
-                        if (state.peerTyping) {
-                            item { TypingBubble(peerName = state.conversation?.displayName.orEmpty()) }
+                        if (state.typingNames.isNotEmpty() || state.peerTyping) {
+                            item {
+                                TypingBubble(
+                                    peerName = state.typingLabel.ifBlank {
+                                        state.conversation?.displayName.orEmpty()
+                                    },
+                                    showLabel = state.isGroup,
+                                )
+                            }
                         }
                     }
                 }
@@ -309,6 +336,30 @@ fun ChatScreen(
         }
     }
 
+    if (showGroupInfo) {
+        GroupInfoSheet(
+            title = state.conversation?.displayName ?: "This chat",
+            theme = state.theme,
+            members = state.members,
+            myId = state.myId,
+            saving = state.isSavingTheme,
+            onUpdateTheme = { wallpaper, bubble, accent, title ->
+                viewModel.updateTheme(wallpaper, bubble, accent, title)
+            },
+            onLeaveGroup = viewModel::leaveGroup,
+            onDismiss = { showGroupInfo = false },
+        )
+    }
+
+    state.seenSheetFor?.let { message ->
+        SeenBySheet(
+            message = message,
+            members = state.members,
+            myId = state.myId,
+            onDismiss = viewModel::closeSeenSheet,
+        )
+    }
+
     if (showConversationSheet) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
@@ -317,14 +368,33 @@ fun ChatScreen(
             containerColor = MaterialTheme.colorScheme.surface,
         ) {
             Column(modifier = Modifier.padding(bottom = 20.dp)) {
-                SettingsRow(
-                    icon = Icons.Rounded.Info,
-                    title = "View profile",
-                    onClick = {
-                        showConversationSheet = false
-                        state.conversation?.peer?.id?.let(onOpenProfile)
-                    },
-                )
+                if (state.isGroup) {
+                    SettingsRow(
+                        icon = Icons.Rounded.Groups,
+                        title = "Group info, wallpaper and colours",
+                        onClick = {
+                            showConversationSheet = false
+                            showGroupInfo = true
+                        },
+                    )
+                } else {
+                    SettingsRow(
+                        icon = Icons.Rounded.Info,
+                        title = "View profile",
+                        onClick = {
+                            showConversationSheet = false
+                            state.conversation?.peer?.id?.let(onOpenProfile)
+                        },
+                    )
+                    SettingsRow(
+                        icon = Icons.Rounded.Palette,
+                        title = "Wallpaper and colours",
+                        onClick = {
+                            showConversationSheet = false
+                            showGroupInfo = true
+                        },
+                    )
+                }
                 SettingsRow(
                     icon = Icons.Rounded.PushPin,
                     title = if (state.conversation?.isPinned == true) "Unpin conversation" else "Pin conversation",
@@ -335,7 +405,7 @@ fun ChatScreen(
                     title = "Mute notifications",
                     onClick = { showConversationSheet = false },
                 )
-                SettingsRow(
+                if (!state.isGroup) SettingsRow(
                     icon = Icons.Rounded.Block,
                     title = "Block this person",
                     onClick = { showConversationSheet = false },
@@ -391,6 +461,7 @@ private fun ChatTopBar(
     username: String,
     online: Boolean,
     peerTyping: Boolean,
+    isGroup: Boolean,
     onBack: () -> Unit,
     onOpenProfile: () -> Unit,
     onMore: () -> Unit,
@@ -434,7 +505,7 @@ private fun ChatTopBar(
                     avatarUrl = avatarUrl,
                     size = 40.dp,
                     online = online,
-                    showOnlineIndicator = true,
+                    showOnlineIndicator = !isGroup,
                 )
                 Spacer(Modifier.width(11.dp))
                 Column(modifier = Modifier.weight(1f)) {
@@ -451,7 +522,7 @@ private fun ChatTopBar(
                         exit = fadeOut(),
                     ) {
                         Text(
-                            text = "typing…",
+                            text = if (isGroup) "someone is typing…" else "typing…",
                             style = MaterialTheme.typography.labelSmall,
                             color = MiniChatColors.AmberSecondary,
                         )

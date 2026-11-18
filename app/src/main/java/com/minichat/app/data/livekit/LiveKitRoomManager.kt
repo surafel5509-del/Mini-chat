@@ -22,10 +22,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,6 +39,13 @@ import javax.inject.Singleton
  * decide when to connect and what to publish, and observe [state] to render the UI. A room can hold
  * one remote participant (direct call) or many (group call) — [State.peers] mirrors whoever is
  * currently subscribed.
+ *
+ * Reliability rules learned the hard way:
+ *  * participants are re-read from the SDK every couple of seconds, so a dropped event can never
+ *    leave a call without video;
+ *  * publishing the camera is retried until the track really exists, because some devices fail the
+ *    first capture attempt;
+ *  * every failure ends up in [State.error] instead of an exception.
  */
 @Singleton
 class LiveKitRoomManager @Inject constructor(
@@ -66,6 +75,8 @@ class LiveKitRoomManager @Inject constructor(
         val localVideoTrack: VideoTrack? = null,
         val peers: Map<String, RemotePeer> = emptyMap(),
         val error: String? = null,
+        /** Bumped whenever a remote track event arrives; useful for diagnostics. */
+        val remoteEventTick: Long = 0,
     ) {
         /** Convenience for one-to-one screens. */
         val remoteVideoTrack: VideoTrack? get() = peers.values.firstNotNullOfOrNull { it.videoTrack }
@@ -79,6 +90,7 @@ class LiveKitRoomManager @Inject constructor(
 
     private var room: Room? = null
     private var eventJob: Job? = null
+    private var syncJob: Job? = null
 
     /**
      * Room events outlive the screen that started the call, so a call keeps running (and keeps
@@ -95,7 +107,9 @@ class LiveKitRoomManager @Inject constructor(
         return runCatching {
             LiveKit.create(
                 appContext = context,
-                options = RoomOptions(adaptiveStream = true, dynacast = true),
+                // Adaptive stream only delivers video to renderers that are already attached; a
+                // late or re-created view can then stay black. Reliability beats bandwidth here.
+                options = RoomOptions(adaptiveStream = false, dynacast = false),
             )
         }.onSuccess { room = it }
             .onFailure { failure ->
@@ -110,12 +124,21 @@ class LiveKitRoomManager @Inject constructor(
             .getOrNull()
     }
 
-    suspend fun connect(url: String, token: String, roomName: String? = null) {
+    /**
+     * Joins [url] with [token] and publishes the microphone, plus the camera when [video] is true.
+     * Calling this again for the room we are already inside is a no-op, so screens can re-attach.
+     */
+    suspend fun connect(
+        url: String,
+        token: String,
+        roomName: String? = null,
+        video: Boolean = false,
+    ) {
         val current = _state.value
-        if (current.connection == Connection.Connected &&
-            (roomName == null || current.roomName == null || current.roomName == roomName)
-        ) {
-            // Already inside this room (the screen was recreated): reuse the live session.
+        if (current.connection == Connection.Connected && current.roomName == roomName) {
+            // Already inside this room (the screen was recreated): just make sure media is on.
+            enableAudio()
+            if (video) enableVideo()
             return
         }
 
@@ -133,9 +156,12 @@ class LiveKitRoomManager @Inject constructor(
         observeEvents(activeRoom)
         runCatching { activeRoom.connect(url, token) }
             .onSuccess {
-                _state.update { current ->
-                    current.copy(connection = Connection.Connected, peers = snapshotPeers(activeRoom))
+                _state.update { state ->
+                    state.copy(connection = Connection.Connected, peers = snapshotPeers(activeRoom))
                 }
+                startPeerSync(activeRoom)
+                enableAudio()
+                if (video) enableVideo()
             }
             .onFailure { failure ->
                 Log.e(TAG, "LiveKit connect failed", failure)
@@ -149,17 +175,70 @@ class LiveKitRoomManager @Inject constructor(
     }
 
     // ---------------------------------------------------------------------
+    // Media
+    // ---------------------------------------------------------------------
+
+    private suspend fun enableAudio() {
+        val activeRoom = roomOrNull() ?: return
+        repeat(2) { attempt ->
+            val ok = runCatching {
+                activeRoom.localParticipant.setMicrophoneEnabled(true)
+            }.isSuccess
+            if (ok) {
+                _state.update { it.copy(microphoneEnabled = true) }
+                return
+            }
+            Log.w(TAG, "Microphone publish attempt ${attempt + 1} failed")
+            delay(300L)
+        }
+    }
+
+    /**
+     * Turns the camera on and waits until the track actually exists. Devices occasionally fail the
+     * first capture (camera still held by the system), so the publish is retried with a backoff.
+     */
+    private suspend fun enableVideo() {
+        val activeRoom = roomOrNull() ?: return
+        repeat(3) { attempt ->
+            val failed = runCatching {
+                activeRoom.localParticipant.setCameraEnabled(true)
+            }.exceptionOrNull()
+            refreshLocalVideo()
+            if (_state.value.localVideoTrack != null) {
+                _state.update { it.copy(cameraEnabled = true, error = null) }
+                return
+            }
+            if (failed != null) {
+                Log.w(TAG, "Camera publish attempt ${attempt + 1} failed", failed)
+            }
+            delay(400L * (attempt + 1))
+        }
+        Log.w(TAG, "Camera never produced a track")
+        _state.update {
+            it.copy(
+                cameraEnabled = false,
+                error = "Camera unavailable — check the camera permission, then turn the camera on again.",
+            )
+        }
+    }
+
+    // ---------------------------------------------------------------------
     // Participants
     // ---------------------------------------------------------------------
+
+    /** Stable key for a participant, even on SDK builds where `identity` is nullable. */
+    private fun keyOf(participant: Participant): String =
+        participant.identity?.value?.takeIf { it.isNotBlank() }
+            ?: participant.sid
+            ?: "peer-${participant.hashCode()}"
 
     private fun snapshotPeers(activeRoom: Room): Map<String, RemotePeer> {
         val peers = mutableMapOf<String, RemotePeer>()
         activeRoom.remoteParticipants.values.forEach { participant ->
-            val identity = participant.identity?.value ?: return@forEach
             val videoTrack = participant.getTrackPublication(Track.Source.CAMERA)?.track as? VideoTrack
             val micPublication = participant.getTrackPublication(Track.Source.MICROPHONE)
-            peers[identity] = RemotePeer(
-                identity = identity,
+            peers[keyOf(participant)] = RemotePeer(
+                identity = keyOf(participant),
                 name = displayName(participant),
                 videoTrack = videoTrack,
                 microphoneEnabled = micPublication?.muted != true,
@@ -169,24 +248,30 @@ class LiveKitRoomManager @Inject constructor(
         return peers
     }
 
+    /**
+     * Re-reads the room every two seconds. LiveKit events are the fast path, this is the safety
+     * net: a missed `TrackSubscribed` (or a device that silently stops publishing) can no longer
+     * leave the other side staring at an avatar.
+     */
+    private fun startPeerSync(activeRoom: Room) {
+        syncJob?.cancel()
+        syncJob = eventScope.launch {
+            while (isActive) {
+                delay(PEER_SYNC_MS)
+                if (_state.value.connection != Connection.Connected) continue
+                runCatching {
+                    _state.update { it.copy(peers = snapshotPeers(activeRoom)) }
+                    refreshLocalVideo()
+                }
+            }
+        }
+    }
+
     private fun displayName(participant: Participant?): String {
         val explicit = participant?.name?.takeIf { it.isNotBlank() }
         if (explicit != null) return explicit
         val identity = participant?.identity?.value
         return identity?.take(8)?.let { "Guest $it" } ?: "Guest"
-    }
-
-    private fun updatePeer(identity: String?, transform: (RemotePeer) -> RemotePeer) {
-        val id = identity ?: return
-        _state.update { current ->
-            val existing = current.peers[id] ?: RemotePeer(identity = id, name = "Guest")
-            current.copy(peers = current.peers + (id to transform(existing)))
-        }
-    }
-
-    private fun removePeer(identity: String?) {
-        val id = identity ?: return
-        _state.update { current -> current.copy(peers = current.peers - id) }
     }
 
     // ---------------------------------------------------------------------
@@ -209,7 +294,9 @@ class LiveKitRoomManager @Inject constructor(
                     is RoomEvent.Reconnecting ->
                         _state.update { it.copy(connection = Connection.Reconnecting) }
 
-                    is RoomEvent.Disconnected ->
+                    is RoomEvent.Disconnected -> {
+                        syncJob?.cancel()
+                        syncJob = null
                         _state.update {
                             it.copy(
                                 connection = Connection.Disconnected,
@@ -219,6 +306,7 @@ class LiveKitRoomManager @Inject constructor(
                                 cameraEnabled = false,
                             )
                         }
+                    }
 
                     is RoomEvent.FailedToConnect ->
                         _state.update {
@@ -228,82 +316,23 @@ class LiveKitRoomManager @Inject constructor(
                             )
                         }
 
-                    is RoomEvent.ParticipantConnected -> {
-                        val participant = event.participant as? RemoteParticipant ?: return@collect
-                        val identity = participant.identity?.value ?: return@collect
-                        _state.update { current ->
-                            current.copy(
-                                peers = current.peers + (identity to RemotePeer(
-                                    identity = identity,
-                                    name = displayName(participant),
-                                )),
-                            )
-                        }
-                    }
-
-                    is RoomEvent.ParticipantDisconnected ->
-                        removePeer((event.participant as? RemoteParticipant)?.identity?.value)
-
-                    is RoomEvent.TrackSubscribed -> {
-                        val participant = event.participant as? RemoteParticipant ?: return@collect
-                        val identity = participant.identity?.value ?: return@collect
-                        val track = event.track
-                        _state.update { current ->
-                            val existing = current.peers[identity]
-                                ?: RemotePeer(identity = identity, name = displayName(participant))
-                            val updated = if (track is VideoTrack) {
-                                existing.copy(videoTrack = track, cameraEnabled = true)
-                            } else {
-                                existing.copy(microphoneEnabled = true)
-                            }
-                            current.copy(peers = current.peers + (identity to updated))
-                        }
-                    }
-
-                    is RoomEvent.TrackUnsubscribed -> {
-                        val participant = event.participant as? RemoteParticipant ?: return@collect
-                        val identity = participant.identity?.value ?: return@collect
-                        if (event.track is VideoTrack) {
-                            updatePeer(identity) { it.copy(videoTrack = null, cameraEnabled = false) }
-                        }
-                    }
-
-                    is RoomEvent.TrackMuted -> {
-                        val participant = event.participant as? RemoteParticipant ?: return@collect
-                        when (event.publication.source) {
-                            Track.Source.MICROPHONE ->
-                                updatePeer(participant.identity?.value) { it.copy(microphoneEnabled = false) }
-
-                            Track.Source.CAMERA ->
-                                updatePeer(participant.identity?.value) {
-                                    it.copy(videoTrack = null, cameraEnabled = false)
-                                }
-
-                            else -> Unit
-                        }
-                    }
-
-                    is RoomEvent.TrackUnmuted -> {
-                        val participant = event.participant as? RemoteParticipant ?: return@collect
-                        when (event.publication.source) {
-                            Track.Source.MICROPHONE ->
-                                updatePeer(participant.identity?.value) { it.copy(microphoneEnabled = true) }
-
-                            Track.Source.CAMERA -> {
-                                val track = event.publication.track as? VideoTrack
-                                updatePeer(participant.identity?.value) {
-                                    it.copy(videoTrack = track ?: it.videoTrack, cameraEnabled = true)
-                                }
-                            }
-
-                            else -> Unit
-                        }
+                    // Every participant/track change just refreshes the snapshot: it is the single
+                    // source of truth, so the UI can never drift from the room.
+                    is RoomEvent.ParticipantConnected,
+                    is RoomEvent.ParticipantDisconnected,
+                    is RoomEvent.TrackSubscribed,
+                    is RoomEvent.TrackUnsubscribed,
+                    is RoomEvent.TrackMuted,
+                    is RoomEvent.TrackUnmuted -> _state.update {
+                        it.copy(
+                            peers = snapshotPeers(activeRoom),
+                            remoteEventTick = it.remoteEventTick + 1,
+                        )
                     }
 
                     is RoomEvent.TrackPublished -> {
-                        if (event.participant is LocalParticipant) {
-                            refreshLocalVideo()
-                        }
+                        refreshLocalVideo()
+                        _state.update { it.copy(peers = snapshotPeers(activeRoom)) }
                     }
 
                     else -> Unit
@@ -316,7 +345,7 @@ class LiveKitRoomManager @Inject constructor(
         val track = roomOrNull()?.localParticipant
             ?.getTrackPublication(Track.Source.CAMERA)
             ?.track as? VideoTrack
-        _state.update { it.copy(localVideoTrack = track) }
+        _state.update { it.copy(localVideoTrack = track, cameraEnabled = track != null) }
     }
 
     // ---------------------------------------------------------------------
@@ -331,12 +360,16 @@ class LiveKitRoomManager @Inject constructor(
     }
 
     suspend fun setCameraEnabled(enabled: Boolean) {
+        if (enabled) {
+            enableVideo()
+            return
+        }
         val activeRoom = roomOrNull() ?: return
-        runCatching { activeRoom.localParticipant.setCameraEnabled(enabled) }
+        runCatching { activeRoom.localParticipant.setCameraEnabled(false) }
             .onSuccess {
-                _state.update { state -> state.copy(cameraEnabled = enabled) }
-                refreshLocalVideo()
-                if (!enabled) _state.update { it.copy(localVideoTrack = null) }
+                _state.update { state ->
+                    state.copy(cameraEnabled = false, localVideoTrack = null)
+                }
             }
             .onFailure { Log.w(TAG, "Camera toggle failed", it) }
     }
@@ -353,6 +386,13 @@ class LiveKitRoomManager @Inject constructor(
         }
         runCatching { videoTrack.switchCamera(position = next) }
             .onFailure { Log.w(TAG, "Camera flip failed", it) }
+    }
+
+    /** Re-attaches the camera after the app came back to the foreground mid-call. */
+    suspend fun resumeMedia(video: Boolean) {
+        if (_state.value.connection != Connection.Connected) return
+        enableAudio()
+        if (video) enableVideo()
     }
 
     /** Routes audio to the loudspeaker (video calls, speaker-phone) or back to the earpiece. */
@@ -380,6 +420,8 @@ class LiveKitRoomManager @Inject constructor(
     suspend fun disconnect() {
         eventJob?.cancel()
         eventJob = null
+        syncJob?.cancel()
+        syncJob = null
         runCatching { room?.disconnect() }
         _state.value = State()
     }
@@ -387,6 +429,8 @@ class LiveKitRoomManager @Inject constructor(
     fun release() {
         eventJob?.cancel()
         eventJob = null
+        syncJob?.cancel()
+        syncJob = null
         eventScope.coroutineContext.cancelChildren()
         runCatching { room?.disconnect() }
         room = null
@@ -395,5 +439,6 @@ class LiveKitRoomManager @Inject constructor(
 
     private companion object {
         const val TAG = "LiveKitRoom"
+        const val PEER_SYNC_MS = 2_000L
     }
 }

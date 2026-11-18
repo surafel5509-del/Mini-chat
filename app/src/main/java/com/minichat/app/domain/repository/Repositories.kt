@@ -3,8 +3,10 @@ package com.minichat.app.domain.repository
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.model.BlockedUser
 import com.minichat.app.domain.model.ConversationSummary
+import com.minichat.app.domain.model.ConversationTheme
 import com.minichat.app.domain.model.Message
 import com.minichat.app.domain.model.Profile
+import com.minichat.app.domain.model.SeenReceipt
 import com.minichat.app.domain.model.StartedConversation
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
@@ -93,6 +95,35 @@ interface ChatRepository {
     suspend fun setPinned(conversationId: String, pinned: Boolean): AppResult<Unit>
     suspend fun setMuted(conversationId: String, muted: Boolean): AppResult<Unit>
     suspend fun peerReadAt(conversationId: String): AppResult<Instant?>
+
+    // ---- Groups -------------------------------------------------------------
+
+    /** Creates a group chat and returns its conversation id. */
+    suspend fun createGroup(
+        title: String,
+        description: String?,
+        memberIds: List<String>,
+    ): AppResult<String>
+
+    suspend fun addGroupMembers(conversationId: String, memberIds: List<String>): AppResult<Unit>
+    suspend fun leaveGroup(conversationId: String): AppResult<Unit>
+
+    /** Wallpaper, bubble colours and title of a conversation. */
+    suspend fun theme(conversationId: String): AppResult<ConversationTheme>
+
+    suspend fun updateTheme(
+        conversationId: String,
+        wallpaper: String? = null,
+        bubbleColor: String? = null,
+        accentColor: String? = null,
+        title: String? = null,
+    ): AppResult<Unit>
+
+    /** Every member's read cursor, for the seen-by avatars and panel. */
+    suspend fun receipts(conversationId: String): AppResult<List<SeenReceipt>>
+
+    /** Read cursors only (cheap poll used next to the Realtime subscription). */
+    suspend fun members(conversationId: String): AppResult<List<SeenReceipt>>
 }
 
 interface ProfileRepository {

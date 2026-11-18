@@ -89,11 +89,17 @@ fun VideoTrackView(
     LaunchedEffect(track, mirror, renderer) {
         val target = renderer ?: return@LaunchedEffect
         if (track == null) return@LaunchedEffect
-        runCatching {
-            target.setMirror(mirror)
-            target.setScalingType(scalingType)
-            track.addRenderer(target)
-        }.onFailure { Log.w("VideoTrackView", "Could not attach the video track", it) }
+        repeat(3) { attempt ->
+            val attached = runCatching {
+                target.setMirror(mirror)
+                target.setScalingType(scalingType)
+                track.addRenderer(target)
+            }.onFailure {
+                Log.w("VideoTrackView", "Attach attempt ${attempt + 1} failed", it)
+            }.isSuccess
+            if (attached) return@LaunchedEffect
+            kotlinx.coroutines.delay(250L)
+        }
     }
 
     DisposableEffect(track, renderer) {

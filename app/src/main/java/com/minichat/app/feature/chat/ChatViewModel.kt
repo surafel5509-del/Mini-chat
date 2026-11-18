@@ -9,6 +9,9 @@ import com.minichat.app.core.util.Validators
 import com.minichat.app.domain.model.Call
 import com.minichat.app.domain.model.CallType
 import com.minichat.app.domain.model.ConversationSummary
+import com.minichat.app.domain.model.ConversationTheme
+import com.minichat.app.domain.model.Profile
+import com.minichat.app.domain.model.SeenReceipt
 import com.minichat.app.domain.model.Message
 import com.minichat.app.domain.model.MessageStatus
 import com.minichat.app.domain.repository.CallRepository
@@ -57,11 +60,44 @@ class ChatViewModel @Inject constructor(
         val hasMoreHistory: Boolean = true,
         val infoMessage: Message? = null,
         val isBlockedByPeer: Boolean = false,
+        val theme: ConversationTheme? = null,
+        val members: List<SeenReceipt> = emptyList(),
+        val typingNames: List<String> = emptyList(),
+        val seenSheetFor: Message? = null,
+        val isSavingTheme: Boolean = false,
+        val groupLeft: Boolean = false,
     ) {
+        val isGroup: Boolean get() = conversation?.isGroup == true || theme?.isGroup == true
+
+        /** Members whose read cursor is past this message — the mini profiles on the bubble. */
+        fun seenBy(message: Message): List<Profile> {
+            val sentAt = message.createdAt ?: return emptyList()
+            return members
+                .filter { it.userId != myId }
+                .filter { member ->
+                    val readAt = member.lastReadAt
+                    readAt != null && !readAt.isBefore(sentAt.minusSeconds(1))
+                }
+                .map { it.toProfile() }
+        }
+
+        val typingLabel: String
+            get() = when {
+                typingNames.isEmpty() -> ""
+                typingNames.size == 1 -> "${typingNames.first()} is typing"
+                typingNames.size == 2 -> "${typingNames[0]} and ${typingNames[1]} are typing"
+                else -> "${typingNames.size} people are typing"
+            }
+
         val isBlocked: Boolean get() = isBlockedByPeer
         val canSend: Boolean get() = composerText.isNotBlank() && !isBlockedByPeer
         val subtitle: String get() = when {
+            typingNames.isNotEmpty() -> typingLabel
             peerTyping -> "typing…"
+            isGroup -> {
+                val count = conversation?.memberCount?.takeIf { it > 0 } ?: members.size
+                if (count > 0) "$count members" else "Group chat"
+            }
             conversation?.peer == null -> ""
             else -> com.minichat.app.core.util.TimeFormat.lastSeen(
                 conversation.peer.lastSeenAt?.toString(),
@@ -102,6 +138,8 @@ class ChatViewModel @Inject constructor(
 
             loadMessages(initial = true)
             refreshPeerReadState()
+            refreshTheme()
+            refreshReceipts()
             markRead()
 
             chatRepository.messageEvents(conversationId).collect { event -> applyMessageEvent(event) }
@@ -435,17 +473,99 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onScreenStarted() {
+        // Read cursors also arrive over Realtime, but a slow poll keeps the seen avatars honest.
+        viewModelScope.launch {
+            while (true) {
+                refreshReceipts()
+                delay(RECEIPTS_POLL_MS)
+            }
+        }
         viewModelScope.launch {
             runCatching { realtimeRepository.watchConversation(conversationId) }
             realtimeRepository.typingUserIds(conversationId).collect { typingUserIds ->
-                val peerId = _uiState.value.conversation?.peer?.id
-                _uiState.update { it.copy(peerTyping = typingUserIds.contains(peerId)) }
+                val state = _uiState.value
+                val others = typingUserIds - state.myId
+                val names = others.mapNotNull { id ->
+                    state.members.firstOrNull { it.userId == id }?.let { member ->
+                        member.displayName.takeIf { it.isNotBlank() } ?: member.username
+                    } ?: state.conversation?.peer?.takeIf { it.id == id }?.displayName
+                }
+                _uiState.update {
+                    it.copy(
+                        peerTyping = others.contains(it.conversation?.peer?.id),
+                        typingNames = names.distinct(),
+                    )
+                }
             }
         }
     }
 
+    // ------------------------------------------------------------------
+    // Groups, theme and seen receipts
+    // ------------------------------------------------------------------
+
+    fun refreshTheme() {
+        viewModelScope.launch {
+            chatRepository.theme(conversationId).onSuccess { theme ->
+                _uiState.update { it.copy(theme = theme) }
+            }
+        }
+    }
+
+    fun refreshReceipts() {
+        viewModelScope.launch {
+            chatRepository.members(conversationId).onSuccess { members ->
+                _uiState.update { state ->
+                    state.copy(
+                        members = members,
+                        typingNames = state.typingNames,
+                        peerReadAt = members.firstOrNull { it.userId != state.myId }?.lastReadAt
+                            ?: state.peerReadAt,
+                    )
+                }
+            }
+        }
+    }
+
+    fun updateTheme(
+        wallpaper: String? = null,
+        bubbleColor: String? = null,
+        accentColor: String? = null,
+        title: String? = null,
+    ) {
+        _uiState.update { it.copy(isSavingTheme = true) }
+        viewModelScope.launch {
+            chatRepository.updateTheme(conversationId, wallpaper, bubbleColor, accentColor, title)
+                .onSuccess {
+                    refreshTheme()
+                    refreshPeerProfile()
+                }
+                .onFailure { failure ->
+                    _uiState.update { it.copy(error = failure.message) }
+                }
+            _uiState.update { it.copy(isSavingTheme = false) }
+        }
+    }
+
+    fun leaveGroup() {
+        viewModelScope.launch {
+            chatRepository.leaveGroup(conversationId)
+                .onSuccess { _uiState.update { it.copy(groupLeft = true) } }
+                .onFailure { failure -> _uiState.update { it.copy(error = failure.message) } }
+        }
+    }
+
+    fun openSeenSheet(message: Message) {
+        _uiState.update { it.copy(seenSheetFor = message) }
+    }
+
+    fun closeSeenSheet() {
+        _uiState.update { it.copy(seenSheetFor = null) }
+    }
+
     private companion object {
         const val PAGE_SIZE = 40
+        const val RECEIPTS_POLL_MS = 12_000L
         const val TYPING_THROTTLE_MS = 2_500L
         const val TYPING_IDLE_MS = 2_000L
     }

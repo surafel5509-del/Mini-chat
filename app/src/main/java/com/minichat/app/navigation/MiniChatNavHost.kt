@@ -29,6 +29,7 @@ import com.minichat.app.feature.call.CallScreen
 import com.minichat.app.feature.call.group.GroupCallScreen
 import com.minichat.app.feature.call.group.GroupCallSetupScreen
 import com.minichat.app.feature.chat.ChatScreen
+import com.minichat.app.feature.chat.NewGroupScreen
 import com.minichat.app.feature.contacts.DiscoverScreen
 import com.minichat.app.feature.home.HomeScreen
 import com.minichat.app.feature.profile.EditProfileScreen
@@ -226,7 +227,20 @@ fun MiniChatNavHost(
                 onOpenProfile = { navController.navigate(Routes.MY_PROFILE) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onNewChat = { navController.navigate(Routes.DISCOVER) },
+                onNewGroup = { navController.navigate(Routes.NEW_GROUP) },
                 onOpenCalls = { navController.navigate(Routes.CALLS) },
+            )
+        }
+
+        composable(Routes.NEW_GROUP) {
+            NewGroupScreen(
+                onBack = { navController.popBackStack() },
+                onCreated = { conversationId ->
+                    navController.navigate(Routes.chat(conversationId)) {
+                        popUpTo(Routes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
             )
         }
 

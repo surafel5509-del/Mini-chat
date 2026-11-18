@@ -5,14 +5,18 @@ import com.minichat.app.core.util.TimeFormat
 import com.minichat.app.core.util.safeCall
 import com.minichat.app.data.dto.ConversationMemberDto
 import com.minichat.app.data.dto.ConversationOverviewDto
+import com.minichat.app.data.dto.ConversationThemeDto
+import com.minichat.app.data.dto.SeenReceiptDto
 import com.minichat.app.data.dto.MessageInsertDto
 import com.minichat.app.data.dto.MessageRowDto
 import com.minichat.app.data.dto.ReplyPreviewRowDto
 import com.minichat.app.data.dto.ReactionInsertDto
 import com.minichat.app.data.realtime.RealtimeService
 import com.minichat.app.domain.model.ConversationSummary
+import com.minichat.app.domain.model.ConversationTheme
 import com.minichat.app.domain.model.Message
 import com.minichat.app.domain.model.ReplyPreview
+import com.minichat.app.domain.model.SeenReceipt
 import com.minichat.app.domain.repository.ChatRepository
 import com.minichat.app.domain.repository.ConversationSignal
 import com.minichat.app.domain.repository.MessageEvent
@@ -245,6 +249,89 @@ class ChatRepositoryImpl @Inject constructor(
             ?.let { TimeFormat.parse(it) }
     }
 
+    // ---------------------------------------------------------------------
+    // Groups + conversation theme
+    // ---------------------------------------------------------------------
+
+    override suspend fun createGroup(
+        title: String,
+        description: String?,
+        memberIds: List<String>,
+    ): AppResult<String> = safeCall {
+        val cleanTitle = title.trim()
+        if (cleanTitle.isEmpty()) error("Give the group a name.")
+        if (memberIds.isEmpty()) error("Pick at least one member.")
+        val body = buildJsonObject {
+            put("p_title", cleanTitle)
+            putJsonArray("p_member_ids") { memberIds.distinct().forEach { add(JsonPrimitive(it)) } }
+            description?.trim()?.takeIf { it.isNotEmpty() }?.let { put("p_description", it) }
+        }
+        client.postgrest.rpc(GROUP_CREATE_RPC, body).data.trim().trim('"')
+    }
+
+    override suspend fun addGroupMembers(
+        conversationId: String,
+        memberIds: List<String>,
+    ): AppResult<Unit> = safeCall {
+        if (memberIds.isEmpty()) return@safeCall
+        client.postgrest.rpc(
+            GROUP_ADD_MEMBERS_RPC,
+            buildJsonObject {
+                put("p_conversation_id", conversationId)
+                putJsonArray("p_user_ids") { memberIds.distinct().forEach { add(JsonPrimitive(it)) } }
+            },
+        )
+        Unit
+    }
+
+    override suspend fun leaveGroup(conversationId: String): AppResult<Unit> = safeCall {
+        client.postgrest.rpc(
+            GROUP_LEAVE_RPC,
+            buildJsonObject { put("p_conversation_id", conversationId) },
+        )
+        Unit
+    }
+
+    override suspend fun theme(conversationId: String): AppResult<ConversationTheme> = safeCall {
+        client.postgrest.rpc(
+            THEME_RPC,
+            buildJsonObject { put("p_conversation_id", conversationId) },
+        ).decodeList<ConversationThemeDto>().firstOrNull()?.toDomain()
+            ?: error("This conversation isn't available.")
+    }
+
+    override suspend fun updateTheme(
+        conversationId: String,
+        wallpaper: String?,
+        bubbleColor: String?,
+        accentColor: String?,
+        title: String?,
+    ): AppResult<Unit> = safeCall {
+        val params = buildJsonObject {
+            put("p_conversation_id", conversationId)
+            put("p_wallpaper", wallpaper)
+            put("p_bubble_color", bubbleColor)
+            put("p_accent_color", accentColor)
+            put("p_title", title)
+        }
+        client.postgrest.rpc(THEME_UPDATE_RPC, params)
+        Unit
+    }
+
+    override suspend fun receipts(conversationId: String): AppResult<List<SeenReceipt>> = safeCall {
+        loadReceipts(conversationId)
+    }
+
+    override suspend fun members(conversationId: String): AppResult<List<SeenReceipt>> = safeCall {
+        loadReceipts(conversationId)
+    }
+
+    private suspend fun loadReceipts(conversationId: String): List<SeenReceipt> =
+        client.postgrest.rpc(
+            RECEIPTS_RPC,
+            buildJsonObject { put("p_conversation_id", conversationId) },
+        ).decodeList<SeenReceiptDto>().mapNotNull { it.toDomain() }
+
     private companion object {
         const val VIEW_CONVERSATIONS = "conversation_overview"
         const val TABLE_MESSAGES = "messages"
@@ -281,5 +368,11 @@ class ChatRepositoryImpl @Inject constructor(
                 "message_reactions(id,message_id,user_id,emoji),profiles(id,display_name,username)"
 
         const val REPLY_PREVIEWS_RPC = "get_reply_previews"
+        const val GROUP_CREATE_RPC = "create_group"
+        const val GROUP_ADD_MEMBERS_RPC = "add_group_members"
+        const val GROUP_LEAVE_RPC = "leave_group"
+        const val THEME_RPC = "conversation_theme"
+        const val THEME_UPDATE_RPC = "update_conversation_theme"
+        const val RECEIPTS_RPC = "conversation_receipts"
     }
 }

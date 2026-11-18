@@ -204,14 +204,16 @@ class CallViewModel @Inject constructor(
     // Media
     // ---------------------------------------------------------------------
 
-    private fun hasPermissions(call: Call): Boolean {
-        val audio = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+    private fun hasAudioPermission(): Boolean =
+        ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
             PackageManager.PERMISSION_GRANTED
-        val camera = !call.type.isVideo ||
-            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+
+    private fun hasCameraPermission(): Boolean =
+        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED
-        return audio && camera
-    }
+
+    /** Audio is mandatory; a denied camera only downgrades the call to audio. */
+    private fun hasPermissions(call: Call): Boolean = hasAudioPermission()
 
     fun onPermissionsGranted() {
         val call = _uiState.value.call ?: return
@@ -232,6 +234,13 @@ class CallViewModel @Inject constructor(
             return
         }
         connecting = true
+        val videoRequested = call.type.isVideo
+        val videoAllowed = videoRequested && hasCameraPermission()
+        if (videoRequested && !videoAllowed) {
+            _uiState.update {
+                it.copy(error = "Camera permission is off — continuing with audio only.")
+            }
+        }
         mediaJob = viewModelScope.launch {
             _uiState.update {
                 it.copy(phase = if (call.status == CallStatus.Active) Phase.Connecting else Phase.Outgoing)
@@ -240,18 +249,21 @@ class CallViewModel @Inject constructor(
             when (val result = callRepository.credentials(call.id)) {
                 is AppResult.Success -> runCatching {
                     val credentials = result.data
-                    roomManager.connect(credentials.url, credentials.token, credentials.roomName)
+                    // connect() publishes the microphone and (when allowed) the camera.
+                    roomManager.connect(
+                        url = credentials.url,
+                        token = credentials.token,
+                        roomName = credentials.roomName,
+                        video = videoAllowed,
+                    )
                     startForegroundService(call)
-                    roomManager.setMicrophoneEnabled(true)
-                    if (call.type.isVideo) {
-                        roomManager.setCameraEnabled(true)
-                    }
                     roomManager.setSpeakerOn(call.type.isVideo)
                     _uiState.update {
                         it.copy(
                             phase = if (call.status == CallStatus.Active) Phase.Active else it.phase,
                             speakerOn = call.type.isVideo,
-                            cameraEnabled = call.type.isVideo,
+                            cameraEnabled = videoAllowed &&
+                                roomManager.state.value.localVideoTrack != null,
                             micEnabled = true,
                         )
                     }
@@ -420,6 +432,29 @@ class CallViewModel @Inject constructor(
         val next = !_uiState.value.speakerOn
         _uiState.update { it.copy(speakerOn = next) }
         roomManager.setSpeakerOn(next)
+    }
+
+    /** The app came back to the foreground: make sure the camera/mic are still publishing. */
+    fun onAppForeground() {
+        val call = _uiState.value.call ?: return
+        if (_uiState.value.phase != Phase.Active) return
+        viewModelScope.launch {
+            runCatching { roomManager.resumeMedia(call.type.isVideo && hasCameraPermission()) }
+            refreshFromRoom()
+        }
+    }
+
+    private fun refreshFromRoom() {
+        val room = roomManager.state.value
+        _uiState.update {
+            it.copy(
+                localVideoTrack = room.localVideoTrack,
+                remoteVideoTrack = room.remoteVideoTrack,
+                remoteCameraEnabled = room.remoteCameraEnabled,
+                micEnabled = room.microphoneEnabled,
+                cameraEnabled = room.cameraEnabled,
+            )
+        }
     }
 
     fun togglePermissionsPrompt(show: Boolean) {

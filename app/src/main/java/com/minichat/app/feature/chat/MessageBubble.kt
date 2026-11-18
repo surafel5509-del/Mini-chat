@@ -32,13 +32,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minichat.app.core.util.TimeFormat
 import com.minichat.app.design.theme.MiniChatColors
 import com.minichat.app.design.theme.MiniChatTheme
+import com.minichat.app.design.components.MiniChatAvatar
 import com.minichat.app.domain.model.Message
-import com.minichat.app.domain.model.MessageStatus
+import com.minichat.app.domain.model.Profile
+import com.minichat.app.design.components.MiniChatAvatar
+import com.minichat.app.domain.model.Message
+import com.minichat.app.domain.model.ProfileStatus
 import com.minichat.app.domain.model.ReactionSummary
 import java.time.Instant
 
@@ -56,13 +61,22 @@ fun MessageBubble(
     onLongPress: () -> Unit,
     onRetry: () -> Unit,
     onReactionTap: (String) -> Unit,
+    seenProfiles: List<Profile> = emptyList(),
+    onSeenClick: (() -> Unit)? = null,
+    /** Wallpaper-aware bubble tint chosen in the group editor. */
+    bubbleColorOverride: Color? = null,
     modifier: Modifier = Modifier,
 ) {
     val mine = message.isMine
-    val bubbleColor = if (mine) MiniChatTheme.extra.bubbleOutgoing else MiniChatTheme.extra.bubbleIncoming
-    val textColor = if (mine) MiniChatTheme.extra.bubbleOutgoingText else MiniChatTheme.extra.bubbleIncomingText
+    val custom = if (mine) bubbleColorOverride else null
+    val bubbleColor = custom ?: if (mine) MiniChatTheme.extra.bubbleOutgoing else MiniChatTheme.extra.bubbleIncoming
+    val textColor = when {
+        custom != null -> com.minichat.app.feature.chat.textColorOn(custom)
+        mine -> MiniChatTheme.extra.bubbleOutgoingText
+        else -> MiniChatTheme.extra.bubbleIncomingText
+    }
     val metaColor = if (mine) {
-        MiniChatColors.OnYellow.copy(alpha = 0.62f)
+        if (custom != null) textColor.copy(alpha = 0.66f) else MiniChatColors.OnYellow.copy(alpha = 0.62f)
     } else {
         MiniChatTheme.extra.textSecondary
     }
@@ -110,7 +124,7 @@ fun MessageBubble(
                                 .fillMaxWidth()
                                 .background(
                                     if (mine) {
-                                        MiniChatColors.OnYellow.copy(alpha = 0.10f)
+                                        textColor.copy(alpha = 0.12f)
                                     } else {
                                         MiniChatTheme.extra.textSecondary.copy(alpha = 0.12f)
                                     },
@@ -122,7 +136,7 @@ fun MessageBubble(
                             Icon(
                                 imageVector = Icons.Rounded.Reply,
                                 contentDescription = null,
-                                tint = if (mine) MiniChatColors.OnYellow.copy(alpha = 0.8f) else MiniChatColors.AmberSecondary,
+                                tint = if (mine) textColor.copy(alpha = 0.8f) else MiniChatColors.AmberSecondary,
                                 modifier = Modifier.size(13.dp),
                             )
                             Spacer(Modifier.width(7.dp))
@@ -130,7 +144,7 @@ fun MessageBubble(
                                 Text(
                                     text = reply.senderName,
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = if (mine) MiniChatColors.OnYellow.copy(alpha = 0.85f) else MiniChatColors.AmberSecondary,
+                                    color = if (mine) textColor.copy(alpha = 0.85f) else MiniChatColors.AmberSecondary,
                                 )
                                 Text(
                                     text = reply.snippet,
@@ -217,8 +231,62 @@ fun MessageBubble(
                             }
                         }
                     }
+
                 }
             }
+
+            if (mine && seenProfiles.isNotEmpty()) {
+                SeenByRow(
+                    profiles = seenProfiles,
+                    onSeenClick = onSeenClick,
+                    modifier = Modifier.padding(top = 5.dp, end = 4.dp),
+                )
+            }
+        }
+    }
+}
+
+/** Mini profile pictures of everybody who read my message (WhatsApp-style seen state). */
+@Composable
+private fun SeenByRow(
+    profiles: List<Profile>,
+    onSeenClick: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.then(
+            if (onSeenClick != null) {
+                Modifier.combinedClickableCompat(onSeenClick)
+            } else {
+                Modifier
+            },
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy((-6).dp),
+    ) {
+        profiles.take(3).forEach { profile ->
+            Box(
+                modifier = Modifier
+                    .size(17.dp)
+                    .background(MiniChatTheme.extra.surfaceMuted, CircleShape)
+                    .padding(1.dp),
+            ) {
+                MiniChatAvatar(
+                    displayName = profile.displayName,
+                    username = profile.username,
+                    avatarUrl = profile.avatarUrl,
+                    size = 15.dp,
+                    showOnlineIndicator = false,
+                )
+            }
+        }
+        if (profiles.size > 3) {
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = "+${profiles.size - 3}",
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                color = MiniChatTheme.extra.textSecondary,
+            )
         }
     }
 }
@@ -303,7 +371,11 @@ fun DayDivider(label: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TypingBubble(peerName: String, modifier: Modifier = Modifier) {
+fun TypingBubble(
+    peerName: String,
+    modifier: Modifier = Modifier,
+    showLabel: Boolean = true,
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -317,12 +389,14 @@ fun TypingBubble(peerName: String, modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             com.minichat.app.design.components.TypingDots(dotSize = 6.dp)
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = "$peerName is typing",
-                style = MaterialTheme.typography.labelSmall,
-                color = MiniChatTheme.extra.textSecondary,
-            )
+            if (showLabel) {
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = peerName,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MiniChatTheme.extra.textSecondary,
+                )
+            }
         }
     }
 }

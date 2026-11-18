@@ -54,6 +54,11 @@ data class ConversationOverviewDto(
     @SerialName("last_read_at") val lastReadAt: String? = null,
     @SerialName("my_id") val myId: String? = null,
     @SerialName("conversation_updated_at") val conversationUpdatedAt: String? = null,
+    @SerialName("conversation_type") val conversationType: String? = null,
+    @SerialName("conversation_title") val conversationTitle: String? = null,
+    @SerialName("conversation_avatar_url") val conversationAvatarUrl: String? = null,
+    @SerialName("member_count") val memberCount: Long? = null,
+    @SerialName("my_role") val myRole: String? = null,
 ) {
     /** Returns null for a row the view could not resolve (should not happen, but never crash). */
     fun toDomainOrNull(currentUserId: String): ConversationSummary? {
@@ -81,9 +86,16 @@ data class ConversationOverviewDto(
             )
         }
 
+        val type = com.minichat.app.domain.model.ConversationType.from(conversationType)
+
         return ConversationSummary(
             id = id,
             peer = peer,
+            type = type,
+            title = conversationTitle,
+            avatarUrl = conversationAvatarUrl,
+            memberCount = (memberCount ?: 0L).toInt(),
+            myRole = myRole,
             lastMessage = preview,
             lastActivityAt = TimeFormat.parse(lastMessageAt)
                 ?: TimeFormat.parse(conversationUpdatedAt),
@@ -238,6 +250,54 @@ data class MessageRowDto(
         senderName = profiles?.displayName.orEmpty(),
         isMine = senderId == currentUserId,
     )
+}
+
+/** Row of the `conversation_theme` RPC. */
+@Serializable
+data class ConversationThemeDto(
+    val title: String? = null,
+    val description: String? = null,
+    @SerialName("conversation_type") val conversationType: String? = null,
+    val wallpaper: String? = null,
+    @SerialName("bubble_color") val bubbleColor: String? = null,
+    @SerialName("accent_color") val accentColor: String? = null,
+    @SerialName("member_count") val memberCount: Int? = null,
+    @SerialName("my_role") val myRole: String? = null,
+) {
+    fun toDomain(): com.minichat.app.domain.model.ConversationTheme =
+        com.minichat.app.domain.model.ConversationTheme(
+            title = title,
+            description = description,
+            type = com.minichat.app.domain.model.ConversationType.from(conversationType),
+            wallpaper = wallpaper,
+            bubbleColor = bubbleColor,
+            accentColor = accentColor,
+            memberCount = memberCount ?: 0,
+            myRole = myRole,
+        )
+}
+
+/** Row of the `conversation_receipts` RPC. */
+@Serializable
+data class SeenReceiptDto(
+    @SerialName("user_id") val userId: String? = null,
+    @SerialName("display_name") val displayName: String? = null,
+    val username: String? = null,
+    @SerialName("avatar_url") val avatarUrl: String? = null,
+    @SerialName("last_read_at") val lastReadAt: String? = null,
+    @SerialName("member_role") val memberRole: String? = null,
+) {
+    fun toDomain(): com.minichat.app.domain.model.SeenReceipt? {
+        val id = userId ?: return null
+        return com.minichat.app.domain.model.SeenReceipt(
+            userId = id,
+            displayName = displayName.orEmpty(),
+            username = username.orEmpty(),
+            avatarUrl = avatarUrl,
+            lastReadAt = TimeFormat.parse(lastReadAt),
+            role = memberRole,
+        )
+    }
 }
 
 /** Row of the `get_reply_previews` RPC: the quoted message of a reply, with its author. */

@@ -82,7 +82,19 @@ data class MessagePreview(
     val isMine: Boolean = false,
 )
 
-/** Row rendered on the home screen. */
+enum class ConversationType {
+    Direct,
+    Group;
+
+    val isGroup: Boolean get() = this == Group
+
+    companion object {
+        fun from(value: String?): ConversationType =
+            if (value.equals("group", ignoreCase = true)) Group else Direct
+    }
+}
+
+/** Row rendered on the home screen — a one-to-one chat or a group. */
 data class ConversationSummary(
     val id: String,
     val peer: Profile?,
@@ -92,9 +104,54 @@ data class ConversationSummary(
     val isPinned: Boolean = false,
     val isMuted: Boolean = false,
     val peerTyping: Boolean = false,
+    val type: ConversationType = ConversationType.Direct,
+    val title: String? = null,
+    val avatarUrl: String? = null,
+    val memberCount: Int = 0,
+    val myRole: String? = null,
 ) {
-    val displayName: String get() = peer?.displayName ?: "Unknown"
+    val isGroup: Boolean get() = type.isGroup
+    val displayName: String get() = when {
+        isGroup -> title?.takeIf { it.isNotBlank() } ?: "Group chat"
+        else -> peer?.displayName ?: "Unknown"
+    }
+    val avatar: String? get() = if (isGroup) avatarUrl else peer?.avatarUrl
+    val subtitleHandle: String get() = if (isGroup) "$memberCount members" else peer?.username.orEmpty()
     val sortKey: Instant get() = lastActivityAt ?: Instant.EPOCH
+}
+
+/** Look and feel of one conversation: wallpaper, bubble colours, group name. */
+data class ConversationTheme(
+    val title: String? = null,
+    val description: String? = null,
+    val type: ConversationType = ConversationType.Direct,
+    val wallpaper: String? = null,
+    val bubbleColor: String? = null,
+    val accentColor: String? = null,
+    val memberCount: Int = 0,
+    val myRole: String? = null,
+) {
+    val isGroup: Boolean get() = type.isGroup
+    val canEdit: Boolean
+        get() = !isGroup || myRole.equals("owner", true) || myRole.equals("admin", true)
+}
+
+/** One member's read cursor — used by the "seen by" panel. */
+data class SeenReceipt(
+    val userId: String,
+    val displayName: String,
+    val username: String,
+    val avatarUrl: String? = null,
+    val lastReadAt: Instant? = null,
+    val role: String? = null,
+) {
+    fun toProfile(): Profile = Profile(
+        id = userId,
+        username = username,
+        displayName = displayName.ifBlank { username },
+        avatarUrl = avatarUrl,
+        lastSeenAt = lastReadAt,
+    )
 }
 
 /** Result of opening a direct conversation with somebody. */

@@ -11,6 +11,7 @@ object Routes {
     const val RESET_PASSWORD = "reset_password?email={email}"
     const val HOME = "home"
     const val CHAT = "chat/{conversationId}"
+    const val NEW_GROUP = "group/new"
     const val DISCOVER = "discover"
     const val MY_PROFILE = "profile/me"
     const val USER_PROFILE = "profile/{userId}"

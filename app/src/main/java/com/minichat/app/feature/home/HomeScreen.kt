@@ -34,6 +34,7 @@ import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DoneAll
+import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material.icons.rounded.PushPin
@@ -79,6 +80,7 @@ fun HomeScreen(
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
     onNewChat: () -> Unit,
+    onNewGroup: () -> Unit = {},
     onOpenCalls: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -161,13 +163,37 @@ fun HomeScreen(
             }
         }
 
-        NewChatFab(
-            onClick = onNewChat,
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
                 .padding(end = 20.dp, bottom = 22.dp),
-        )
+            horizontalAlignment = Alignment.End,
+        ) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .clickable(onClick = onNewGroup)
+                    .padding(horizontal = 14.dp, vertical = 9.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Groups,
+                    contentDescription = null,
+                    tint = MiniChatColors.OnYellow,
+                    modifier = Modifier.size(16.dp),
+                )
+                Spacer(Modifier.width(7.dp))
+                Text(
+                    text = "New group",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MiniChatColors.OnYellow,
+                )
+            }
+            Spacer(Modifier.height(10.dp))
+            NewChatFab(onClick = onNewChat)
+        }
 
         state.error?.let { error ->
             Box(
@@ -310,8 +336,10 @@ private fun ConversationRow(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
-    val online = TimeFormat.isOnline(conversation.peer?.lastSeenAt?.toString(), thresholdSeconds = 90) ||
-        isPeerRecentlyOnline(conversation)
+    val online = !conversation.isGroup && (
+        TimeFormat.isOnline(conversation.peer?.lastSeenAt?.toString(), thresholdSeconds = 90) ||
+            isPeerRecentlyOnline(conversation)
+        )
 
     Row(
         modifier = Modifier
@@ -322,11 +350,11 @@ private fun ConversationRow(
     ) {
         MiniChatAvatar(
             displayName = conversation.displayName,
-            username = conversation.peer?.username.orEmpty(),
-            avatarUrl = conversation.peer?.avatarUrl,
+            username = conversation.subtitleHandle,
+            avatarUrl = conversation.avatar,
             size = 54.dp,
-            online = online,
-            showOnlineIndicator = true,
+            online = online && !conversation.isGroup,
+            showOnlineIndicator = !conversation.isGroup,
         )
         Spacer(Modifier.width(14.dp))
 

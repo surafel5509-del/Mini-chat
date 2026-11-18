@@ -210,7 +210,12 @@ class GroupCallViewModel @Inject constructor(
             _uiState.update { it.copy(phase = Phase.Connecting, cameraEnabled = isVideo) }
             when (val result = groupCallRepository.credentials(call.id)) {
                 is AppResult.Success -> runCatching {
-                    roomManager.connect(result.data.url, result.data.token, result.data.roomName)
+                    roomManager.connect(
+                        url = result.data.url,
+                        token = result.data.token,
+                        roomName = result.data.roomName,
+                        video = isVideo,
+                    )
                     CallForegroundService.start(
                         context = context,
                         callId = call.id,
@@ -218,8 +223,6 @@ class GroupCallViewModel @Inject constructor(
                         subtitle = "Group call · ${_uiState.value.inCallCount} on the call",
                         isVideo = isVideo,
                     )
-                    roomManager.setMicrophoneEnabled(true)
-                    if (isVideo) roomManager.setCameraEnabled(true)
                     roomManager.setSpeakerOn(true)
                     notificationHelper.cancelIncomingGroupCall(call.id)
                     _uiState.update {
