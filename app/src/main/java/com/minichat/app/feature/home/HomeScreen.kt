@@ -532,26 +532,20 @@ private fun NoteBar(note: com.minichat.app.domain.model.UserNote?, onClick: () -
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        val ringBrush = if (note != null) {
+            androidx.compose.ui.graphics.Brush.linearGradient(
+                listOf(MiniChatColors.YellowPrimary, MiniChatColors.AmberSecondary),
+            )
+        } else {
+            androidx.compose.ui.graphics.Brush.linearGradient(
+                listOf(MiniChatTheme.extra.surfaceMuted, MiniChatTheme.extra.surfaceMuted),
+            )
+        }
         Box(
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
-                .background(
-                    if (note != null) {
-                        androidx.compose.ui.graphics.Brush.linearGradient(
-                            listOf(MiniChatColors.YellowPrimary, MiniChatColors.AmberSecondary),
-                        )
-                    } else {
-                        androidx.compose.ui.graphics.Color.Transparent
-                    },
-                )
-                .then(
-                    if (note == null) {
-                        Modifier.background(MiniChatTheme.extra.surfaceMuted)
-                    } else {
-                        Modifier
-                    },
-                ),
+                .background(ringBrush),
             contentAlignment = Alignment.Center,
         ) {
             Icon(

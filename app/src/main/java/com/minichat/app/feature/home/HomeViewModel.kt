@@ -3,6 +3,8 @@ package com.minichat.app.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.util.AppResult
+import com.minichat.app.core.util.onFailure
+import com.minichat.app.core.util.onSuccess
 import com.minichat.app.domain.model.ConversationSummary
 import com.minichat.app.domain.model.Profile
 import com.minichat.app.domain.model.UserNote
