@@ -229,7 +229,7 @@ class LiveKitRoomManager @Inject constructor(
     /** Stable key for a participant, even on SDK builds where `identity` is nullable. */
     private fun keyOf(participant: Participant): String =
         participant.identity?.value?.takeIf { it.isNotBlank() }
-            ?: participant.sid
+            ?: participant.sid.takeIf { it.isNotBlank() }
             ?: "peer-${participant.hashCode()}"
 
     private fun snapshotPeers(activeRoom: Room): Map<String, RemotePeer> {

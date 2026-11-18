@@ -40,10 +40,8 @@ import com.minichat.app.design.theme.MiniChatColors
 import com.minichat.app.design.theme.MiniChatTheme
 import com.minichat.app.design.components.MiniChatAvatar
 import com.minichat.app.domain.model.Message
+import com.minichat.app.domain.model.MessageStatus
 import com.minichat.app.domain.model.Profile
-import com.minichat.app.design.components.MiniChatAvatar
-import com.minichat.app.domain.model.Message
-import com.minichat.app.domain.model.ProfileStatus
 import com.minichat.app.domain.model.ReactionSummary
 import java.time.Instant
 
