@@ -252,6 +252,24 @@ data class MessageRowDto(
     )
 }
 
+/** Row of `public.notes` — a user's status note. */
+@Serializable
+data class NoteDto(
+    val id: String? = null,
+    @SerialName("author_id") val authorId: String = "",
+    val body: String = "",
+    @SerialName("expires_at") val expiresAt: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
+) {
+    fun toDomain(): com.minichat.app.domain.model.UserNote =
+        com.minichat.app.domain.model.UserNote(
+            userId = authorId,
+            body = body,
+            expiresAt = TimeFormat.parse(expiresAt),
+            createdAt = TimeFormat.parse(createdAt),
+        )
+}
+
 /** Row of the `conversation_theme` RPC. */
 @Serializable
 data class ConversationThemeDto(

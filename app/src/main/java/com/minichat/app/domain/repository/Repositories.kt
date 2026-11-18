@@ -8,6 +8,7 @@ import com.minichat.app.domain.model.Message
 import com.minichat.app.domain.model.Profile
 import com.minichat.app.domain.model.SeenReceipt
 import com.minichat.app.domain.model.StartedConversation
+import com.minichat.app.domain.model.UserNote
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 import com.minichat.app.domain.model.Reaction
@@ -151,6 +152,17 @@ interface ProfileRepository {
 
     suspend fun heartbeat(): AppResult<Unit>
     suspend fun registerDeviceToken(token: String): AppResult<Unit>
+
+    // ---- Status notes -------------------------------------------------------
+
+    /** My own status note, if it hasn't expired yet. */
+    suspend fun myNote(): AppResult<UserNote?>
+
+    /** Someone else's note — only visible when we share a conversation. */
+    suspend fun note(userId: String): AppResult<UserNote?>
+
+    suspend fun setNote(body: String, hours: Int): AppResult<UserNote>
+    suspend fun clearNote(): AppResult<Unit>
 }
 
 /** Ephemeral, best-effort signals: typing indicators and connection health. */

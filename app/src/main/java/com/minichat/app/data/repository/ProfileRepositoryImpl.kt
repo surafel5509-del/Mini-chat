@@ -3,12 +3,14 @@ package com.minichat.app.data.repository
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.core.util.safeCall
 import com.minichat.app.data.dto.BlockInsertDto
+import com.minichat.app.data.dto.NoteDto
 import com.minichat.app.data.dto.ProfileDto
 import com.minichat.app.data.dto.ReportInsertDto
 import com.minichat.app.data.dto.UserBlockDto
 import com.minichat.app.domain.model.BlockedUser
 import com.minichat.app.domain.model.Profile
 import com.minichat.app.domain.model.StartedConversation
+import com.minichat.app.domain.model.UserNote
 import com.minichat.app.domain.repository.ProfileRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
@@ -17,6 +19,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.storage.storage
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import javax.inject.Inject
@@ -25,6 +28,7 @@ import javax.inject.Singleton
 @Singleton
 class ProfileRepositoryImpl @Inject constructor(
     private val client: SupabaseClient,
+    private val json: Json,
 ) : ProfileRepository {
 
     private fun me(): String? = client.auth.currentUserOrNull()?.id
@@ -230,8 +234,53 @@ class ProfileRepositoryImpl @Inject constructor(
         )
     }
 
+    // ---------------------------------------------------------------------
+    // Status notes
+    // ---------------------------------------------------------------------
+
+    override suspend fun myNote(): AppResult<UserNote?> = safeCall {
+        val me = me() ?: return@safeCall null
+        loadNote(me)
+    }
+
+    override suspend fun note(userId: String): AppResult<UserNote?> = safeCall {
+        loadNote(userId)
+    }
+
+    private suspend fun loadNote(userId: String): UserNote? =
+        client.from(TABLE_NOTES)
+            .select(columns = Columns.list("id", "author_id", "body", "expires_at", "created_at")) {
+                filter {
+                    eq("author_id", userId)
+                    gt("expires_at", com.minichat.app.core.util.TimeFormat.toIso(java.time.Instant.now()))
+                }
+                limit(1)
+            }
+            .decodeList<NoteDto>()
+            .firstOrNull()
+            ?.toDomain()
+
+    override suspend fun setNote(body: String, hours: Int): AppResult<UserNote> = safeCall {
+        val trimmed = body.trim()
+        if (trimmed.isEmpty()) error("Write something first.")
+        val raw = client.postgrest.rpc(
+            function = "set_my_note",
+            parameters = buildJsonObject {
+                put("p_body", trimmed.take(200))
+                put("p_minutes", (hours.coerceIn(1, 168)) * 60)
+            },
+        ).data.trim()
+        json.decodeFromString<NoteDto>(raw).toDomain()
+    }
+
+    override suspend fun clearNote(): AppResult<Unit> = safeCall {
+        client.postgrest.rpc(function = "delete_my_note", parameters = buildJsonObject { })
+        Unit
+    }
+
     private companion object {
         const val TABLE_PROFILES = "profiles"
+        const val TABLE_NOTES = "notes"
         const val TABLE_BLOCKS = "user_blocks"
         const val TABLE_REPORTS = "user_reports"
         const val BUCKET_AVATARS = "avatars"

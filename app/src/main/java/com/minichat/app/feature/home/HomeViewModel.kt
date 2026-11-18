@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.model.ConversationSummary
 import com.minichat.app.domain.model.Profile
+import com.minichat.app.domain.model.UserNote
 import com.minichat.app.domain.repository.ChatRepository
 import com.minichat.app.domain.repository.ProfileRepository
 import com.minichat.app.domain.repository.RealtimeRepository
@@ -36,6 +37,11 @@ class HomeViewModel @Inject constructor(
         val error: String? = null,
         val typingByConversation: Map<String, Set<String>> = emptyMap(),
         val actionInProgress: String? = null,
+        val myNote: UserNote? = null,
+        val noteEditorOpen: Boolean = false,
+        val noteDraft: String = "",
+        val noteHours: Int = 24,
+        val savingNote: Boolean = false,
     ) {
         val visible: List<ConversationSummary> get() = if (query.isBlank()) {
             conversations
@@ -62,6 +68,63 @@ class HomeViewModel @Inject constructor(
         refresh(showSpinner = true)
         observeRealtime()
         loadProfile()
+        loadNote()
+    }
+
+    private fun loadNote() {
+        viewModelScope.launch {
+            profileRepository.myNote().onSuccess { note ->
+                _uiState.update { it.copy(myNote = note) }
+            }
+        }
+    }
+
+    fun openNoteEditor() {
+        _uiState.update {
+            it.copy(
+                noteEditorOpen = true,
+                noteDraft = it.myNote?.body.orEmpty(),
+            )
+        }
+    }
+
+    fun closeNoteEditor() {
+        _uiState.update { it.copy(noteEditorOpen = false) }
+    }
+
+    fun onNoteDraftChange(value: String) {
+        _uiState.update { it.copy(noteDraft = value.take(200)) }
+    }
+
+    fun onNoteHoursChange(hours: Int) {
+        _uiState.update { it.copy(noteHours = hours) }
+    }
+
+    fun saveNote() {
+        val state = _uiState.value
+        if (state.noteDraft.isBlank()) return
+        _uiState.update { it.copy(savingNote = true) }
+        viewModelScope.launch {
+            profileRepository.setNote(state.noteDraft, state.noteHours)
+                .onSuccess { note ->
+                    _uiState.update {
+                        it.copy(myNote = note, noteEditorOpen = false, savingNote = false)
+                    }
+                }
+                .onFailure { failure ->
+                    _uiState.update {
+                        it.copy(savingNote = false, error = failure.message)
+                    }
+                }
+        }
+    }
+
+    fun clearNote() {
+        _uiState.update { it.copy(savingNote = true) }
+        viewModelScope.launch {
+            profileRepository.clearNote()
+            _uiState.update { it.copy(myNote = null, noteEditorOpen = false, savingNote = false) }
+        }
     }
 
     fun onQueryChange(value: String) {

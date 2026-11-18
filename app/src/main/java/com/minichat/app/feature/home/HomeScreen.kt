@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DoneAll
+import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.NotificationsOff
@@ -107,6 +108,11 @@ fun HomeScreen(
                 onOpenProfile = onOpenProfile,
                 onOpenSettings = onOpenSettings,
                 onOpenCalls = onOpenCalls,
+            )
+
+            NoteBar(
+                note = state.myNote,
+                onClick = viewModel::openNoteEditor,
             )
 
             AnimatedVisibility(
@@ -206,6 +212,20 @@ fun HomeScreen(
                 com.minichat.app.design.components.InlineError(message = error)
             }
         }
+    }
+
+    if (state.noteEditorOpen) {
+        NoteEditorSheet(
+            draft = state.noteDraft,
+            hours = state.noteHours,
+            hasNote = state.myNote != null,
+            saving = state.savingNote,
+            onDraftChange = viewModel::onNoteDraftChange,
+            onHoursChange = viewModel::onNoteHoursChange,
+            onSave = viewModel::saveNote,
+            onClear = viewModel::clearNote,
+            onDismiss = viewModel::closeNoteEditor,
+        )
     }
 
     actionSheetFor?.let { conversation ->
@@ -496,5 +516,167 @@ private fun NewChatFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
             color = MiniChatColors.OnYellow,
         )
+    }
+}
+
+/** My status note: a tap opens the editor, the ring shows that a note is live. */
+@Composable
+private fun NoteBar(note: com.minichat.app.domain.model.UserNote?, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 4.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(30.dp)
+                .clip(CircleShape)
+                .background(
+                    if (note != null) {
+                        androidx.compose.ui.graphics.Brush.linearGradient(
+                            listOf(MiniChatColors.YellowPrimary, MiniChatColors.AmberSecondary),
+                        )
+                    } else {
+                        androidx.compose.ui.graphics.Color.Transparent
+                    },
+                )
+                .then(
+                    if (note == null) {
+                        Modifier.background(MiniChatTheme.extra.surfaceMuted)
+                    } else {
+                        Modifier
+                    },
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.EditNote,
+                contentDescription = null,
+                tint = if (note != null) MiniChatColors.OnYellow else MiniChatTheme.extra.textSecondary,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        Spacer(Modifier.width(11.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = if (note != null) "Your note" else "Add a note",
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = note?.body?.takeIf { it.isNotBlank() }
+                    ?: "Share what you're up to — friends see it on your profile.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MiniChatTheme.extra.textSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = if (note != null) "Edit" else "New",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            color = MiniChatColors.AmberSecondary,
+        )
+    }
+}
+
+@Composable
+private fun NoteEditorSheet(
+    draft: String,
+    hours: Int,
+    hasNote: Boolean,
+    saving: Boolean,
+    onDraftChange: (String) -> Unit,
+    onHoursChange: (Int) -> Unit,
+    onSave: () -> Unit,
+    onClear: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val durations = listOf(1 to "1 hour", 4 to "4 hours", 24 to "24 hours", 168 to "7 days")
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+            Text(
+                text = if (hasNote) "Edit your note" else "Add a note",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Notes are visible to people you chat with and disappear when they expire.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MiniChatTheme.extra.textSecondary,
+            )
+            Spacer(Modifier.height(12.dp))
+            com.minichat.app.design.components.MiniChatTextField(
+                value = draft,
+                onValueChange = onDraftChange,
+                label = "Your note",
+                placeholder = "Building MINI CHAT 🚀",
+                singleLine = false,
+                maxLines = 3,
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = "SHOW FOR",
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                color = MiniChatTheme.extra.textSecondary,
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                durations.forEach { (value, label) ->
+                    val selected = hours == value
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                if (selected) {
+                                    MiniChatColors.YellowPrimary.copy(alpha = 0.28f)
+                                } else {
+                                    MiniChatTheme.extra.surfaceMuted
+                                },
+                            )
+                            .clickable { onHoursChange(value) }
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = if (selected) {
+                                MiniChatColors.AmberSecondary
+                            } else {
+                                MiniChatTheme.extra.textSecondary
+                            },
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.height(18.dp))
+            com.minichat.app.design.components.PrimaryButton(
+                text = "Save note",
+                loading = saving,
+                enabled = draft.isNotBlank(),
+                onClick = onSave,
+            )
+            if (hasNote) {
+                Spacer(Modifier.height(8.dp))
+                com.minichat.app.design.components.GhostButton(
+                    text = "Delete note",
+                    onClick = onClear,
+                )
+            }
+            Spacer(Modifier.height(24.dp))
+        }
     }
 }

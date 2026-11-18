@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -76,8 +77,22 @@ fun TypingDots(
                 ),
                 label = "dot$index",
             )
+            val lift by transition.animateFloat(
+                initialValue = 0f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(
+                        durationMillis = 620,
+                        delayMillis = index * 140,
+                        easing = FastOutSlowInEasing,
+                    ),
+                    repeatMode = RepeatMode.Reverse,
+                ),
+                label = "lift$index",
+            )
             Box(
                 modifier = Modifier
+                    .graphicsLayer { translationY = -lift * dotSize.toPx() * 0.35f }
                     .size(dotSize)
                     .alpha(alpha)
                     .background(color, CircleShape),

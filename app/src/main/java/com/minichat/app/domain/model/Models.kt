@@ -154,6 +154,14 @@ data class SeenReceipt(
     )
 }
 
+/** A short-lived status ("note") somebody pinned to their profile. */
+data class UserNote(
+    val userId: String,
+    val body: String,
+    val expiresAt: Instant? = null,
+    val createdAt: Instant? = null,
+)
+
 /** Result of opening a direct conversation with somebody. */
 data class StartedConversation(
     val conversationId: String,
