@@ -93,25 +93,10 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:writeDebugAppMetadata
 > Task :app:writeDebugSigningConfigVersions
 
-> Task :app:compileDebugKotlin
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/livekit/LiveKitRoomManager.kt:231:9 Return type mismatch: expected 'String', actual 'Any'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:42:38 Conflicting import: imported name 'Message' is ambiguous.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:45:38 Conflicting import: imported name 'Message' is ambiguous.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:46:38 Unresolved reference 'ProfileStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:294:68 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:295:27 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:295:70 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:298:9 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:305:39 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:307:9 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:314:9 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:321:9 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:328:9 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/chat/MessageBubble.kt:335:9 Unresolved reference 'MessageStatus'.
-e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/feature/home/HomeScreen.kt:177:22 Unresolved reference 'clickable' on receiver of type 'Modifier'.
-
 > Task :app:compileDebugKotlin FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1795021872566.json
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/livekit/LiveKitRoomManager.kt:231:9 Return type mismatch: expected 'String', actual 'Any'.
+e: file:///home/runner/work/Mini-chat/Mini-chat/app/src/main/java/com/minichat/app/data/livekit/LiveKitRoomManager.kt:232:44 Unresolved reference 'isNotBlank' on receiver of type 'Participant.Sid'.
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1795022258758.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Mini-chat/Mini-chat/build/reports/problems/problems-report.html
 
@@ -158,6 +143,36 @@ org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:com
 	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:475)
 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:392)
+	at org.gradle.execution.plan.DefaultPlanExecutor.process(DefaultPlanExecutor.java:118)
+	at org.gradle.execution.DefaultBuildWorkExecutor.executePlan(DefaultBuildWorkExecutor.java:143)
+	at org.gradle.execution.DefaultBuildWorkExecutor.displayOrExecutePlan(DefaultBuildWorkExecutor.java:128)
+	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:79)
+	at org.gradle.execution.DefaultBuildWorkExecutor$1.call(DefaultBuildWorkExecutor.java:75)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.execution.DefaultBuildWorkExecutor.execute(DefaultBuildWorkExecutor.java:75)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$executeTasks$0(DefaultBuildLifecycleController.java:322)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:324)
+	at org.gradle.internal.model.StateTransitionController.lambda$tryTransition$0(StateTransitionController.java:235)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:45)
+	at org.gradle.internal.model.StateTransitionController.tryTransition(StateTransitionController.java:235)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.executeTasks(DefaultBuildLifecycleController.java:313)
+	at org.gradle.internal.build.DefaultBuildWorkGraphController$DefaultBuildWorkGraph.runWork(DefaultBuildWorkGraphController.java:207)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:291)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:289)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:285)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:277)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+	at org.gradle.composite.internal.DefaultBuildController.doRun(DefaultBuildController.java:182)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.lambda$run$0(DefaultBuildController.java:199)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.run(DefaultBuildController.java:199)
 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
@@ -278,7 +293,7 @@ Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionExcept
 	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
 	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
 	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
-	... 25 more
+	... 55 more
 Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Return type mismatch: expected 'String', actual 'Any'.
 	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
 	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
@@ -316,5 +331,5 @@ Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Return t
 	... 2 more
 
 
-BUILD FAILED in 3m 9s
+BUILD FAILED in 2m 39s
 32 actionable tasks: 32 executed
