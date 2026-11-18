@@ -280,6 +280,28 @@ fun UserProfileScreen(
                 style = MaterialTheme.typography.labelMedium,
                 color = MiniChatTheme.extra.textSecondary,
             )
+            state.note?.let { note ->
+                Spacer(Modifier.height(14.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(MiniChatColors.YellowPrimary.copy(alpha = 0.16f))
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                ) {
+                    Text(
+                        text = if (state.isMe) "YOUR NOTE" else "NOTE",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MiniChatColors.AmberSecondary,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = note.body,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
             if (!profile.bio.isNullOrBlank()) {
                 Spacer(Modifier.height(14.dp))
                 Text(

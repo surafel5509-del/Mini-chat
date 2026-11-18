@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.core.util.Validators
 import com.minichat.app.domain.model.Profile
+import com.minichat.app.domain.model.UserNote
 import com.minichat.app.domain.repository.AuthRepository
 import com.minichat.app.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +42,7 @@ class ProfileViewModel @Inject constructor(
         val usernameError: String? = null,
         val bioError: String? = null,
         val blockedCount: Int = 0,
+        val note: UserNote? = null,
     ) {
         val canSave: Boolean
             get() = displayName.isNotBlank() && username.isNotBlank() && !isSaving
@@ -56,6 +58,18 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun load() {
+        viewModelScope.launch {
+            val currentUser = profileRepository.currentUserId()
+            val target = routeUserId?.takeIf { it != "me" } ?: currentUser
+            if (target != null) {
+                val note = (if (target == currentUser) {
+                    profileRepository.myNote()
+                } else {
+                    profileRepository.note(target)
+                }).getOrNull()
+                _uiState.update { it.copy(note = note) }
+            }
+        }
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val currentUserId = profileRepository.currentUserId()
