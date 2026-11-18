@@ -1,10 +1,12 @@
 package com.minichat.app.feature.call.group
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minichat.app.core.util.AppResult
 import com.minichat.app.domain.model.CallType
 import com.minichat.app.domain.model.Profile
+import com.minichat.app.domain.repository.ChatRepository
 import com.minichat.app.domain.repository.GroupCallRepository
 import com.minichat.app.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +24,12 @@ import javax.inject.Inject
 class GroupCallSetupViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val groupCallRepository: GroupCallRepository,
+    private val chatRepository: ChatRepository,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    /** Set when the composer was opened from a group chat. */
+    private val groupId: String? = savedStateHandle.get<String>("groupId")?.takeIf { it.isNotBlank() }
 
     data class UiState(
         val isLoading: Boolean = true,
@@ -44,16 +51,41 @@ class GroupCallSetupViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            val preselected = loadGroupDefaults()
             when (val result = profileRepository.recentPeers()) {
                 is AppResult.Success -> _uiState.update {
-                    it.copy(isLoading = false, people = result.data)
+                    it.copy(
+                        isLoading = false,
+                        people = result.data,
+                        selected = preselected,
+                    )
                 }
 
                 is AppResult.Failure -> _uiState.update {
-                    it.copy(isLoading = false, error = result.message)
+                    it.copy(isLoading = false, error = result.message, selected = preselected)
                 }
             }
         }
+    }
+
+    /** Preselects the members of the group the composer was opened from. */
+    private suspend fun loadGroupDefaults(): Set<String> {
+        val id = groupId ?: return emptySet()
+        val me = profileRepository.currentUserId()
+        val selected = when (val result = chatRepository.members(id)) {
+            is AppResult.Success ->
+                result.data.map { it.userId }.filter { it.isNotBlank() && it != me }.toSet()
+
+            is AppResult.Failure -> emptySet()
+        }
+        when (val result = chatRepository.loadConversation(id)) {
+            is AppResult.Success -> result.data?.displayName?.takeIf { it.isNotBlank() }?.let { name ->
+                _uiState.update { it.copy(title = name.take(60)) }
+            }
+
+            is AppResult.Failure -> Unit
+        }
+        return selected
     }
 
     fun onQueryChange(value: String) {

@@ -24,7 +24,7 @@ object Routes {
     const val ABOUT = "settings/about"
     const val CALL = "call/{callId}"
     const val GROUP_CALL = "group-call/{callId}"
-    const val NEW_GROUP_CALL = "group-calls/new"
+    const val NEW_GROUP_CALL = "group-calls/new?groupId={groupId}"
     const val CALLS = "calls"
 
     fun chat(conversationId: String): String = "chat/$conversationId"
@@ -34,6 +34,10 @@ object Routes {
     fun call(callId: String): String = "call/$callId"
 
     fun groupCall(callId: String): String = "group-call/$callId"
+
+    /** [groupId] preselects that conversation's members in the group-call composer. */
+    fun newGroupCall(groupId: String? = null): String =
+        if (groupId.isNullOrBlank()) "group-calls/new" else "group-calls/new?groupId=$groupId"
 
     fun resetPassword(email: String): String = "reset_password?email=${Uri.encode(email)}"
 }

@@ -79,6 +79,7 @@ fun ChatScreen(
     onBack: () -> Unit,
     onOpenProfile: (String) -> Unit,
     onOpenCall: (String) -> Unit,
+    onStartGroupCall: (String) -> Unit = {},
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -347,6 +348,10 @@ fun ChatScreen(
                 viewModel.updateTheme(wallpaper, bubble, accent, title)
             },
             onLeaveGroup = viewModel::leaveGroup,
+            onStartCall = {
+                showGroupInfo = false
+                onStartGroupCall(viewModel.conversationId)
+            },
             onDismiss = { showGroupInfo = false },
         )
     }

@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Icon
@@ -73,6 +74,7 @@ fun GroupInfoSheet(
         title: String?,
     ) -> Unit,
     onLeaveGroup: () -> Unit,
+    onStartCall: () -> Unit = {},
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -157,6 +159,40 @@ fun GroupInfoSheet(
                         renaming = false
                     },
                 )
+            }
+
+            Spacer(Modifier.height(18.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MiniChatColors.YellowPrimary.copy(alpha = 0.18f))
+                    .clickable {
+                        onStartCall()
+                        onDismiss()
+                    }
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Videocam,
+                    contentDescription = null,
+                    tint = MiniChatColors.AmberSecondary,
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(Modifier.width(10.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Start a call with this group",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = "Everyone here is preselected — add or remove people before you ring.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MiniChatTheme.extra.textSecondary,
+                    )
+                }
             }
 
             Spacer(Modifier.height(18.dp))

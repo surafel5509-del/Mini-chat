@@ -252,6 +252,9 @@ fun MiniChatNavHost(
                 onBack = { navController.popBackStack() },
                 onOpenProfile = { userId -> navController.navigate(Routes.userProfile(userId)) },
                 onOpenCall = { callId -> navController.navigate(Routes.call(callId)) },
+                onStartGroupCall = { conversationId ->
+                    navController.navigate(Routes.newGroupCall(conversationId))
+                },
             )
         }
 
@@ -279,11 +282,20 @@ fun MiniChatNavHost(
                     navController.navigate(Routes.chat(conversationId)) { launchSingleTop = true }
                 },
                 onOpenCall = { callId -> navController.navigate(Routes.call(callId)) },
-                onNewGroupCall = { navController.navigate(Routes.NEW_GROUP_CALL) },
+                onNewGroupCall = { navController.navigate(Routes.newGroupCall()) },
             )
         }
 
-        composable(Routes.NEW_GROUP_CALL) {
+        composable(
+            route = Routes.NEW_GROUP_CALL,
+            arguments = listOf(
+                navArgument("groupId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+            ),
+        ) {
             GroupCallSetupScreen(
                 onBack = { navController.popBackStack() },
                 onCallStarted = { callId ->
