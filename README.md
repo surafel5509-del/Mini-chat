@@ -19,6 +19,9 @@ lives in `design/theme`.
 | **Contacts** | Search people by display name or `@username`, recent peers, start a conversation in one tap, block and report from the same screen. |
 | **Profile** | My profile, other people's profiles (last seen, bio, block/report/unblock), edit profile with avatar upload to the `avatars` storage bucket. |
 | **Settings** | Theme (light / dark / follow system), notification master switch + sound + vibration + previews, read receipts, typing indicators, blocked users, about, sign out. |
+| **Groups** | Create a group with a name, an optional photo and any number of people, then chat in it with the same features as 1:1 — sender names and avatars on bubbles, a shared wallpaper, accent and bubble colours, group "seen by" with mini profiles, and typing bubbles that name who is typing. |
+| **Group appearance** | Per-group editor (background wallpaper, name colour, your own message bubble colour) with eight ready-made presets plus a live preview; the theme is stored on the conversation so every member sees the same thing. |
+| **Status notes** | Pin a note to your profile for 1 hour up to 7 days; the home screen shows an edit bar and friends see the note on your profile. Expired notes disappear on their own. |
 | **Group calls** | Multi-party **voice and video rooms** (up to 16 people) over LiveKit: pick people from a roster, name the room, then join a grid of live tiles with per-tile mute indicators, mute/speaker/camera/flip controls, host "end for all", leave, and a live roster that survives people joining late. Invites arrive as full-screen call notifications; everything is logged in **Calls → Group calls**. |
 | **Calls** | One-to-one **voice and video calls** over LiveKit: outgoing ringing, incoming full-screen notification with Accept/Decline, mute, speaker, camera on/off, front/back switch, live duration timer, reconnect handling, call log with redial, and every call (caller, callee, type, status, duration, timestamp) stored in Supabase. |
 | **Push** | `FirebaseMessagingService` renders grouped notifications that deep-link into the conversation; device tokens are registered per user in `device_tokens`. Disabled safely when no Firebase project is configured. |
@@ -101,6 +104,10 @@ to deploy the push notification Edge Function.
 `start_call`, `answer_call`, `decline_call`, `end_call`, `active_call`, `call_history`,
 `expire_stale_calls`, `start_group_call`, `join_group_call`, `decline_group_call`, `leave_group_call`,
 `end_group_call`, `active_group_call`, `group_call_participants`, `group_call_history`).
+Group appearance adds `conversations.wallpaper|bubble_color|accent_color` plus the
+`conversation_theme`, `update_conversation_theme` and `conversation_receipts` RPCs (see
+`supabase/migrations/20261108000001_group_themes.sql`). Status notes use the existing
+`notes` table with `set_my_note` / `delete_my_note`.
 
 ### Calling setup (LiveKit)
 
